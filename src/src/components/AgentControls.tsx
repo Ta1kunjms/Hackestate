@@ -1,9 +1,14 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrophone, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 
+// Add listening and onListenToggle props
 type AgentControlsProps = {
   muted: boolean;
   onMuteToggle: () => void;
   onReset: () => void;
+  listening: boolean;
+  onListenToggle: () => void;
 };
 
 const AgentControls: React.FC<AgentControlsProps> = ({ muted, onMuteToggle, onReset }) => {

@@ -12,6 +12,9 @@ import {
 } from '../utils/agentMemory';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeMute, faVolumeUp, faCog, faMicrophone, faTimes, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import AgentControls from './AgentControls';
+import { createRecognition, startRecognition, stopRecognition, SpeechRecognitionResultHandler, speakText, isSpeechSynthesisSupported, stopSpeaking, getVoices } from '../utils/webSpeech';
+import TranscriptPopup from './TranscriptPopup';
 
 // You will set your Gemini API key in an environment variable (see api/geminiApi.ts for details)
 
@@ -30,11 +33,18 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [animating, setAnimating] = useState(false);
-  const [listening, setListening] = useState(false); // Placeholder for voice
+  const [listening, setListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const [popup, setPopup] = useState<{ user: string; ai: string } | null>(null);
   const popupTimeout = useRef<NodeJS.Timeout | null>(null);
   const [inputFocused, setInputFocused] = useState(false);
+  const [speechError, setSpeechError] = useState<string | null>(null);
+  const [speechEnabled, setSpeechEnabled] = useState(true);
+  const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [lang, setLang] = useState('en-US');
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
   useEffect(() => {
     setMessages(loadChatHistory());
@@ -71,6 +81,53 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [expanded]);
+
+  useEffect(() => {
+    if (!listening) {
+      setTranscript('');
+      if (recognitionRef.current) stopRecognition(recognitionRef.current);
+      return;
+    }
+    setSpeechError(null);
+    const handleResult: SpeechRecognitionResultHandler = (text, isFinal) => {
+      setTranscript(text);
+      if (isFinal) {
+        setInput(prev => prev + (prev ? ' ' : '') + text);
+        setListening(false);
+      }
+    };
+    recognitionRef.current = createRecognition(handleResult, (err) => {
+      setSpeechError(err || 'Speech recognition error');
+      setListening(false);
+    });
+    if (recognitionRef.current) startRecognition(recognitionRef.current);
+    else setSpeechError('Speech recognition not supported in this browser.');
+    return () => {
+      if (recognitionRef.current) stopRecognition(recognitionRef.current);
+    };
+  }, [listening]);
+
+  useEffect(() => {
+    if (!isSpeechSynthesisSupported()) return;
+    const updateVoices = () => {
+      const v = getVoices();
+      setVoices(v);
+      if (!voice && v.length > 0) setVoice(v[0]);
+    };
+    updateVoices();
+    window.speechSynthesis.onvoiceschanged = updateVoices;
+    return () => { window.speechSynthesis.onvoiceschanged = null; };
+  }, []);
+
+  useEffect(() => {
+    if (!speechEnabled || muted) return;
+    if (!isSpeechSynthesisSupported()) return;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg && lastMsg.from === 'ai') {
+      speakText(lastMsg.text, voice || undefined, lang);
+    }
+    return () => { stopSpeaking(); };
+  }, [messages, speechEnabled, muted, voice, lang]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -120,6 +177,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
     setShowSettings(false);
   };
   const handleMuteToggle = () => setMuted((m) => !m);
+  const handleListenToggle = () => setListening(l => !l);
 
   const isSpeechRecognitionSupported =
     typeof window !== 'undefined' &&
@@ -132,29 +190,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
     return (
       <>
         {popup && (
-          <div
-            style={{
-              position: 'fixed',
-              bottom: 110,
-              right: 32,
-              zIndex: 1100,
-              background: 'white',
-              border: '1px solid #1976d2',
-              borderRadius: 12,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-              minWidth: 220,
-              maxWidth: 320,
-              padding: '12px 16px',
-              cursor: 'pointer',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}
-            onClick={() => { setExpanded(true); setPopup(null); }}
-          >
-            <div style={{ color: '#1976d2', fontWeight: 500, textAlign: 'right', fontSize: 14 }}>{popup.user}</div>
-            <div style={{ color: '#333', background: '#f5f5f5', borderRadius: 8, padding: '8px 12px', fontSize: 14 }}>{popup.ai}</div>
-          </div>
+          <TranscriptPopup message={popup.ai} onClose={() => setPopup(null)} />
         )}
         <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 1000, cursor: 'pointer' }} onClick={() => setExpanded(true)}>
           <div style={{ borderRadius: '50%', width: 64, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', background: 'transparent' }}>
@@ -170,7 +206,21 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
 
   // Animate chat open/close
   return (
-    <div ref={chatRef} style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 1000, background: 'transparent', padding: 0, margin: 0 }}>
+    <div
+      ref={chatRef}
+      style={{
+        position: 'fixed',
+        bottom: 32,
+        right: 32,
+        zIndex: 1000,
+        background: 'transparent',
+        padding: 0,
+        margin: 0,
+        boxShadow: listening ? '0 0 0 4px #43a04755' : undefined,
+        borderRadius: 24,
+        transition: 'box-shadow 0.2s',
+      }}
+    >
       <div
         style={{
           width: 340,
@@ -191,7 +241,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
         {/* Header: 10% */}
         <div style={{ flex: '0 0 10%', minHeight: 48, maxHeight: 56, background: '#1976d2', color: 'white', borderTopLeftRadius: 20, borderTopRightRadius: 20, display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative', justifyContent: 'center', padding: 0, width: '100%' }}>
           {/* Centered, overflowing avatar */}
-          <div style={{ position: 'absolute', left: '50%', top: -24, transform: 'translateX(-50%)', zIndex: 3, background: 'transparent' }}>
+          <div style={{ position: 'absolute', left: '50%', top: -24, transform: 'translateX(-50%)', zIndex: 3, background: 'transparent', animation: 'agent-float 2.2s ease-in-out infinite alternate' }}>
             <AgentAvatar />
           </div>
           {/* Agent name, centered */}
@@ -216,7 +266,32 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
               <FontAwesomeIcon icon={faTimes} />
             </button>
             {showSettings && (
-              <div style={{ position: 'absolute', top: 36, right: 0, background: 'rgba(25,118,210,0.95)', color: '#fff', border: '1.5px solid #1976d2', borderRadius: 8, boxShadow: '0 2px 8px rgba(25,118,210,0.18)', zIndex: 10, minWidth: 120, padding: 8, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+              <div style={{ position: 'absolute', top: 36, right: 0, background: 'rgba(25,118,210,0.95)', color: '#fff', border: '1.5px solid #1976d2', borderRadius: 8, boxShadow: '0 2px 8px rgba(25,118,210,0.18)', zIndex: 10, minWidth: 220, padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+                {/* Voice settings moved here */}
+                {isSpeechSynthesisSupported() && voices.length > 0 && (
+                  <>
+                    <select
+                      value={lang}
+                      onChange={e => setLang(e.target.value)}
+                      style={{ fontSize: 13, color: '#fff', background: 'rgba(0,0,0,0.25)', borderRadius: 4, border: '1px solid #fff', marginLeft: 4, marginTop: 8, marginBottom: 4, padding: '4px 8px', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}
+                      disabled={muted}
+                    >
+                      {Array.from(new Set(voices.map(v => v.lang))).map(l => (
+                        <option key={l} value={l} style={{ color: '#222', background: '#fff' }}>{l}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={voice ? voice.name : ''}
+                      onChange={e => setVoice(voices.find(v => v.name === e.target.value) || null)}
+                      style={{ fontSize: 13, color: '#fff', background: 'rgba(0,0,0,0.25)', borderRadius: 4, border: '1px solid #fff', marginLeft: 4, marginBottom: 8, padding: '4px 8px', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}
+                      disabled={muted}
+                    >
+                      {voices.filter(v => v.lang === lang).map(v => (
+                        <option key={v.name} value={v.name} style={{ color: '#222', background: '#fff' }}>{v.name}</option>
+                      ))}
+                    </select>
+                  </>
+                )}
                 <button
                   onClick={handleReset}
                   aria-label="Reset agent memory"
@@ -230,11 +305,9 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
               </div>
             )}
           </div>
-          {/* Removed mic and speaker buttons from header */}
-          {prefs.location && <div style={{ fontSize: 12, color: '#fff', marginTop: 2 }}>Pref: {prefs.location}{prefs.budget ? `, ≤ $${prefs.budget.toLocaleString()}` : ''}</div>}
         </div>
         {/* Chat history: 80% */}
-        <div style={{ flex: '1 1 80%', minHeight: 0, padding: '1rem', overflowY: 'auto', background: '#fff', maxHeight: '100%' }}>
+        <div style={{ flex: '1 1 80%', minHeight: 0, padding: '1rem', overflowY: 'auto', background: '#fff', maxHeight: '100%', position: 'relative' }}>
           {messages.length === 0 && (
             <div style={{ marginBottom: '1rem', color: '#888' }}>[Chat messages will appear here]</div>
           )}
@@ -243,9 +316,20 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
               Voice input is not supported in your browser. You can still use text chat.
             </div>
           )}
+          {speechError && (
+            <div style={{ color: '#d32f2f', fontSize: 13, marginBottom: 8 }}>
+              {speechError}
+            </div>
+          )}
           {muted && (
             <div style={{ color: '#ffa726', fontSize: 13, marginBottom: 8 }}>
               Agent is muted. Voice responses are disabled.
+            </div>
+          )}
+          {listening && (
+            <div style={{ position: 'absolute', top: 8, right: 8, background: '#e3f2fd', color: '#1976d2', borderRadius: 8, padding: '6px 12px', fontWeight: 600, fontSize: 14, zIndex: 10, boxShadow: '0 2px 8px rgba(25,118,210,0.10)' }}>
+              <span role="img" aria-label="mic">🎤</span> Listening...<br />
+              <span style={{ fontWeight: 400, fontSize: 13 }}>{transcript}</span>
             </div>
           )}
           {messages.map((msg, i) => (
@@ -268,50 +352,33 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
           style={{ flex: '0 0 10%', minHeight: 56, maxHeight: 56, padding: '0.5rem 1rem', borderTop: '1px solid #eee', display: 'flex', alignItems: 'center', background: 'white', gap: 0 }}
           onSubmit={e => { e.preventDefault(); handleSend(); }}
         >
-          {!inputFocused && (
-            <>
-              <button
-                type="button"
-                onClick={() => setListening(l => !l)}
-                style={{
-                  background: 'transparent',
-                  color: listening ? '#1976d2' : '#1976d2',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: 24,
-                  height: 24,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 4,
-                  boxShadow: listening ? '0 0 0 2px #90caf9' : undefined,
-                  transition: 'color 0.2s',
-                }}
-                title={listening ? 'Stop Listening' : 'Start Listening'}
-                aria-pressed={listening}
-                onMouseOver={e => (e.currentTarget.style.color = '#1565c0')}
-                onMouseOut={e => (e.currentTarget.style.color = '#1976d2')}
-                onFocus={e => (e.currentTarget.style.color = '#1565c0')}
-                onBlur={e => (e.currentTarget.style.color = '#1976d2')}
-              >
-                <FontAwesomeIcon icon={faMicrophone} spin={listening} style={{ fontSize: 13 }} />
-              </button>
-              <button
-                onClick={handleMuteToggle}
-                aria-label={muted ? 'Unmute agent' : 'Mute agent'}
-                tabIndex={0}
-                style={{ background: 'transparent', color: '#1976d2', border: 'none', borderRadius: '50%', width: 24, height: 24, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 8, transition: 'color 0.2s' }}
-                onMouseOver={e => (e.currentTarget.style.color = '#1565c0')}
-                onMouseOut={e => (e.currentTarget.style.color = '#1976d2')}
-                onFocus={e => (e.currentTarget.style.color = '#1565c0')}
-                onBlur={e => (e.currentTarget.style.color = '#1976d2')}
-              >
-                <FontAwesomeIcon icon={muted ? faVolumeMute : faVolumeUp} style={{ fontSize: 13 }} />
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            onClick={handleListenToggle}
+            aria-label={listening ? 'Stop voice recognition' : 'Start voice recognition'}
+            aria-pressed={listening}
+            tabIndex={0}
+            style={{ background: listening ? '#43a047' : '#eee', color: listening ? 'white' : '#1976d2', border: 'none', borderRadius: '50%', width: 24, height: 24, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 4, boxShadow: listening ? '0 0 0 2px #90caf9' : undefined, transition: 'color 0.2s' }}
+            title={listening ? 'Stop Listening' : 'Start Listening'}
+            onMouseOver={e => (e.currentTarget.style.color = '#1565c0')}
+            onMouseOut={e => (e.currentTarget.style.color = '#1976d2')}
+            onFocus={e => (e.currentTarget.style.color = '#1565c0')}
+            onBlur={e => (e.currentTarget.style.color = '#1976d2')}
+          >
+            <FontAwesomeIcon icon={faMicrophone} spin={listening} style={{ fontSize: 13 }} />
+          </button>
+          <button
+            onClick={handleMuteToggle}
+            aria-label={muted ? 'Unmute agent' : 'Mute agent'}
+            tabIndex={0}
+            style={{ background: 'transparent', color: '#1976d2', border: 'none', borderRadius: '50%', width: 24, height: 24, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 8, transition: 'color 0.2s' }}
+            onMouseOver={e => (e.currentTarget.style.color = '#1565c0')}
+            onMouseOut={e => (e.currentTarget.style.color = '#1976d2')}
+            onFocus={e => (e.currentTarget.style.color = '#1565c0')}
+            onBlur={e => (e.currentTarget.style.color = '#1976d2')}
+          >
+            <FontAwesomeIcon icon={muted ? faVolumeMute : faVolumeUp} style={{ fontSize: 13 }} />
+          </button>
           <textarea
             placeholder="Aa"
             style={{
