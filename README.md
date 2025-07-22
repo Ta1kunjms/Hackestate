@@ -12,7 +12,10 @@ This project is a mock real-estate website built with **Next.js + React + TypeSc
 ---
 
 ## Features
-- **Floating AI Agent:** Chat and (placeholder) voice UI, 2D avatar, mute/reset/settings controls
+- **Floating AI Agent:** Messenger-style chat and (placeholder) voice UI, with a floating circular avatar (blue gradient background, white border, shadow) that overflows the chat header for a modern look
+- **FontAwesome Icons:** All controls (mic, mute, send, settings, close) use consistent, accessible FontAwesome icons
+- **Compact Auto-Growing Textarea:** Chat input uses a compact, auto-growing textarea for a clean, mobile-friendly UX
+- **Overflow Fixes:** No content is clipped; chat history and input are always visible and scrollable
 - **Property Filtering:** Filter by location and price using natural language
 - **Persistent Memory:** User preferences and chat history saved in localStorage
 - **DOM Actions:** Agent can scroll to listings or filters on command
@@ -63,7 +66,9 @@ This project is a mock real-estate website built with **Next.js + React + TypeSc
 
 - **UI:**
   - Header, sidebar with filters (placeholders), main area with property cards, floating AI agent widget in the bottom-right
-  - Agent widget includes chat area, voice input button (disabled if unsupported), mute/reset/settings controls, and a 2D avatar
+  - Agent widget features a Messenger-like design: floating blue avatar with white border/shadow, visually overflows the chat header, and a compact, auto-growing chat input
+  - All controls use FontAwesome icons for a modern, accessible look
+  - No overflow issues: chat history and input are always visible and scrollable
 
 - **Chat & Filtering:**
   - Type commands like “Show me properties in Austin” or “Show me properties under $400,000” in the chat
