@@ -1,52 +1,55 @@
 ## Relevant Files
 
-- `src/components/AgentChat/AgentChat.tsx` - Main chat interface component (text and voice)
-- `src/components/AgentChat/AgentChat.test.tsx` - Unit tests for chat interface
-- `src/components/AgentAvatar/AgentAvatar.tsx` - 2D robot avatar UI
+- `src/App.tsx` - Main React app entry point with mock real-estate layout (placeholders for listings, filters, etc.)
+- `src/src/components/AgentChat.tsx` - Floating AI agent component (voice + chat)
+- `src/components/AgentChat/AgentChat.test.tsx` - Unit tests for agent chat
+- `src/src/components/AgentAvatar.tsx` - 2D robot avatar UI
 - `src/components/AgentAvatar/AgentAvatar.test.tsx` - Unit tests for avatar
 - `src/utils/agentMemory.ts` - Utility for persisting user preferences and chat history in localStorage
 - `src/utils/agentMemory.test.ts` - Unit tests for agent memory utils
-- `src/api/geminiApi.ts` - Handles Gemini API requests
+- `src/src/api/geminiApi.ts` - Handles Gemini API requests
 - `src/api/geminiApi.test.ts` - Unit tests for Gemini API handler
 - `src/hooks/useSpeech.ts` - Custom React hook for SpeechRecognition and SpeechSynthesis
 - `src/hooks/useSpeech.test.ts` - Unit tests for speech hook
 - `src/components/AgentControls/AgentControls.tsx` - UI for mute, reset, and settings
-- `src/components/AgentControls/AgentControls.test.tsx` - Unit tests for controls
+- `src/components/AgentControls/AgentControls.test.ts` - Unit tests for controls
+- `src/src/data/mockProperties.ts` - Mock property data for filtering and agent actions
 
 ### Notes
 
-- Unit tests should typically be placed alongside the code files they are testing (e.g., `MyComponent.tsx` and `MyComponent.test.tsx` in the same directory).
+- The app should have a basic layout mimicking a real-estate site (property listings, filters, etc.) using placeholder/mock data.
+- The floating AI agent (voice + chat) should be able to filter properties, perform DOM actions (scroll, open sections), and remember user preferences using localStorage.
+- Use Gemini API for chat responses.
+- Unit tests should be placed alongside the code files they are testing.
 - Use `npx jest [optional/path/to/test/file]` to run tests. Running without a path executes all tests found by the Jest configuration.
 
 ## Tasks
 
-- [ ] 1.0 Implement AI-powered chat interface (text and voice)
-  - [ ] 1.1 Create chat UI component with message history and input field
-  - [ ] 1.2 Integrate Gemini API for text-based chat responses
-  - [ ] 1.3 Add voice input using Web Speech API (SpeechRecognition)
-  - [ ] 1.4 Add voice output using SpeechSynthesis API
-  - [ ] 1.5 Ensure chat interface always displays microphone icon
-  - [ ] 1.6 Implement fallback typing interface for unsupported browsers
-  - [ ] 1.7 Write unit tests for chat interface and voice features
-- [ ] 2.0 Integrate persistent user memory and preferences
-  - [ ] 2.1 Store user preferences (location, budget) in localStorage
-  - [ ] 2.2 Cache past queries locally for performance
-  - [ ] 2.3 Implement memory reset functionality (button or command)
-  - [ ] 2.4 Ensure preferences persist across reloads and new visits
-  - [ ] 2.5 Write unit tests for memory and persistence logic
-- [ ] 3.0 Enable dynamic property filtering and DOM actions via agent
-  - [ ] 3.1 Parse user input for filter criteria (price, location, etc.)
-  - [ ] 3.2 Apply filters to property listings dynamically
-  - [ ] 3.3 Implement agent-initiated DOM actions (scroll, navigate, open sections)
-  - [ ] 3.4 Validate correct filter and navigation behavior in test cases
-- [ ] 4.0 Design and implement 2D avatar and floating UI
-  - [ ] 4.1 Create 2D robot avatar component, toggleable by user
-  - [ ] 4.2 Position avatar and chat widget in bottom-right corner
-  - [ ] 4.3 Style floating UI (avatar, chat, controls) to match real estate site
-  - [ ] 4.4 Add settings toggle to floating UI
-  - [ ] 4.5 Write unit tests for avatar and UI components
+- [x] 1.0 Set up basic React app with mock real-estate layout
+  - [x] 1.1 Create placeholder components for property listings, filters, and main layout
+  - [x] 1.2 Add mock property data for filtering
+- [ ] 2.0 Implement floating AI agent (voice + chat)
+  - [x] 2.1 Create floating AgentChat component with text and voice input/output
+  - [x] 2.2 Integrate Gemini API for chat responses
+  - [x] 2.3 Add 2D robot avatar UI (toggleable)
+  - [x] 2.4 Ensure agent can perform actions based on user commands (filter, scroll, open sections)
+  - [x] 2.5 Provide fallback typing interface for unsupported browsers
+- [ ] 3.0 Integrate persistent user memory and preferences
+  - [x] 3.1 Store user preferences (location, budget, etc.) and chat history in localStorage
+  - [x] 3.2 Implement memory reset functionality
+  - [x] 3.3 Ensure preferences persist across reloads and new visits
+- [ ] 4.0 Enable dynamic property filtering and DOM actions via agent
+  - [x] 4.1 Parse user input for filter criteria (price, location, etc.)
+  - [x] 4.2 Apply filters to property listings dynamically
+  - [x] 4.3 Implement agent-initiated DOM actions (scroll, navigate, open sections)
+  - [x] 4.4 Validate correct filter and navigation behavior in test cases
 - [ ] 5.0 Add accessibility, fallback, and agent control features
-  - [ ] 5.1 Ensure all controls are keyboard accessible
-  - [ ] 5.2 Add mute/disable agent controls in UI
-  - [ ] 5.3 Provide clear feedback for unsupported features (voice, etc.)
-  - [ ] 5.4 Test accessibility and fallback flows 
+  - [x] 5.1 Ensure all controls are keyboard accessible
+  - [x] 5.2 Add mute/disable agent controls in UI
+  - [x] 5.3 Provide clear feedback for unsupported features (voice, etc.)
+  - [x] 5.4 Test accessibility and fallback flows
+- [ ] 6.0 Write unit tests for all major features
+  - [ ] 6.1 Agent chat and voice features
+  - [x] 6.2 Memory and persistence logic
+  - [x] 6.3 Property filtering and DOM actions
+  - [x] 6.4 Avatar and UI components 
