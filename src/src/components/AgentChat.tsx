@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AgentAvatar from './AgentAvatar';
 import { sendToGemini } from '../api/geminiApi';
-import { Property, mockProperties } from '../data/mockProperties';
 import {
   savePreferences,
   loadPreferences,
@@ -21,7 +20,7 @@ import VoiceFeedback from './VoiceFeedback';
 // You will set your Gemini API key in an environment variable (see api/geminiApi.ts for details)
 
 type AgentChatProps = {
-  onFilter: (criteria: { location?: string; maxPrice?: number }) => void;
+  onFilter?: (criteria: { location?: string; maxPrice?: number }) => void;
   onScrollTo?: (section: 'listings' | 'filters') => void;
 };
 
@@ -329,41 +328,15 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
     setInput('');
     setLoading(true);
 
-    // Enhanced parsing for filtering
+    // Enhanced parsing for filtering (optional callback)
     const criteria = parseSearchCriteria(textToSend);
-    if (Object.keys(criteria).length > 0) {
+    if (Object.keys(criteria).length > 0 && onFilter) {
       // Save preferences for location and budget if present
       if (criteria.location) setPrefs((p) => ({ ...p, location: criteria.location }));
       if (criteria.maxPrice) setPrefs((p) => ({ ...p, budget: criteria.maxPrice }));
 
-      // Map criteria to mockProperties data fields
-      let filtered: Property[] = mockProperties;
-      if (criteria.location) {
-        filtered = filtered.filter(p => p.location.toLowerCase().includes(criteria.location!.toLowerCase()));
-      }
-      if (criteria.maxPrice) {
-        filtered = filtered.filter(p => p.price <= criteria.maxPrice!);
-      }
-      if (criteria.bedrooms) {
-        filtered = filtered.filter(p => p.bedrooms === criteria.bedrooms);
-      }
-      if (criteria.bathrooms) {
-        filtered = filtered.filter(p => p.bathrooms === criteria.bathrooms);
-      }
+      // Call the optional filter callback
       onFilter(criteria);
-
-      // Show filtered results as an AI message in the chat
-      let aiResultMsg = '';
-      if (filtered.length > 0) {
-        aiResultMsg = `Here are the matching properties:\n` +
-          filtered.map(p => `• ${p.title} — ${p.bedrooms} bed, ${p.bathrooms} bath, $${p.price.toLocaleString()} (${p.location})`).join('\n');
-      } else {
-        aiResultMsg = 'No properties found matching your criteria.';
-      }
-      setMessages(msgs => [...msgs, { from: 'ai', text: aiResultMsg }]);
-      // Removed toast - user can see the message in chat
-      setLoading(false);
-      return; // Exit early, don't call Gemini API for property searches
     }
 
     // DOM action parsing (unchanged)
