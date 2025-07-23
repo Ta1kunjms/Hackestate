@@ -14,12 +14,12 @@ describe('webSpeech utilities', () => {
       delete window.webkitSpeechRecognition;
     });
     it('returns true if SpeechRecognition is present', () => {
-      window.SpeechRecognition = function() {};
+      window.SpeechRecognition = function () {};
       expect(typeof window.SpeechRecognition).toBe('function');
       expect(isSpeechRecognitionSupported()).toBe(true);
     });
     it('returns true if webkitSpeechRecognition is present', () => {
-      window.webkitSpeechRecognition = function() {};
+      window.webkitSpeechRecognition = function () {};
       expect(typeof window.webkitSpeechRecognition).toBe('function');
       expect(isSpeechRecognitionSupported()).toBe(true);
     });
@@ -47,7 +47,10 @@ describe('webSpeech utilities', () => {
         getVoices: jest.fn(() => []),
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).SpeechSynthesisUtterance = function (this: any, text: string) {
+      (window as any).SpeechSynthesisUtterance = function (
+        this: any,
+        text: string
+      ) {
         this.text = text;
       };
     });
@@ -95,4 +98,4 @@ describe('webSpeech utilities', () => {
       delete (window as any).webkitSpeechRecognition;
     });
   });
-}); 
+});

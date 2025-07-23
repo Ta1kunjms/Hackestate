@@ -78,10 +78,7 @@ A: You can ask me to "scroll to listings" or "show filters" and I'll help you na
       body: JSON.stringify({
         contents: [
           {
-            parts: [
-              { text: systemPrompt },
-              { text: prompt },
-            ],
+            parts: [{ text: systemPrompt }, { text: prompt }],
           },
         ],
       }),
@@ -96,4 +93,4 @@ A: You can ask me to "scroll to listings" or "show filters" and I'll help you na
   } catch (e) {
     return 'Error contacting Gemini API.';
   }
-} 
+}

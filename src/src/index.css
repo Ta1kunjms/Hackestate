@@ -1,13 +1,509 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@layer base {
+  html {
+    font-family:
+      'Inter',
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      Arial,
+      'Noto Sans',
+      sans-serif;
+  }
+
+  body {
+    @apply bg-white text-secondary-900 antialiased;
+    line-height: 1.6;
+  }
+
+  /* Headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold text-secondary-900 leading-tight;
+  }
+
+  h1 {
+    @apply text-4xl lg:text-5xl xl:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl lg:text-4xl xl:text-5xl;
+  }
+
+  h3 {
+    @apply text-2xl lg:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl lg:text-2xl;
+  }
+
+  h5 {
+    @apply text-lg lg:text-xl;
+  }
+
+  h6 {
+    @apply text-base lg:text-lg;
+  }
+
+  /* Paragraphs and text */
+  p {
+    @apply text-secondary-600 leading-relaxed;
+  }
+
+  /* Links */
+  a {
+    @apply text-primary-600 hover:text-primary-700 transition-colors duration-200;
+  }
+
+  /* Focus styles */
+  button:focus,
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
+  /* Container utility */
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Container width variations */
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-full {
+    @apply w-full px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section spacing */
+  .section-padding {
+    @apply py-16 lg:py-24;
+  }
+
+  .section-padding-sm {
+    @apply py-12 lg:py-16;
+  }
+
+  .section-padding-lg {
+    @apply py-20 lg:py-32;
+  }
+
+  /* Content spacing utilities */
+  .content-spacing > * + * {
+    @apply mt-6;
+  }
+
+  .content-spacing-sm > * + * {
+    @apply mt-4;
+  }
+
+  .content-spacing-lg > * + * {
+    @apply mt-8;
+  }
+
+  /* Button base styles */
+  .btn-base {
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500 shadow-soft hover:shadow-medium;
+  }
+
+  .btn-secondary {
+    @apply btn-base bg-secondary-100 hover:bg-secondary-200 text-secondary-900 focus:ring-secondary-500;
+  }
+
+  .btn-outline {
+    @apply btn-base border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white focus:ring-primary-500;
+  }
+
+  .btn-ghost {
+    @apply btn-base text-secondary-600 hover:text-secondary-900 hover:bg-secondary-50 focus:ring-secondary-500;
+  }
+
+  /* Button size variations */
+  .btn-sm {
+    @apply px-4 py-2 text-sm rounded-lg;
+  }
+
+  .btn-lg {
+    @apply px-8 py-4 text-lg rounded-2xl;
+  }
+
+  .btn-xl {
+    @apply px-10 py-5 text-xl rounded-2xl;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-2xl shadow-soft hover:shadow-medium transition-shadow duration-300;
+  }
+
+  .card-padding {
+    @apply p-6 lg:p-8;
+  }
+
+  .card-padding-sm {
+    @apply p-4 lg:p-6;
+  }
+
+  .card-padding-lg {
+    @apply p-8 lg:p-12;
+  }
+
+  /* Property card specific */
+  .property-card {
+    @apply card overflow-hidden;
+  }
+
+  .property-card-image {
+    @apply aspect-property w-full object-cover;
+  }
+
+  .property-card-content {
+    @apply p-6;
+  }
+
+  .property-price {
+    @apply text-2xl font-bold text-primary-600;
+  }
+
+  .property-address {
+    @apply text-secondary-500 text-sm;
+  }
+
+  .property-features {
+    @apply flex items-center gap-4 text-sm text-secondary-600 mt-2;
+  }
+
+  /* Form elements */
+  .form-input {
+    @apply w-full px-4 py-3 border border-secondary-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 placeholder-secondary-400 transition-colors duration-200;
+  }
+
+  .form-input-sm {
+    @apply px-3 py-2 text-sm rounded-lg;
+  }
+
+  .form-input-lg {
+    @apply px-6 py-4 text-lg rounded-2xl;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-secondary-700 mb-2;
+  }
+
+  .form-select {
+    @apply form-input appearance-none bg-white;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  /* Search and filter utilities */
+  .search-container {
+    @apply relative;
+  }
+
+  .search-input {
+    @apply form-input pl-12;
+  }
+
+  .search-icon {
+    @apply absolute left-4 top-1/2 transform -translate-y-1/2 text-secondary-400;
+  }
+
+  .filter-chip {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800;
+  }
+
+  .filter-chip-active {
+    @apply bg-primary-600 text-white;
+  }
+
+  /* Layout utilities */
+  .hero-section {
+    @apply relative overflow-hidden bg-gradient-to-br from-primary-50 to-secondary-50;
+  }
+
+  .hero-content {
+    @apply container-custom section-padding text-center;
+  }
+
+  /* Grid utilities */
+  .grid-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .grid-auto-fill {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  /* Property grid specific */
+  .property-grid {
+    @apply grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
+  .property-grid-large {
+    @apply grid gap-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
+  }
+
+  /* Agent grid */
+  .agent-grid {
+    @apply grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
+  /* Feature grid */
+  .feature-grid {
+    @apply grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+  }
+
+  /* Navigation utilities */
+  .nav-link {
+    @apply text-secondary-600 hover:text-secondary-900 font-medium transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-primary-600;
+  }
+
+  /* Badge utilities */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+
+  .badge-success {
+    @apply badge bg-success-100 text-success-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-800;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger-100 text-danger-800;
+  }
+
+  /* Status indicators */
+  .status-available {
+    @apply text-success-600;
+  }
+
+  .status-pending {
+    @apply text-warning-600;
+  }
+
+  .status-sold {
+    @apply text-danger-600;
+  }
+
+  /* Image utilities */
+  .image-overlay {
+    @apply absolute inset-0 bg-black bg-opacity-40;
+  }
+
+  .image-overlay-gradient {
+    @apply absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Text utilities */
+  .text-gradient {
+    background: linear-gradient(
+      135deg,
+      theme('colors.primary.600'),
+      theme('colors.primary.800')
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Scrollbar utilities */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  /* Aspect ratio utilities for images */
+  .aspect-golden {
+    aspect-ratio: 1.618 / 1;
+  }
+
+  .aspect-property {
+    aspect-ratio: 4 / 3;
+  }
+
+  .aspect-hero {
+    aspect-ratio: 16 / 9;
+  }
+
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Spacing utilities */
+  .space-y-section > * + * {
+    margin-top: theme('spacing.16');
+  }
+
+  @screen lg {
+    .space-y-section > * + * {
+      margin-top: theme('spacing.24');
+    }
+  }
+
+  /* Hover effects */
+  .hover-lift {
+    transition: transform 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .hover-scale {
+    transition: transform 0.2s ease;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  /* Focus utilities */
+  .focus-brand {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  /* Print utilities */
+  @media print {
+    .print-hidden {
+      display: none !important;
+    }
+
+    .print-break-before {
+      break-before: page;
+    }
+
+    .print-break-after {
+      break-after: page;
+    }
+  }
 }

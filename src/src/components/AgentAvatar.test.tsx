@@ -15,4 +15,4 @@ describe('AgentAvatar', () => {
     const svg = screen.getByRole('img', { hidden: true });
     expect(svg).toBeInTheDocument();
   });
-}); 
+});

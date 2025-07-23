@@ -1,18 +1,30 @@
 ## Relevant Files
 
-- `pages/` – Page-level routes (index, properties, agents, dashboard, etc.)
-- `components/ui/` – Tailwind-styled reusable components (Button, Card, Modal, etc.)
-- `components/layout/` – Layout components like Navbar, Footer, Wrapper
-- `lib/roles.ts` – Role & permission utilities
-- `pages/api/` – API routes for authentication, listings, agents, events
-- `styles/globals.css` – Tailwind config and custom styles
-- `tailwind.config.js` – Tailwind theme and plugin configuration
+- `src/src/App.tsx` – Main application component with Tailwind-styled layout
+- `src/src/index.css` – Tailwind directives and custom global styles with component classes
+- `src/src/components/layout/Layout.tsx` – Main layout wrapper with ToastProvider and AgentChat
+- `src/src/components/layout/PageWrapper.tsx` – Page wrapper for consistent container spacing
+- `src/src/components/layout/Section.tsx` – Section component with padding and background variants
+- `src/src/utils/constants.ts` – Constants for breakpoints, spacing, property types, validation rules
+- `src/src/utils/helpers.ts` – Helper functions for formatting, validation, and common utilities
+- `src/src/components/AgentChat.tsx` – AI chatbot component (preserved for real estate assistance)  
+- `src/src/components/` – Other chatbot components (AgentAvatar, ToastProvider, etc.)
+- `src/src/utils/` – Utility functions for voice recognition and agent memory
+- `src/src/api/geminiApi.ts` – AI API integration for real estate assistance
+- `package.json` – Project dependencies and scripts
+- `tailwind.config.js` – Tailwind configuration with custom colors, fonts, and spacing
+- `postcss.config.mjs` – PostCSS configuration for Tailwind processing
 
 ### Notes
 
-- Follow Tailwind’s utility-first methodology: build layouts with utility classes unless a reusable abstraction is required.
-- Encourage consistency by reusing components (e.g., `components/ui/Button.tsx`) across the project.
-- Use a Tailwind UI kit or custom component library. Request guidance from the product team:
+- ✅ **Cleanup completed**: Removed mockProperties and property filtering logic
+- ✅ **AI Chatbot preserved**: Functional voice-enabled AI assistant for real estate topics
+- ✅ **Clean foundation**: Ready to build real estate website with existing chat functionality
+- ✅ **Tailwind configured**: Custom color palette, fonts, and spacing for real estate branding
+- ✅ **Global styles created**: Complete Tailwind setup with custom component classes
+- ✅ **Layout system built**: Reusable Layout, PageWrapper, and Section components
+- ✅ **Utility system complete**: Constants, helpers, and reusable utility classes for real estate
+- 🎯 **Next step**: Add Prettier, ESLint, Husky, and commit hooks
 
 ### 🔍 Developer Action Required
 
@@ -23,10 +35,10 @@
 ## Tasks
 
 - [ ] 1.0 Project Setup with Tailwind  
-  - [ ] 1.1 Initialize Next.js with TypeScript and Tailwind  
-  - [ ] 1.2 Set up Tailwind config (`tailwind.config.js`) with custom colors and fonts  
-  - [ ] 1.3 Create global styles and layout wrappers  
-  - [ ] 1.4 Set up reusable utility classes (e.g., spacing, container widths)  
+  - [x] 1.1 Initialize Next.js with TypeScript and Tailwind  
+  - [x] 1.2 Set up Tailwind config (`tailwind.config.js`) with custom colors and fonts  
+  - [x] 1.3 Create global styles and layout wrappers  
+  - [x] 1.4 Set up reusable utility classes (e.g., spacing, container widths)  
   - [ ] 1.5 Add Prettier, ESLint, Husky, and commit hooks
 
 - [ ] 2.0 Design System Kickoff (Tailwind Components)  
