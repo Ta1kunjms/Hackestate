@@ -7,6 +7,10 @@
 - `pages/api/` – API routes for authentication, listings, agents, events
 - `styles/globals.css` – Tailwind config and custom styles
 - `tailwind.config.js` – Tailwind theme and plugin configuration
+- `src/src/components/AgentDirectory.tsx` – Agent directory filter UI for location, language, and experience
+- `src/src/components/AgentCard.tsx` – Card UI for displaying agent info in directory (avatar, name, location, language, experience, profile link)
+- `app/agents/[id]/page.tsx` – Agent profile page with contact form and agent's listings
+- `app/agents/[id]/messages.tsx` – Messaging UI for agent-purchaser chat (local state, no backend)
 
 ### Notes
 
@@ -22,82 +26,82 @@
 
 ## Tasks
 
-- [ ] 1.0 Project Setup with Tailwind  
-  - [ ] 1.1 Initialize Next.js with TypeScript and Tailwind  
-  - [ ] 1.2 Set up Tailwind config (`tailwind.config.js`) with custom colors and fonts  
-  - [ ] 1.3 Create global styles and layout wrappers  
-  - [ ] 1.4 Set up reusable utility classes (e.g., spacing, container widths)  
+- [ ] 1.0 Project Setup with Tailwind
+  - [ ] 1.1 Initialize Next.js with TypeScript and Tailwind
+  - [ ] 1.2 Set up Tailwind config (`tailwind.config.js`) with custom colors and fonts
+  - [ ] 1.3 Create global styles and layout wrappers
+  - [ ] 1.4 Set up reusable utility classes (e.g., spacing, container widths)
   - [ ] 1.5 Add Prettier, ESLint, Husky, and commit hooks
 
-- [ ] 2.0 Design System Kickoff (Tailwind Components)  
-  - [ ] 2.1 Request Tailwind component library/design kit link from product owner 🔍  
-  - [ ] 2.2 Set up a base component library in `components/ui/` (Button, Input, Modal, etc.)  
-  - [ ] 2.3 Style all components using Tailwind utilities only  
+- [ ] 2.0 Design System Kickoff (Tailwind Components)
+  - [ ] 2.1 Request Tailwind component library/design kit link from product owner 🔍
+  - [ ] 2.2 Set up a base component library in `components/ui/` (Button, Input, Modal, etc.)
+  - [ ] 2.3 Style all components using Tailwind utilities only
   - [ ] 2.4 Document components and variants for reuse (e.g., Button: primary, ghost, disabled)
 
-- [ ] 3.0 Authentication System (UI + Logic)  
-  - [ ] 3.1 Design and build Login, Register, Reset Password, and Verify Email pages using Tailwind  
-  - [ ] 3.2 Create auth forms with validation and accessibility in mind  
-  - [ ] 3.3 Implement modals or pages depending on design spec  
+- [ ] 3.0 Authentication System (UI + Logic)
+  - [ ] 3.1 Design and build Login, Register, Reset Password, and Verify Email pages using Tailwind
+  - [ ] 3.2 Create auth forms with validation and accessibility in mind
+  - [ ] 3.3 Implement modals or pages depending on design spec
   - [ ] 3.4 Connect to backend (NextAuth/Firebase/etc.)
 
-- [ ] 4.0 UI Shell: Navbar, Footer, Layout  
-  - [ ] 4.1 Build responsive Navbar with login/profile dropdown  
-  - [ ] 4.2 Build Footer with links, social icons, and newsletter input  
-  - [ ] 4.3 Create main `Layout.tsx` wrapper for page structure  
+- [ ] 4.0 UI Shell: Navbar, Footer, Layout
+  - [ ] 4.1 Build responsive Navbar with login/profile dropdown
+  - [ ] 4.2 Build Footer with links, social icons, and newsletter input
+  - [ ] 4.3 Create main `Layout.tsx` wrapper for page structure
   - [ ] 4.4 Add Error Pages (404, 500) with Tailwind styles
 
-- [ ] 5.0 Landing Page  
-  - [ ] 5.1 Build Hero section with search input  
-  - [ ] 5.2 Add Featured Listings carousel/grid  
-  - [ ] 5.3 Add "Browse by Category" and Featured Agents  
-  - [ ] 5.4 Build Testimonials, How It Works, Blog/Event teasers  
+- [ ] 5.0 Landing Page
+  - [ ] 5.1 Build Hero section with search input
+  - [ ] 5.2 Add Featured Listings carousel/grid
+  - [ ] 5.3 Add "Browse by Category" and Featured Agents
+  - [ ] 5.4 Build Testimonials, How It Works, Blog/Event teasers
   - [ ] 5.5 Add call-to-action buttons (List Property, Contact Agent)
 
-- [ ] 6.0 Listings Page  
-  - [ ] 6.1 Create filter sidebar or top filters using `SearchFilters.tsx`  
-  - [ ] 6.2 Build `PropertyCard.tsx` for results grid  
-  - [ ] 6.3 Add sorting, pagination, and optional map view toggle  
+- [ ] 6.0 Listings Page
+  - [ ] 6.1 Create filter sidebar or top filters using `SearchFilters.tsx`
+  - [ ] 6.2 Build `PropertyCard.tsx` for results grid
+  - [ ] 6.3 Add sorting, pagination, and optional map view toggle
   - [ ] 6.4 Integrate saved favorites button (auth required)
 
-- [ ] 7.0 Property Details Page  
-  - [ ] 7.1 Design responsive image gallery with 360 viewer (optional)  
-  - [ ] 7.2 Display info: price, size, description, features, floor plan  
-  - [ ] 7.3 Build Agent Contact Form and Agent Info section  
-  - [ ] 7.4 Add “Similar Properties” section with cards  
+- [ ] 7.0 Property Details Page
+  - [ ] 7.1 Design responsive image gallery with 360 viewer (optional)
+  - [ ] 7.2 Display info: price, size, description, features, floor plan
+  - [ ] 7.3 Build Agent Contact Form and Agent Info section
+  - [ ] 7.4 Add “Similar Properties” section with cards
   - [ ] 7.5 Add optional viewing scheduler modal
 
-- [ ] 8.0 Agents Directory & Profile Pages  
-  - [ ] 8.1 Create filters for agent location, language, experience  
-  - [ ] 8.2 Build `AgentCard.tsx` for directory  
-  - [ ] 8.3 Build individual Agent Profile page with contact form and listings
+- [x] 8.0 Agents Directory & Profile Pages
+  - [x] 8.1 Create filters for agent location, language, experience
+  - [x] 8.2 Build `AgentCard.tsx` for directory
+  - [x] 8.3 Build individual Agent Profile page with contact form and listings
+  - [x] 8.4 Add Messaging System betweens Agents and Purchaser
 
-- [ ] 9.0 Dashboards  
-  - [ ] 9.1 Build User Dashboard with saved listings, alerts, and preferences  
-  - [ ] 9.2 Build Agent Dashboard with property CRUD and inquiry management  
-  - [ ] 9.3 Build Admin Dashboard with CMS for users, agents, events, and listings  
+- [ ] 9.0 Dashboards
+  - [ ] 9.1 Build User Dashboard with saved listings, alerts, and preferences
+  - [ ] 9.2 Build Agent Dashboard with property CRUD and inquiry management
+  - [ ] 9.3 Build Admin Dashboard with CMS for users, agents, events, and listings
   - [ ] 9.4 Create reusable dashboard layout wrapper with sidebar/topbar
 
-- [ ] 10.0 Events Page  
-  - [ ] 10.1 Build Event List with filterable `EventCard.tsx`  
-  - [ ] 10.2 Add RSVP/registration form  
+- [ ] 10.0 Events Page
+  - [ ] 10.1 Build Event List with filterable `EventCard.tsx`
+  - [ ] 10.2 Add RSVP/registration form
   - [ ] 10.3 Add backend support and Tailwind-styled event forms
 
-- [ ] 11.0 Blog Teaser Page  
-  - [ ] 11.1 Create “Coming Soon” layout with teaser and email subscription  
+- [ ] 11.0 Blog Teaser Page
+  - [ ] 11.1 Create “Coming Soon” layout with teaser and email subscription
   - [ ] 11.2 Hook up to newsletter provider (Mailchimp, Resend, etc.)
 
-- [ ] 12.0 Profile Page  
-  - [ ] 12.1 Build user profile settings UI with Tailwind forms  
+- [ ] 12.0 Profile Page
+  - [ ] 12.1 Build user profile settings UI with Tailwind forms
   - [ ] 12.2 Add password update, notification preferences, and avatar upload
 
-- [ ] 13.0 Marketing & Legal Pages  
-  - [ ] 13.1 Create Contact page with Tailwind form and map embed  
-  - [ ] 13.2 Create About page with mission, team bios, timeline  
+- [ ] 13.0 Marketing & Legal Pages
+  - [ ] 13.1 Create Contact page with Tailwind form and map embed
+  - [ ] 13.2 Create About page with mission, team bios, timeline
   - [ ] 13.3 Create legal markdown-rendered pages (Terms, Privacy, Cookies, Accessibility)
 
-- [ ] 14.0 Notifications & Modals  
-  - [ ] 14.1 Implement global `Notifications.tsx` for alerts and messages  
-  - [ ] 14.2 Build modal system for login, scheduling, confirmations  
+- [ ] 14.0 Notifications & Modals
+  - [ ] 14.1 Implement global `Notifications.tsx` for alerts and messages
+  - [ ] 14.2 Build modal system for login, scheduling, confirmations
   - [ ] 14.3 Ensure focus trapping, accessibility, and escape handling
-
