@@ -9,6 +9,7 @@ export interface InputProps {
   defaultValue?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   required?: boolean;
   error?: boolean;
@@ -20,9 +21,12 @@ export interface InputProps {
   icon?: React.ReactNode;
   name?: string;
   id?: string;
+  autoComplete?: string;
+  'aria-invalid'?: boolean;
+  'aria-describedby'?: string;
 }
 
-export const Input: React.FC<InputProps> = ({
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(({
   type = 'text',
   placeholder,
   label,
@@ -30,6 +34,7 @@ export const Input: React.FC<InputProps> = ({
   defaultValue,
   onChange,
   onBlur,
+  onKeyDown,
   disabled = false,
   required = false,
   error = false,
@@ -41,7 +46,10 @@ export const Input: React.FC<InputProps> = ({
   icon,
   name,
   id,
-}) => {
+  autoComplete,
+  'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy,
+}, ref) => {
   return (
     <MTInput
       type={type}
@@ -51,7 +59,11 @@ export const Input: React.FC<InputProps> = ({
       defaultValue={defaultValue}
       onChange={onChange}
       onBlur={onBlur}
+      onKeyDown={onKeyDown}
       disabled={disabled}
+      autoComplete={autoComplete}
+      aria-invalid={ariaInvalid}
+      aria-describedby={ariaDescribedBy}
       required={required}
       error={error}
       success={success}
@@ -67,8 +79,11 @@ export const Input: React.FC<InputProps> = ({
       onResizeCapture={undefined}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
+      ref={ref}
     />
   );
-};
+});
+
+Input.displayName = 'Input';
 
 export default Input; 
