@@ -1,16 +1,17 @@
 import React from 'react';
-import './index.css'; // Updated to use Tailwind styles
+import './index.css';
 import Layout from './components/layout/Layout';
 import PageWrapper from './components/layout/PageWrapper';
 import Section from './components/layout/Section';
 
+// Test with simple components first
 const App: React.FC = () => {
   return (
     <Layout>
       {/* Hero Section */}
       <Section background="gradient" padding="lg">
         <PageWrapper>
-          <div className="text-center animate-fade-in">
+          <div className="text-center">
             <h1 className="text-4xl font-bold text-blue-600 mb-6">Find Your Dream Home</h1>
             <p className="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
               Welcome to our real estate platform. Discover amazing properties
