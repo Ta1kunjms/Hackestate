@@ -86,7 +86,7 @@ describe('webSpeech utilities', () => {
       expect(createRecognition(jest.fn())).toBeNull();
     });
     it('creates a recognition instance if supported', () => {
-      (window as any).webkitSpeechRecognition = jest.fn(function () {
+      (window as any).webkitSpeechRecognition = jest.fn(function (this: any) {
         this.start = jest.fn();
         this.stop = jest.fn();
         this.abort = jest.fn();

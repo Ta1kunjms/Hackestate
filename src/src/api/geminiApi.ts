@@ -9,7 +9,7 @@
 //    NEXT_PUBLIC_GEMINI_API_KEY=your-key-here
 // 2. Restart your dev server after setting the key.
 
-import { mockProperties } from '../data/mockProperties';
+
 
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 const GEMINI_API_URL =
@@ -34,10 +34,7 @@ export async function sendToGemini(prompt: string): Promise<string> {
   // If a question is outside this domain, always clarify that you can only answer about the app's content.
   // The AI should also guide users on how to use the app's features and navigation.
   // Include example navigation/help queries and answers for consistency.
-  const systemPrompt = `You are an AI assistant for a real estate app. You can ONLY answer questions about the properties listed below and the app's features. NEVER use or reference any external or general knowledge. If a user asks something out-of-scope, you must always respond: 'Sorry, I can only answer questions about properties in this app.'
-
-Properties:
-${mockProperties.map(p => `- ${p.title}, ${p.bedrooms} bedrooms, ${p.bathrooms} bathrooms, $${p.price}, located in ${p.location}`).join('\n')}
+  const systemPrompt = `You are an AI assistant for a real estate app. You can help users navigate the app and understand its features. NEVER use or reference any external or general knowledge. If a user asks something out-of-scope, you must always respond: 'Sorry, I can only help with features and navigation in this real estate app.'
 
 App Features & Navigation:
 - Users can search/filter properties by location, price, bedrooms, and bathrooms using natural language.
