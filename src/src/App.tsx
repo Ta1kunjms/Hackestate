@@ -7,32 +7,18 @@ import PageWrapper from './components/layout/PageWrapper';
 import Section from './components/layout/Section';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import HeroSection from './components/landing/HeroSection';
 // Removed LoginModal - using page-only authentication
 import { Login, Register, ResetPassword, VerifyEmail } from './pages/auth';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Home Page Component
 const HomePage: React.FC = () => {
   return (
     <div>
       <Navbar />
+      <HeroSection />
       <Layout>
-        {/* Hero Section */}
-        <Section background="gradient" padding="lg">
-          <PageWrapper>
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-blue-600 mb-6">Find Your Dream Home</h1>
-              <p className="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
-                Welcome to our real estate platform. Discover amazing properties
-                with the help of our AI-powered assistant.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Browse Properties</button>
-                <button className="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-600 hover:text-white">List Your Property</button>
-              </div>
-            </div>
-          </PageWrapper>
-        </Section>
-
         {/* Coming Soon Section */}
         <Section background="white" padding="md">
           <PageWrapper>
@@ -124,8 +110,8 @@ const App: React.FC = () => {
           <Route path="/auth/reset-password" element={<AuthPageLayout><ResetPassword /></AuthPageLayout>} />
           <Route path="/auth/verify-email" element={<AuthPageLayout><VerifyEmail /></AuthPageLayout>} />
           
-          {/* Fallback Route */}
-          <Route path="*" element={<HomePage />} />
+          {/* Fallback Route - 404 Page */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
     </AuthProvider>
