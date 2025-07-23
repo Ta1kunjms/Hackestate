@@ -6,7 +6,11 @@ interface TranscriptPopupProps {
   visible?: boolean;
 }
 
-const TranscriptPopup: React.FC<TranscriptPopupProps> = ({ message, onClose, visible = true }) => {
+const TranscriptPopup: React.FC<TranscriptPopupProps> = ({
+  message,
+  onClose,
+  visible = true,
+}) => {
   const [fade, setFade] = useState(false);
 
   useEffect(() => {
@@ -47,4 +51,4 @@ const TranscriptPopup: React.FC<TranscriptPopupProps> = ({ message, onClose, vis
   );
 };
 
-export default TranscriptPopup; 
+export default TranscriptPopup;

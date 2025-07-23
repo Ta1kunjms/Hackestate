@@ -1,6 +1,9 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrophone, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faMicrophone,
+  faMicrophoneSlash,
+} from '@fortawesome/free-solid-svg-icons';
 
 // Add listening and onListenToggle props
 type AgentControlsProps = {
@@ -11,14 +14,27 @@ type AgentControlsProps = {
   onListenToggle: () => void;
 };
 
-const AgentControls: React.FC<AgentControlsProps> = ({ muted, onMuteToggle, onReset }) => {
+const AgentControls: React.FC<AgentControlsProps> = ({
+  muted,
+  onMuteToggle,
+  onReset,
+}) => {
   return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
+    <div
+      style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}
+    >
       <button
         onClick={onMuteToggle}
         aria-label={muted ? 'Unmute agent' : 'Mute agent'}
         tabIndex={0}
-        style={{ background: muted ? '#eee' : '#1976d2', color: muted ? '#1976d2' : 'white', border: 'none', borderRadius: 8, padding: '4px 12px', cursor: 'pointer' }}
+        style={{
+          background: muted ? '#eee' : '#1976d2',
+          color: muted ? '#1976d2' : 'white',
+          border: 'none',
+          borderRadius: 8,
+          padding: '4px 12px',
+          cursor: 'pointer',
+        }}
       >
         {muted ? 'Unmute' : 'Mute'}
       </button>
@@ -26,14 +42,28 @@ const AgentControls: React.FC<AgentControlsProps> = ({ muted, onMuteToggle, onRe
         onClick={onReset}
         aria-label="Reset agent memory"
         tabIndex={0}
-        style={{ background: '#fff', color: '#1976d2', border: '1px solid #1976d2', borderRadius: 8, padding: '4px 12px', cursor: 'pointer' }}
+        style={{
+          background: '#fff',
+          color: '#1976d2',
+          border: '1px solid #1976d2',
+          borderRadius: 8,
+          padding: '4px 12px',
+          cursor: 'pointer',
+        }}
       >
         Reset
       </button>
       <button
         aria-label="Agent settings (coming soon)"
         tabIndex={0}
-        style={{ background: '#f5f5f5', color: '#1976d2', border: '1px solid #1976d2', borderRadius: 8, padding: '4px 12px', cursor: 'pointer' }}
+        style={{
+          background: '#f5f5f5',
+          color: '#1976d2',
+          border: '1px solid #1976d2',
+          borderRadius: 8,
+          padding: '4px 12px',
+          cursor: 'pointer',
+        }}
         disabled
       >
         Settings
@@ -42,4 +72,4 @@ const AgentControls: React.FC<AgentControlsProps> = ({ muted, onMuteToggle, onRe
   );
 };
 
-export default AgentControls; 
+export default AgentControls;

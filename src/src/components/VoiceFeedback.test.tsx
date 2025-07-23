@@ -4,7 +4,9 @@ import VoiceFeedback from './VoiceFeedback';
 
 describe('VoiceFeedback', () => {
   it('renders listening state with transcript', () => {
-    render(<VoiceFeedback listening={true} error={null} transcript="hello world" />);
+    render(
+      <VoiceFeedback listening={true} error={null} transcript="hello world" />
+    );
     expect(screen.getByText(/Listening/i)).toBeInTheDocument();
     expect(screen.getByText(/hello world/i)).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /mic/i })).toBeInTheDocument();
@@ -17,7 +19,9 @@ describe('VoiceFeedback', () => {
   });
 
   it('renders nothing when idle', () => {
-    const { container } = render(<VoiceFeedback listening={false} error={null} transcript="" />);
+    const { container } = render(
+      <VoiceFeedback listening={false} error={null} transcript="" />
+    );
     expect(container.firstChild).toBeNull();
   });
-}); 
+});

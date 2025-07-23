@@ -25,4 +25,4 @@ export async function startWakeWord(onDetection: (label: string) => void) {
   );
   await WebVoiceProcessor.subscribe(porcupine);
   return porcupine;
-} 
+}

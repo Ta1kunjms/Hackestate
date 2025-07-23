@@ -29,14 +29,17 @@ declare global {
 
 // Web Speech API utilities for SpeechRecognition
 
-export type SpeechRecognitionResultHandler = (transcript: string, isFinal: boolean) => void;
+export type SpeechRecognitionResultHandler = (
+  transcript: string,
+  isFinal: boolean
+) => void;
 export type SpeechRecognitionErrorHandler = (error: string) => void;
 
 export function isSpeechRecognitionSupported(): boolean {
   return (
     typeof window !== 'undefined' &&
     (typeof (window as any).SpeechRecognition === 'function' ||
-     typeof (window as any).webkitSpeechRecognition === 'function')
+      typeof (window as any).webkitSpeechRecognition === 'function')
   );
 }
 
@@ -47,7 +50,8 @@ export function createRecognition(
 ): SpeechRecognition | null {
   if (!isSpeechRecognitionSupported()) return null;
   const SpeechRecognitionClass =
-    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    (window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition;
   const recognition = new SpeechRecognitionClass();
   recognition.lang = lang;
   recognition.interimResults = true;
@@ -56,7 +60,10 @@ export function createRecognition(
   recognition.onresult = (event: SpeechRecognitionEvent) => {
     const results = Array.from(event.results as any);
     for (let i = event.resultIndex; i < results.length; ++i) {
-      const result = results[i] as { 0: { transcript: string }; isFinal: boolean };
+      const result = results[i] as {
+        0: { transcript: string };
+        isFinal: boolean;
+      };
       const transcript = result[0].transcript;
       const isFinal = result.isFinal;
       onResult(transcript, isFinal);
@@ -88,7 +95,11 @@ export function isSpeechSynthesisSupported(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window;
 }
 
-export function speakText(text: string, voice?: SpeechSynthesisVoice, lang: string = 'en-US') {
+export function speakText(
+  text: string,
+  voice?: SpeechSynthesisVoice,
+  lang: string = 'en-US'
+) {
   if (!isSpeechSynthesisSupported()) return;
   const utterance = new window.SpeechSynthesisUtterance(text);
   utterance.lang = lang;
@@ -116,11 +127,20 @@ export function playChime(type: 'start' | 'stop' | 'command' | 'error') {
   o.type = 'sine';
   // Pick frequency based on type
   switch (type) {
-    case 'start': o.frequency.value = 880; break; // A5
-    case 'stop': o.frequency.value = 440; break; // A4
-    case 'command': o.frequency.value = 660; break; // E5
-    case 'error': o.frequency.value = 220; break; // A3
-    default: o.frequency.value = 440;
+    case 'start':
+      o.frequency.value = 880;
+      break; // A5
+    case 'stop':
+      o.frequency.value = 440;
+      break; // A4
+    case 'command':
+      o.frequency.value = 660;
+      break; // E5
+    case 'error':
+      o.frequency.value = 220;
+      break; // A3
+    default:
+      o.frequency.value = 440;
   }
   g.gain.value = 0.18;
   o.connect(g);
@@ -128,4 +148,4 @@ export function playChime(type: 'start' | 'stop' | 'command' | 'error') {
   o.start();
   o.stop(ctx.currentTime + 0.18);
   o.onended = () => ctx.close();
-} 
+}

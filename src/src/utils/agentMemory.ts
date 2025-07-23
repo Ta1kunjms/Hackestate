@@ -17,7 +17,9 @@ export function loadPreferences(): UserPreferences {
   return raw ? JSON.parse(raw) : {};
 }
 
-export function saveChatHistory(history: { from: 'user' | 'ai'; text: string }[]) {
+export function saveChatHistory(
+  history: { from: 'user' | 'ai'; text: string }[]
+) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(CHAT_KEY, JSON.stringify(history));
 }
@@ -32,4 +34,4 @@ export function resetMemory() {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(PREF_KEY);
   localStorage.removeItem(CHAT_KEY);
-} 
+}

@@ -34,4 +34,4 @@ describe('agentMemory', () => {
     expect(loadPreferences()).toEqual({});
     expect(loadChatHistory()).toEqual([]);
   });
-}); 
+});

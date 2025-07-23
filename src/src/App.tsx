@@ -1,61 +1,97 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import AgentChat from './components/AgentChat';
-import { mockProperties, Property } from './data/mockProperties';
-import { useRef } from 'react';
-import { ToastProvider } from './components/ToastProvider';
+import React from 'react';
+import './index.css';
+import Layout from './components/layout/Layout';
+import PageWrapper from './components/layout/PageWrapper';
+import Section from './components/layout/Section';
 
+// Test with simple components first
 const App: React.FC = () => {
-  const [filter, setFilter] = useState<{ location?: string; maxPrice?: number }>({});
-  const filtered = mockProperties.filter((p) => {
-    let ok = true;
-    if (filter.location) ok = ok && p.location.toLowerCase().includes(filter.location.toLowerCase());
-    if (filter.maxPrice) ok = ok && p.price <= filter.maxPrice;
-    return ok;
-  });
-
-  const listingsRef = useRef<HTMLDivElement>(null);
-  const filtersRef = useRef<HTMLDivElement>(null);
-
-  const handleScrollTo = (section: 'listings' | 'filters') => {
-    if (section === 'listings' && listingsRef.current) {
-      listingsRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (section === 'filters' && filtersRef.current) {
-      filtersRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <ToastProvider>
-    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <header style={{ padding: '1rem', background: '#1976d2', color: 'white' }}>
-        <h1>Mock Real Estate Site</h1>
-      </header>
-      <main style={{ display: 'flex', flex: 1, padding: '1rem', gap: '2rem' }}>
-        <aside ref={filtersRef} style={{ width: '250px', background: '#f5f5f5', padding: '1rem', borderRadius: '8px' }}>
-          <h2>Filters (Placeholder)</h2>
-          <div>Location, Price, Bedrooms, etc.</div>
-        </aside>
-        <section ref={listingsRef} style={{ flex: 1 }}>
-          <h2>Property Listings</h2>
-          <div>
-            {filtered.length === 0 && <div style={{ color: '#888' }}>No properties found.</div>}
-            {filtered.map((p) => (
-              <div key={p.id} style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
-                <strong>{p.title}</strong> - ${p.price.toLocaleString()} - {p.bedrooms} Bed, {p.bathrooms} Bath<br />
-                <span style={{ color: '#1976d2' }}>{p.location}</span>
-              </div>
-            ))}
+    <Layout>
+      {/* Hero Section */}
+      <Section background="gradient" padding="lg">
+        <PageWrapper>
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-blue-600 mb-6">Find Your Dream Home</h1>
+            <p className="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
+              Welcome to our real estate platform. Discover amazing properties
+              with the help of our AI-powered assistant.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Browse Properties</button>
+              <button className="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-600 hover:text-white">List Your Property</button>
+            </div>
           </div>
-        </section>
-        {/* Floating AI agent */}
-        <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 1000 }}>
-          <AgentChat onFilter={setFilter} onScrollTo={handleScrollTo} />
-        </div>
-      </main>
-    </div>
-    </ToastProvider>
+        </PageWrapper>
+      </Section>
+
+      {/* Coming Soon Section */}
+      <Section background="white" padding="md">
+        <PageWrapper>
+          <div className="text-center">
+            <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
+              <h3 className="text-2xl font-semibold text-blue-600 mb-4">Coming Soon</h3>
+              <p className="text-gray-600 mb-6">
+                Our full real estate website is under development. In the
+                meantime, try our AI assistant in the bottom-right corner!
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300">Get Notified</button>
+                <button className="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-600 hover:text-white">Learn More</button>
+              </div>
+            </div>
+          </div>
+        </PageWrapper>
+      </Section>
+
+      {/* Features Preview Section */}
+      <Section background="gray" padding="md">
+        <PageWrapper>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">What's Coming</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Our platform will feature everything you need to find, buy, or
+              sell properties.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 text-xl">🏠</span>
+              </div>
+              <h4 className="text-xl font-semibold text-gray-800 mb-3">Property Search</h4>
+              <p className="text-gray-600">
+                Advanced filters and AI-powered search to find your perfect
+                home.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 text-xl">🤖</span>
+              </div>
+              <h4 className="text-xl font-semibold text-gray-800 mb-3">AI Assistant</h4>
+              <p className="text-gray-600">
+                Get personalized recommendations and instant answers to your
+                questions.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 text-xl">📱</span>
+              </div>
+              <h4 className="text-xl font-semibold text-gray-800 mb-3">Modern Experience</h4>
+              <p className="text-gray-600">
+                Beautiful, responsive design that works perfectly on all
+                devices.
+              </p>
+            </div>
+          </div>
+        </PageWrapper>
+      </Section>
+    </Layout>
   );
 };
 

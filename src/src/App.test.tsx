@@ -3,10 +3,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 
 jest.mock('@picovoice/porcupine-web', () => ({
-  PorcupineWorker: { create: jest.fn() }
+  PorcupineWorker: { create: jest.fn() },
 }));
 jest.mock('@picovoice/web-voice-processor', () => ({
-  WebVoiceProcessor: { subscribe: jest.fn() }
+  WebVoiceProcessor: { subscribe: jest.fn() },
 }));
 jest.mock('src/src/utils/webSpeech', () => ({
   playChime: jest.fn(),
