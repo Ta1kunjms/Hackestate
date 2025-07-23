@@ -9,7 +9,7 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import HeroSection from './components/landing/HeroSection';
 // Removed LoginModal - using page-only authentication
-import { Login, Register, ResetPassword, VerifyEmail } from './pages/auth';
+import { Login, Register, ResetPassword, VerifyEmail, AuthCallback } from './pages/auth';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Home Page Component
@@ -109,6 +109,7 @@ const App: React.FC = () => {
           <Route path="/auth/register" element={<AuthPageLayout><Register /></AuthPageLayout>} />
           <Route path="/auth/reset-password" element={<AuthPageLayout><ResetPassword /></AuthPageLayout>} />
           <Route path="/auth/verify-email" element={<AuthPageLayout><VerifyEmail /></AuthPageLayout>} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           
           {/* Fallback Route - 404 Page */}
           <Route path="*" element={<NotFoundPage />} />

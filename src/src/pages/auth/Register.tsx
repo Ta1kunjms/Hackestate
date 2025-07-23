@@ -121,8 +121,8 @@ const Register: React.FC = () => {
         }, 1000);
       }
       
-      // Redirect to verification on success (placeholder)
-      alert('Registration successful! Please check your email for verification.');
+      // Show success message for email verification
+      alert('Registration successful! Please check your email for a verification link before signing in.');
     } catch (error) {
       console.error('Registration error:', error);
       alert('Registration failed. Please try again.');
