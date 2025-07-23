@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Typography, Input, Button } from '@material-tailwind/react';
 import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,12 +11,16 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
   const { login, isLoading } = useAuth();
+  const location = useLocation();
+  const state = location.state as { message?: string; email?: string } | null;
+  
   const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
+    email: state?.email || '',
     password: '',
   });
   const [error, setError] = useState<string>('');
   const [passwordShown, setPasswordShown] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(!!state?.message);
   
   const togglePasswordVisibility = () => setPasswordShown((cur) => !cur);
 
@@ -55,6 +59,25 @@ const Login: React.FC = () => {
         <p className="mb-8 text-gray-600 font-normal text-lg">
           Enter your email and password to sign in
         </p>
+
+        {/* Success Message from Registration */}
+        {showSuccessMessage && state?.message && (
+          <div className="mx-auto max-w-[24rem] mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="text-green-600 text-xl mr-3">✅</div>
+                <p className="text-green-800 text-sm">{state.message}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSuccessMessage(false)}
+                className="text-green-600 hover:text-green-800 text-xl"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (

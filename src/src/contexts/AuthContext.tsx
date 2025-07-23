@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await signIn(email, password);
       
       // Success announcement (client-side only)
-      if (typeof document !== 'undefined') {
+      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         const successAnnouncement = document.createElement('div');
         successAnnouncement.setAttribute('aria-live', 'polite');
         successAnnouncement.className = 'sr-only';
@@ -48,7 +48,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         document.body.appendChild(successAnnouncement);
         
         setTimeout(() => {
-          document.body.removeChild(successAnnouncement);
+          if (document.body.contains(successAnnouncement)) {
+            document.body.removeChild(successAnnouncement);
+          }
         }, 2000);
       }
     } catch (error: any) {
@@ -66,7 +68,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       // Success announcement (client-side only)
-      if (typeof document !== 'undefined') {
+      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         const successAnnouncement = document.createElement('div');
         successAnnouncement.setAttribute('aria-live', 'polite');
         successAnnouncement.className = 'sr-only';
@@ -74,7 +76,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         document.body.appendChild(successAnnouncement);
         
         setTimeout(() => {
-          document.body.removeChild(successAnnouncement);
+          if (document.body.contains(successAnnouncement)) {
+            document.body.removeChild(successAnnouncement);
+          }
         }, 2000);
       }
     } catch (error: any) {
@@ -88,7 +92,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await signOut();
       
       // Logout announcement (client-side only)
-      if (typeof document !== 'undefined') {
+      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         const logoutAnnouncement = document.createElement('div');
         logoutAnnouncement.setAttribute('aria-live', 'polite');
         logoutAnnouncement.className = 'sr-only';
@@ -96,7 +100,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         document.body.appendChild(logoutAnnouncement);
         
         setTimeout(() => {
-          document.body.removeChild(logoutAnnouncement);
+          if (document.body.contains(logoutAnnouncement)) {
+            document.body.removeChild(logoutAnnouncement);
+          }
         }, 2000);
       }
     } catch (error: any) {

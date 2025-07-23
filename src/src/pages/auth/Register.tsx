@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Typography, Input, Button } from '@material-tailwind/react';
 import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface RegisterFormData {
   firstName: string;
@@ -24,6 +25,9 @@ interface FormErrors {
 }
 
 const Register: React.FC = () => {
+  const { register, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
@@ -37,6 +41,7 @@ const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordShown, setPasswordShown] = useState(false);
   const [confirmPasswordShown, setConfirmPasswordShown] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
   // Refs for focus management
   const firstNameRef = useRef<HTMLInputElement>(null);
@@ -100,32 +105,46 @@ const Register: React.FC = () => {
     }
 
     setIsLoading(true);
+    setErrors({}); // Clear any previous errors
     
     try {
-      // TODO: Implement actual registration logic
-      console.log('Registration attempt:', formData);
+      // Use real Supabase registration
+      await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone || undefined,
+      });
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Show success state
+      setRegistrationSuccess(true);
       
-      // Success announcement (client-side only)
-      if (typeof document !== 'undefined') {
-        const successAnnouncement = document.createElement('div');
-        successAnnouncement.setAttribute('aria-live', 'polite');
-        successAnnouncement.className = 'sr-only';
-        successAnnouncement.textContent = 'Registration successful! Please check your email for verification instructions.';
-        document.body.appendChild(successAnnouncement);
-        
-        setTimeout(() => {
-          document.body.removeChild(successAnnouncement);
-        }, 1000);
-      }
+      // Navigate to login after 3 seconds
+      setTimeout(() => {
+        navigate('/auth/login', { 
+          state: { 
+            message: 'Registration successful! Please check your email for verification before signing in.',
+            email: formData.email 
+          }
+        });
+      }, 3000);
       
-      // Show success message for email verification
-      alert('Registration successful! Please check your email for a verification link before signing in.');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
-      alert('Registration failed. Please try again.');
+      
+      // Show user-friendly error messages
+      if (error.message.includes('already registered')) {
+        setErrors({ email: 'An account with this email already exists. Please try signing in instead.' });
+      } else if (error.message.includes('Invalid email')) {
+        setErrors({ email: 'Please enter a valid email address.' });
+      } else if (error.message.includes('Password')) {
+        setErrors({ password: error.message });
+      } else {
+        setErrors({ 
+          email: error.message || 'Registration failed. Please check your details and try again.' 
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -162,6 +181,21 @@ const Register: React.FC = () => {
               Join our real estate community
             </p>
           </div>
+
+          {/* Registration Success Message */}
+          {registrationSuccess && (
+            <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center">
+                <div className="text-green-600 text-xl mr-3">✅</div>
+                <div>
+                  <p className="text-green-800 font-medium">Registration Successful!</p>
+                  <p className="text-green-700 text-sm mt-1">
+                    Please check your email for a verification link. You'll be redirected to sign in shortly.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Error Message */}
           {Object.keys(errors).length > 0 && (
@@ -412,15 +446,20 @@ const Register: React.FC = () => {
               size="lg" 
               className="mt-6 mb-3 !bg-blue-600 !text-white hover:!bg-blue-700 !py-3 !px-6 !font-medium !text-base !rounded-lg !shadow-md hover:!shadow-lg !transition-all !duration-200" 
               fullWidth
-              loading={isLoading}
-              disabled={isLoading}
+              loading={isLoading || authLoading}
+              disabled={isLoading || authLoading || registrationSuccess}
               placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
               onResize={undefined}
               onResizeCapture={undefined}
             >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {registrationSuccess 
+                ? 'Registration Complete!' 
+                : isLoading || authLoading 
+                  ? 'Creating Account...' 
+                  : 'Create Account'
+              }
             </Button>
             
             <p className="mt-4 text-center font-normal text-sm text-gray-600">
