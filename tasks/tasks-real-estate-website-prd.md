@@ -71,6 +71,7 @@
   - [ ] 8.1 Create filters for agent location, language, experience  
   - [ ] 8.2 Build `AgentCard.tsx` for directory  
   - [ ] 8.3 Build individual Agent Profile page with contact form and listings
+  - [ ] 8.4 Add Messaging System
 
 - [ ] 9.0 Dashboards  
   - [ ] 9.1 Build User Dashboard with saved listings, alerts, and preferences  
