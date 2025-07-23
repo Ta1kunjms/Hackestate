@@ -9,15 +9,19 @@ import {
 
 describe('webSpeech utilities', () => {
   describe('isSpeechRecognitionSupported', () => {
-    it('returns true if SpeechRecognition is present', () => {
-      window.SpeechRecognition = jest.fn();
-      expect(isSpeechRecognitionSupported()).toBe(true);
+    afterEach(() => {
       delete window.SpeechRecognition;
+      delete window.webkitSpeechRecognition;
+    });
+    it('returns true if SpeechRecognition is present', () => {
+      window.SpeechRecognition = function() {};
+      expect(typeof window.SpeechRecognition).toBe('function');
+      expect(isSpeechRecognitionSupported()).toBe(true);
     });
     it('returns true if webkitSpeechRecognition is present', () => {
-      window.webkitSpeechRecognition = jest.fn();
+      window.webkitSpeechRecognition = function() {};
+      expect(typeof window.webkitSpeechRecognition).toBe('function');
       expect(isSpeechRecognitionSupported()).toBe(true);
-      delete window.webkitSpeechRecognition;
     });
     it('returns false if neither is present', () => {
       expect(isSpeechRecognitionSupported()).toBe(false);

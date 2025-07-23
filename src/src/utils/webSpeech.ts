@@ -35,7 +35,8 @@ export type SpeechRecognitionErrorHandler = (error: string) => void;
 export function isSpeechRecognitionSupported(): boolean {
   return (
     typeof window !== 'undefined' &&
-    ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
+    (typeof (window as any).SpeechRecognition === 'function' ||
+     typeof (window as any).webkitSpeechRecognition === 'function')
   );
 }
 
@@ -104,4 +105,27 @@ export function stopSpeaking() {
 export function getVoices(): SpeechSynthesisVoice[] {
   if (!isSpeechSynthesisSupported()) return [];
   return window.speechSynthesis.getVoices();
+}
+
+// Audio feedback (chimes) using Web Audio API
+export function playChime(type: 'start' | 'stop' | 'command' | 'error') {
+  if (typeof window === 'undefined' || !window.AudioContext) return;
+  const ctx = new window.AudioContext();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine';
+  // Pick frequency based on type
+  switch (type) {
+    case 'start': o.frequency.value = 880; break; // A5
+    case 'stop': o.frequency.value = 440; break; // A4
+    case 'command': o.frequency.value = 660; break; // E5
+    case 'error': o.frequency.value = 220; break; // A3
+    default: o.frequency.value = 440;
+  }
+  g.gain.value = 0.18;
+  o.connect(g);
+  g.connect(ctx.destination);
+  o.start();
+  o.stop(ctx.currentTime + 0.18);
+  o.onended = () => ctx.close();
 } 

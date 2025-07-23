@@ -4,7 +4,15 @@ const AgentAvatar: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 0, position: 'relative', zIndex: 10, top: -8 }}>
       {/* Simple SVG robot avatar */}
-      <svg width="64" height="64" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)', borderRadius: '50%', background: 'white', border: '4px solid #fff' }}>
+      <svg
+        role="img"
+        aria-label="Agent Avatar"
+        height="64"
+        width="64"
+        viewBox="0 0 200 200"
+        style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)', borderRadius: '50%', background: 'white', border: '4px solid #fff' }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style={{ stopColor: '#6EC1E4', stopOpacity: 1 }} />

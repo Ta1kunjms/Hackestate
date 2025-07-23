@@ -4,6 +4,7 @@ import './App.css';
 import AgentChat from './components/AgentChat';
 import { mockProperties, Property } from './data/mockProperties';
 import { useRef } from 'react';
+import { ToastProvider } from './components/ToastProvider';
 
 const App: React.FC = () => {
   const [filter, setFilter] = useState<{ location?: string; maxPrice?: number }>({});
@@ -26,6 +27,7 @@ const App: React.FC = () => {
   };
 
   return (
+    <ToastProvider>
     <div className="app-container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <header style={{ padding: '1rem', background: '#1976d2', color: 'white' }}>
         <h1>Mock Real Estate Site</h1>
@@ -53,6 +55,7 @@ const App: React.FC = () => {
         </div>
       </main>
     </div>
+    </ToastProvider>
   );
 };
 

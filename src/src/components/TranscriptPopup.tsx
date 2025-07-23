@@ -1,46 +1,48 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-type TranscriptPopupProps = {
+interface TranscriptPopupProps {
   message: string;
   onClose: () => void;
-  duration?: number; // ms
-};
+  visible?: boolean;
+}
 
-const TranscriptPopup: React.FC<TranscriptPopupProps> = ({ message, onClose, duration = 5000 }) => {
+const TranscriptPopup: React.FC<TranscriptPopupProps> = ({ message, onClose, visible = true }) => {
+  const [fade, setFade] = useState(false);
+
   useEffect(() => {
-    if (!duration) return;
-    const timer = setTimeout(onClose, duration);
-    return () => clearTimeout(timer);
-  }, [onClose, duration]);
+    if (!visible) {
+      setFade(true);
+      const timer = setTimeout(onClose, 800); // match CSS transition
+      return () => clearTimeout(timer);
+    } else {
+      setFade(false);
+    }
+  }, [visible, onClose]);
 
   return (
     <div
-      onClick={onClose}
+      className={`popup-fade${fade ? ' hide' : ''}`}
       style={{
         position: 'fixed',
-        bottom: 110,
-        right: 32,
-        zIndex: 1100,
-        background: 'white',
-        border: '1px solid #1976d2',
+        bottom: 100,
+        right: 40,
+        background: '#1976d2',
+        color: '#fff',
         borderRadius: 12,
-        boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-        minWidth: 220,
-        maxWidth: 320,
-        padding: '12px 16px',
-        cursor: 'pointer',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        color: '#1976d2',
+        padding: '18px 28px',
         fontWeight: 500,
-        fontSize: 15,
+        fontSize: 16,
+        zIndex: 2000,
+        boxShadow: '0 4px 24px rgba(25,118,210,0.18)',
+        maxWidth: 340,
+        minWidth: 180,
+        transition: 'opacity 0.8s',
+        opacity: fade ? 0 : 1,
+        cursor: 'pointer',
       }}
-      aria-live="polite"
-      role="status"
-      title="Click to dismiss"
+      onClick={onClose}
     >
-      <span>{message}</span>
+      {message}
     </div>
   );
 };

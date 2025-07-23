@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AgentAvatar from './AgentAvatar';
 import { sendToGemini } from '../api/geminiApi';
-import { Property } from '../data/mockProperties';
+import { Property, mockProperties } from '../data/mockProperties';
 import {
   savePreferences,
   loadPreferences,
@@ -13,8 +13,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeMute, faVolumeUp, faCog, faMicrophone, faTimes, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import AgentControls from './AgentControls';
-import { createRecognition, startRecognition, stopRecognition, SpeechRecognitionResultHandler, speakText, isSpeechSynthesisSupported, stopSpeaking, getVoices } from '../utils/webSpeech';
-import TranscriptPopup from './TranscriptPopup';
+import { createRecognition, startRecognition, stopRecognition, SpeechRecognitionResultHandler, speakText, isSpeechSynthesisSupported, stopSpeaking, getVoices, playChime } from '../utils/webSpeech';
+import { useToast } from './ToastProvider';
+import { startWakeWord } from '../utils/wakeWord';
+import VoiceFeedback from './VoiceFeedback';
 
 // You will set your Gemini API key in an environment variable (see api/geminiApi.ts for details)
 
@@ -35,9 +37,12 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
   const [animating, setAnimating] = useState(false);
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [speechTimeout, setSpeechTimeout] = useState<NodeJS.Timeout | null>(null);
+  const lastSentRef = useRef('');
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const [popup, setPopup] = useState<{ user: string; ai: string } | null>(null);
+  const [popupVisible, setPopupVisible] = useState(true);
   const popupTimeout = useRef<NodeJS.Timeout | null>(null);
   const [inputFocused, setInputFocused] = useState(false);
   const [speechError, setSpeechError] = useState<string | null>(null);
@@ -45,6 +50,23 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
   const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
   const [lang, setLang] = useState('en-US');
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const wakeWordDetectorRef = useRef<any | null>(null); // Changed type to any for porcupine instance
+  const [continuousListening, setContinuousListening] = useState(false);
+  const [wakeWordEnabled, setWakeWordEnabled] = useState(() => {
+    // Try to load from prefs, default true
+    return typeof window !== 'undefined' && window.localStorage
+      ? JSON.parse(window.localStorage.getItem('wakeWordEnabled') || 'true')
+      : true;
+  });
+  // Timeout for auto-stop (ms)
+  const AUTO_STOP_TIMEOUT = 10000;
+  const autoStopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [autoSendTimeout, setAutoSendTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [autoSendCountdown, setAutoSendCountdown] = useState<number>(0);
+  const autoSendIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const isInCountdownRef = useRef<boolean>(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     setMessages(loadChatHistory());
@@ -86,26 +108,132 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
     if (!listening) {
       setTranscript('');
       if (recognitionRef.current) stopRecognition(recognitionRef.current);
+      if (autoStopTimeoutRef.current) {
+        clearTimeout(autoStopTimeoutRef.current);
+        autoStopTimeoutRef.current = null;
+      }
+      if (speechTimeout) {
+        clearTimeout(speechTimeout);
+        setSpeechTimeout(null);
+      }
+      lastSentRef.current = '';
+      // playChime('stop'); // Removed beep
       return;
     }
     setSpeechError(null);
+    // playChime('start'); // Removed repetitive beep
+    lastSentRef.current = '';
     const handleResult: SpeechRecognitionResultHandler = (text, isFinal) => {
-      setTranscript(text);
+      setTranscript(text); // Show live transcript
       if (isFinal) {
-        setInput(prev => prev + (prev ? ' ' : '') + text);
-        setListening(false);
+        const trimmed = text.trim();
+        if (trimmed) {
+          // If there's already text in input and an auto-send countdown, append to it
+          setInput(prevInput => {
+            const existingText = prevInput.trim();
+            if (existingText && autoSendCountdown > 0) {
+              // Append new speech to existing text
+              return existingText + ' ' + trimmed;
+            } else {
+              // First speech input or no countdown active
+              return trimmed;
+            }
+          });
+          
+          // Clear any existing auto-send timeout and restart the 4-second timer
+          if (autoSendTimeout) {
+            clearTimeout(autoSendTimeout);
+            setAutoSendTimeout(null);
+          }
+          if (autoSendIntervalRef.current) {
+            clearInterval(autoSendIntervalRef.current);
+            autoSendIntervalRef.current = null;
+          }
+          
+          // Start 4-second countdown
+          setAutoSendCountdown(4);
+          isInCountdownRef.current = true;
+          autoSendIntervalRef.current = setInterval(() => {
+            setAutoSendCountdown(prev => {
+              if (prev <= 1) {
+                if (autoSendIntervalRef.current) {
+                  clearInterval(autoSendIntervalRef.current);
+                  autoSendIntervalRef.current = null;
+                }
+                return 0;
+              }
+              return prev - 1;
+            });
+          }, 1000);
+          
+          const timeout = setTimeout(() => {
+            // Use current input value (might have been appended to)
+            const currentInput = inputRef.current?.value || input;
+            handleSend(currentInput);
+            setAutoSendTimeout(null);
+            setAutoSendCountdown(0);
+            setListening(false); // Stop listening after auto-send
+            isInCountdownRef.current = false;
+            if (autoSendIntervalRef.current) {
+              clearInterval(autoSendIntervalRef.current);
+              autoSendIntervalRef.current = null;
+            }
+          }, 4000);
+          setAutoSendTimeout(timeout);
+        }
+        setTranscript('');
+        setListening(false); // Stop current recognition
+        // playChime('command'); // Removed annoying beep
+        
+        // Restart listening after a brief pause to continue capturing speech during countdown
+        setTimeout(() => {
+          // Check if we just started a countdown
+          if (isInCountdownRef.current) {
+            setListening(true); // This will trigger the useEffect to restart recognition
+          }
+        }, 300);
       }
+      // No need for timers or interim result handling!
     };
     recognitionRef.current = createRecognition(handleResult, (err) => {
-      setSpeechError(err || 'Speech recognition error');
+      // Handle mic permission denied, browser interruption, or other errors
+      let userMsg = err || 'Speech recognition error';
+      if (err === 'not-allowed' || err === 'denied') {
+        userMsg = 'Microphone access denied. Please allow mic permissions.';
+      } else if (err === 'no-speech') {
+        userMsg = 'No speech detected. Try again.';
+      } else if (err === 'aborted') {
+        userMsg = 'Speech recognition was interrupted.';
+      }
+      setSpeechError(userMsg);
       setListening(false);
+      setContinuousListening(false);
+      playChime('error');
+      if (autoStopTimeoutRef.current) {
+        clearTimeout(autoStopTimeoutRef.current);
+        autoStopTimeoutRef.current = null;
+      }
+      if (speechTimeout) {
+        clearTimeout(speechTimeout);
+        setSpeechTimeout(null);
+      }
     });
     if (recognitionRef.current) startRecognition(recognitionRef.current);
     else setSpeechError('Speech recognition not supported in this browser.');
+    // Start auto-stop timer
+    autoStopTimeoutRef.current = setTimeout(() => setListening(false), AUTO_STOP_TIMEOUT);
     return () => {
       if (recognitionRef.current) stopRecognition(recognitionRef.current);
+      if (autoStopTimeoutRef.current) {
+        clearTimeout(autoStopTimeoutRef.current);
+        autoStopTimeoutRef.current = null;
+      }
+      if (speechTimeout) {
+        clearTimeout(speechTimeout);
+        setSpeechTimeout(null);
+      }
     };
-  }, [listening]);
+  }, [listening, continuousListening]);
 
   useEffect(() => {
     if (!isSpeechSynthesisSupported()) return;
@@ -129,44 +257,125 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
     return () => { stopSpeaking(); };
   }, [messages, speechEnabled, muted, voice, lang]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    const userMsg = { from: 'user' as const, text: input };
+  useEffect(() => {
+    if (!speechEnabled || muted || !wakeWordEnabled) return;
+    let porcupine: any;
+    startWakeWord(() => setListening(true)).then(instance => {
+      porcupine = instance;
+    });
+    return () => {
+      if (porcupine) porcupine.terminate();
+    };
+  }, [speechEnabled, muted, wakeWordEnabled]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem('wakeWordEnabled', JSON.stringify(wakeWordEnabled));
+    }
+  }, [wakeWordEnabled]);
+
+  useEffect(() => {
+    return () => {
+      if (autoSendTimeout) clearTimeout(autoSendTimeout);
+      if (autoSendIntervalRef.current) {
+        clearInterval(autoSendIntervalRef.current);
+        autoSendIntervalRef.current = null;
+      }
+    };
+  }, [autoSendTimeout]);
+
+  // Helper to parse user queries for property search/filter intent
+  function parseSearchCriteria(text: string) {
+    // Patterns for location, price, bedrooms, bathrooms
+    const locationMatch = text.match(/in ([a-zA-Z ]+)/i);
+    const priceMatch = text.match(/under \$?(\d+[\d,]*)/i) || text.match(/below \$?(\d+[\d,]*)/i);
+    const bedroomsMatch = text.match(/(\d+)\s*bed(room)?s?/i) || text.match(/with (\d+)\s*bed(room)?s?/i);
+    const bathroomsMatch = text.match(/(\d+)\s*bath(room)?s?/i) || text.match(/with (\d+)\s*bath(room)?s?/i);
+
+    const criteria: { location?: string; maxPrice?: number; bedrooms?: number; bathrooms?: number } = {};
+    if (locationMatch) {
+      criteria.location = locationMatch[1].trim();
+    }
+    if (priceMatch) {
+      criteria.maxPrice = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+    }
+    if (bedroomsMatch) {
+      criteria.bedrooms = parseInt(bedroomsMatch[1], 10);
+    }
+    if (bathroomsMatch) {
+      criteria.bathrooms = parseInt(bathroomsMatch[1], 10);
+    }
+    return criteria;
+  }
+
+  const handleSend = async (message?: string) => {
+    const textToSend = (message !== undefined ? message : input).trim();
+    if (!textToSend) return;
+    
+    // Clear auto-send timeout if user sends manually
+    if (autoSendTimeout) {
+      clearTimeout(autoSendTimeout);
+      setAutoSendTimeout(null);
+      setAutoSendCountdown(0);
+      isInCountdownRef.current = false;
+    }
+    if (autoSendIntervalRef.current) {
+      clearInterval(autoSendIntervalRef.current);
+      autoSendIntervalRef.current = null;
+    }
+    
+    const userMsg = { from: 'user' as const, text: textToSend };
     setMessages((msgs) => [...msgs, userMsg]);
     setInput('');
     setLoading(true);
 
-    // Simple command parsing for filtering
-    const locationMatch = input.match(/in ([a-zA-Z ]+)/i);
-    const priceMatch = input.match(/under \$?(\d+[\d,]*)/i);
-    const criteria: { location?: string; maxPrice?: number } = {};
-    if (locationMatch) {
-      criteria.location = locationMatch[1].trim();
-      setPrefs((p) => ({ ...p, location: criteria.location }));
-    }
-    if (priceMatch) {
-      criteria.maxPrice = parseInt(priceMatch[1].replace(/,/g, ''), 10);
-      setPrefs((p) => ({ ...p, budget: criteria.maxPrice }));
-    }
-    if (criteria.location || criteria.maxPrice) {
+    // Enhanced parsing for filtering
+    const criteria = parseSearchCriteria(textToSend);
+    if (Object.keys(criteria).length > 0) {
+      // Save preferences for location and budget if present
+      if (criteria.location) setPrefs((p) => ({ ...p, location: criteria.location }));
+      if (criteria.maxPrice) setPrefs((p) => ({ ...p, budget: criteria.maxPrice }));
+
+      // Map criteria to mockProperties data fields
+      let filtered: Property[] = mockProperties;
+      if (criteria.location) {
+        filtered = filtered.filter(p => p.location.toLowerCase().includes(criteria.location!.toLowerCase()));
+      }
+      if (criteria.maxPrice) {
+        filtered = filtered.filter(p => p.price <= criteria.maxPrice!);
+      }
+      if (criteria.bedrooms) {
+        filtered = filtered.filter(p => p.bedrooms === criteria.bedrooms);
+      }
+      if (criteria.bathrooms) {
+        filtered = filtered.filter(p => p.bathrooms === criteria.bathrooms);
+      }
       onFilter(criteria);
+
+      // Show filtered results as an AI message in the chat
+      let aiResultMsg = '';
+      if (filtered.length > 0) {
+        aiResultMsg = `Here are the matching properties:\n` +
+          filtered.map(p => `• ${p.title} — ${p.bedrooms} bed, ${p.bathrooms} bath, $${p.price.toLocaleString()} (${p.location})`).join('\n');
+      } else {
+        aiResultMsg = 'No properties found matching your criteria.';
+      }
+      setMessages(msgs => [...msgs, { from: 'ai', text: aiResultMsg }]);
+      // Removed toast - user can see the message in chat
+      setLoading(false);
+      return; // Exit early, don't call Gemini API for property searches
     }
 
-    // DOM action parsing
-    if (/scroll to listings|show listings/i.test(input)) {
+    // DOM action parsing (unchanged)
+    if (/scroll to listings|show listings/i.test(textToSend)) {
       onScrollTo && onScrollTo('listings');
-    } else if (/scroll to filters|show filters/i.test(input)) {
+    } else if (/scroll to filters|show filters/i.test(textToSend)) {
       onScrollTo && onScrollTo('filters');
     }
 
-    const aiText = await sendToGemini(input);
+    const aiText = await sendToGemini(textToSend);
     setMessages((msgs) => [...msgs, { from: 'ai', text: aiText }]);
-    // If chat is collapsed, show popup with last user and AI message
-    if (!expanded) {
-      setPopup({ user: input, ai: aiText });
-      if (popupTimeout.current) clearTimeout(popupTimeout.current);
-      popupTimeout.current = setTimeout(() => setPopup(null), 5000);
-    }
+    // Removed toast - user can see the message in chat
     setLoading(false);
   };
 
@@ -185,14 +394,23 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
 
   if (!isClient) return null;
 
+  // Add a user-friendly error message for unsupported speech recognition
+  if (!isSpeechRecognitionSupported) {
+    return (
+      <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 1000, background: '#fff', border: '2px solid #1976d2', borderRadius: 20, boxShadow: '0 8px 32px rgba(25, 118, 210, 0.18)', padding: 32, color: '#1976d2', fontWeight: 600, fontSize: 18 }}>
+        <div>Sorry, your browser does not support speech recognition.<br />
+        Please use Chrome, Edge, or another supported browser.<br /><br />
+        <button onClick={() => window.location.reload()} style={{ marginTop: 16, padding: '8px 18px', borderRadius: 8, border: '1.5px solid #1976d2', background: '#1976d2', color: '#fff', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>Reload</button>
+        </div>
+      </div>
+    );
+  }
+
   // Floating icon (avatar or mic) when collapsed
   if (!expanded && !animating) {
     return (
       <>
-        {popup && (
-          <TranscriptPopup message={popup.ai} onClose={() => setPopup(null)} />
-        )}
-        <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 1000, cursor: 'pointer' }} onClick={() => setExpanded(true)}>
+        <div data-testid="expand-chat" style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 1000, cursor: 'pointer' }} onClick={() => setExpanded(true)}>
           <div style={{ borderRadius: '50%', width: 64, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', background: 'transparent' }}>
             <AgentAvatar />
             {listening && (
@@ -221,6 +439,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
         transition: 'box-shadow 0.2s',
       }}
     >
+      {/* <VoiceFeedback listening={listening} error={speechError} transcript={transcript} /> */}
       <div
         style={{
           width: 340,
@@ -292,6 +511,12 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
                     </select>
                   </>
                 )}
+                {(!isSpeechRecognitionSupported || speechError) && (
+                  <div style={{ color: '#ffd600', background: '#222', border: '1.5px solid #ffd600', borderRadius: 8, padding: '8px 12px', margin: '8px 0', fontWeight: 500, fontSize: 13 }}>
+                    Advanced voice features are unavailable in this browser or due to an error.<br />
+                    You can still use the manual mic button below to send voice commands.
+                  </div>
+                )}
                 <button
                   onClick={handleReset}
                   aria-label="Reset agent memory"
@@ -300,8 +525,30 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
                   onMouseOver={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.22)')}
                   onMouseOut={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
                 >
-                  Reset
+                  Reset Agent
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setWakeWordEnabled((w: boolean) => !w)}
+                  style={{ margin: 4, padding: 8, borderRadius: 6, border: '1.5px solid #fff', background: wakeWordEnabled ? '#1976d2' : 'rgba(255,255,255,0.12)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'background 0.15s' }}
+                  title="Enable or disable wake word activation (say 'Porcupine' to activate hands-free)"
+                >
+                  {wakeWordEnabled ? 'Wake Word: ON' : 'Wake Word: OFF'}
+                </button>
+                <div style={{ color: '#cfd8dc', fontSize: 12, margin: '0 0 8px 4px', maxWidth: 200 }}>
+                  Hands-free activation by saying the wake word (default: "Porcupine").
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setContinuousListening(cl => !cl)}
+                  style={{ margin: 4, padding: 8, borderRadius: 6, border: '1.5px solid #fff', background: continuousListening ? '#1976d2' : 'rgba(255,255,255,0.12)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'background 0.15s' }}
+                  title="Keep mic open after each command for rapid-fire conversations"
+                >
+                  {continuousListening ? 'Continuous Listening: ON' : 'Continuous Listening: OFF'}
+                </button>
+                <div style={{ color: '#cfd8dc', fontSize: 12, margin: '0 0 8px 4px', maxWidth: 200 }}>
+                  When enabled, the mic stays open after each command until you say "stop listening" or timeout.
+                </div>
               </div>
             )}
           </div>
@@ -311,13 +558,8 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
           {messages.length === 0 && (
             <div style={{ marginBottom: '1rem', color: '#888' }}>[Chat messages will appear here]</div>
           )}
-          {!isSpeechRecognitionSupported && (
-            <div style={{ color: '#d32f2f', fontSize: 13, marginBottom: 8 }}>
-              Voice input is not supported in your browser. You can still use text chat.
-            </div>
-          )}
           {speechError && (
-            <div style={{ color: '#d32f2f', fontSize: 13, marginBottom: 8 }}>
+            <div style={{ color: '#d32f2f', background: '#fff3f3', border: '1.5px solid #d32f2f', borderRadius: 8, padding: '8px 12px', margin: '8px 0', fontWeight: 500, fontSize: 14 }}>
               {speechError}
             </div>
           )}
@@ -326,12 +568,8 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
               Agent is muted. Voice responses are disabled.
             </div>
           )}
-          {listening && (
-            <div style={{ position: 'absolute', top: 8, right: 8, background: '#e3f2fd', color: '#1976d2', borderRadius: 8, padding: '6px 12px', fontWeight: 600, fontSize: 14, zIndex: 10, boxShadow: '0 2px 8px rgba(25,118,210,0.10)' }}>
-              <span role="img" aria-label="mic">🎤</span> Listening...<br />
-              <span style={{ fontWeight: 400, fontSize: 13 }}>{transcript}</span>
-            </div>
-          )}
+          {/* Removed listening indicator */}
+          {/* Removed auto-sending countdown display */}
           {messages.map((msg, i) => (
             <div key={i} style={{ marginBottom: 8, textAlign: msg.from === 'user' ? 'right' : 'left' }}>
               <span style={{
@@ -360,10 +598,10 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
             tabIndex={0}
             style={{ background: listening ? '#43a047' : '#eee', color: listening ? 'white' : '#1976d2', border: 'none', borderRadius: '50%', width: 24, height: 24, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 4, boxShadow: listening ? '0 0 0 2px #90caf9' : undefined, transition: 'color 0.2s' }}
             title={listening ? 'Stop Listening' : 'Start Listening'}
-            onMouseOver={e => (e.currentTarget.style.color = '#1565c0')}
-            onMouseOut={e => (e.currentTarget.style.color = '#1976d2')}
-            onFocus={e => (e.currentTarget.style.color = '#1565c0')}
-            onBlur={e => (e.currentTarget.style.color = '#1976d2')}
+            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.color = '#1565c0')}
+            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.color = '#1976d2')}
+            onFocus={(e: React.FocusEvent<HTMLButtonElement>) => (e.currentTarget.style.color = '#1565c0')}
+            onBlur={(e: React.FocusEvent<HTMLButtonElement>) => (e.currentTarget.style.color = '#1976d2')}
           >
             <FontAwesomeIcon icon={faMicrophone} spin={listening} style={{ fontSize: 13 }} />
           </button>
@@ -380,6 +618,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
             <FontAwesomeIcon icon={muted ? faVolumeMute : faVolumeUp} style={{ fontSize: 13 }} />
           </button>
           <textarea
+            ref={inputRef}
             placeholder="Aa"
             style={{
               flex: 1,
@@ -407,6 +646,16 @@ const AgentChat: React.FC<AgentChatProps> = ({ onFilter, onScrollTo }) => {
             value={input}
             onChange={e => {
               setInput(e.target.value);
+              if (autoSendTimeout) {
+                clearTimeout(autoSendTimeout);
+                setAutoSendTimeout(null);
+                setAutoSendCountdown(0);
+                isInCountdownRef.current = false;
+              }
+              if (autoSendIntervalRef.current) {
+                clearInterval(autoSendIntervalRef.current);
+                autoSendIntervalRef.current = null;
+              }
               // auto-grow
               e.target.style.height = '24px'; // Reset height before calculating scrollHeight
               e.target.style.height = Math.min(e.target.scrollHeight, 40) + 'px';
