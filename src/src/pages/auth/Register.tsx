@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardBody, Button, Input } from '../../components/ui';
-import PageWrapper from '../../components/layout/PageWrapper';
-import Section from '../../components/layout/Section';
+import { Typography, Input, Button } from '@material-tailwind/react';
+import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
 
 interface RegisterFormData {
   firstName: string;
@@ -36,15 +35,14 @@ const Register: React.FC = () => {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordShown, setPasswordShown] = useState(false);
+  const [confirmPasswordShown, setConfirmPasswordShown] = useState(false);
   
   // Refs for focus management
   const firstNameRef = useRef<HTMLInputElement>(null);
-  const lastNameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const phoneRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const confirmPasswordRef = useRef<HTMLInputElement>(null);
-  const termsRef = useRef<HTMLInputElement>(null);
+
+  const togglePasswordVisibility = () => setPasswordShown((cur) => !cur);
+  const toggleConfirmPasswordVisibility = () => setConfirmPasswordShown((cur) => !cur);
 
   // Focus on first input when component mounts
   useEffect(() => {
@@ -91,25 +89,6 @@ const Register: React.FC = () => {
     }
 
     setErrors(newErrors);
-    
-    // Focus on first field with error for accessibility
-    const errorFields = [
-      { field: 'firstName', ref: firstNameRef },
-      { field: 'lastName', ref: lastNameRef },
-      { field: 'email', ref: emailRef },
-      { field: 'phone', ref: phoneRef },
-      { field: 'password', ref: passwordRef },
-      { field: 'confirmPassword', ref: confirmPasswordRef },
-      { field: 'acceptTerms', ref: termsRef },
-    ];
-    
-    for (const { field, ref } of errorFields) {
-      if (newErrors[field as keyof FormErrors] && ref.current) {
-        ref.current.focus();
-        break;
-      }
-    }
-    
     return Object.keys(newErrors).length === 0;
   };
 
@@ -117,23 +96,6 @@ const Register: React.FC = () => {
     e.preventDefault();
     
     if (!validateForm()) {
-      // Announce errors to screen readers
-      const errorCount = Object.keys(errors).length;
-      const announcement = `Registration form has ${errorCount} error${errorCount > 1 ? 's' : ''}. Please review and correct the highlighted fields.`;
-      
-      // Create live region for announcements
-      const liveRegion = document.createElement('div');
-      liveRegion.setAttribute('aria-live', 'polite');
-      liveRegion.setAttribute('aria-atomic', 'true');
-      liveRegion.className = 'sr-only';
-      liveRegion.textContent = announcement;
-      document.body.appendChild(liveRegion);
-      
-      // Remove after announcement
-      setTimeout(() => {
-        document.body.removeChild(liveRegion);
-      }, 1000);
-      
       return;
     }
 
@@ -146,34 +108,24 @@ const Register: React.FC = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Success announcement
-      const successAnnouncement = document.createElement('div');
-      successAnnouncement.setAttribute('aria-live', 'polite');
-      successAnnouncement.className = 'sr-only';
-      successAnnouncement.textContent = 'Registration successful! Please check your email for verification instructions.';
-      document.body.appendChild(successAnnouncement);
+      // Success announcement (client-side only)
+      if (typeof document !== 'undefined') {
+        const successAnnouncement = document.createElement('div');
+        successAnnouncement.setAttribute('aria-live', 'polite');
+        successAnnouncement.className = 'sr-only';
+        successAnnouncement.textContent = 'Registration successful! Please check your email for verification instructions.';
+        document.body.appendChild(successAnnouncement);
+        
+        setTimeout(() => {
+          document.body.removeChild(successAnnouncement);
+        }, 1000);
+      }
       
       // Redirect to verification on success (placeholder)
       alert('Registration successful! Please check your email for verification.');
-      
-      setTimeout(() => {
-        document.body.removeChild(successAnnouncement);
-      }, 1000);
     } catch (error) {
       console.error('Registration error:', error);
-      
-      // Error announcement
-      const errorAnnouncement = document.createElement('div');
-      errorAnnouncement.setAttribute('aria-live', 'assertive');
-      errorAnnouncement.className = 'sr-only';
-      errorAnnouncement.textContent = 'Registration failed. Please try again or contact support.';
-      document.body.appendChild(errorAnnouncement);
-      
       alert('Registration failed. Please try again.');
-      
-      setTimeout(() => {
-        document.body.removeChild(errorAnnouncement);
-      }, 1000);
     } finally {
       setIsLoading(false);
     }
@@ -198,302 +150,289 @@ const Register: React.FC = () => {
     }
   };
 
-  const handleKeyDown = (currentRef: React.RefObject<HTMLInputElement | null>, nextRef: React.RefObject<HTMLInputElement | null>) => (
-    e: React.KeyboardEvent
-  ) => {
-    // Enhanced keyboard navigation
-    if (e.key === 'Enter' && e.target === currentRef.current) {
-      e.preventDefault();
-      nextRef.current?.focus();
-    }
-  };
-
   return (
-    <Section background="gray" padding="lg">
-      <PageWrapper>
-        <div className="max-w-lg mx-auto">
-          <Card className="shadow-xl">
-            <CardBody className="p-8">
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
-                <p className="text-gray-600">Join our real estate community</p>
-              </div>
+    <section className="min-h-screen bg-white py-8 px-4">
+      <div className="flex flex-col items-center justify-center">
+        <div className="w-full max-w-[32rem]">
+          <div className="text-center mb-6">
+            <h3 className="text-3xl font-bold text-gray-800 mb-2">
+              Create Account
+            </h3>
+            <p className="mb-6 text-gray-600 font-normal text-lg">
+              Join our real estate community
+            </p>
+          </div>
 
-              <form 
-                onSubmit={handleSubmit} 
-                className="space-y-6"
-                noValidate
-                aria-label="Account registration form"
-              >
-                <fieldset className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <legend className="sr-only">Personal Information</legend>
-                  
-                  <div>
-                    <Input
-                      ref={firstNameRef}
-                      type="text"
-                      label="First Name"
-                      value={formData.firstName}
-                      onChange={handleInputChange('firstName')}
-                      onKeyDown={handleKeyDown(firstNameRef, lastNameRef)}
-                      error={!!errors.firstName}
-                      required
-                      size="lg"
-                      className="w-full"
-                      aria-invalid={!!errors.firstName}
-                      aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-                      autoComplete="given-name"
-                    />
-                    {errors.firstName && (
-                      <p 
-                        id="firstName-error" 
-                        className="text-red-500 text-sm mt-1" 
-                        role="alert"
-                        aria-live="polite"
-                      >
-                        {errors.firstName}
-                      </p>
-                    )}
-                  </div>
+          {/* Error Message */}
+          {Object.keys(errors).length > 0 && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-red-600 text-sm font-medium">
+                Please correct the errors below
+              </p>
+            </div>
+          )}
 
-                  <div>
-                    <Input
-                      ref={lastNameRef}
-                      type="text"
-                      label="Last Name"
-                      value={formData.lastName}
-                      onChange={handleInputChange('lastName')}
-                      onKeyDown={handleKeyDown(lastNameRef, emailRef)}
-                      error={!!errors.lastName}
-                      required
-                      size="lg"
-                      className="w-full"
-                      aria-invalid={!!errors.lastName}
-                      aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-                      autoComplete="family-name"
-                    />
-                    {errors.lastName && (
-                      <p 
-                        id="lastName-error" 
-                        className="text-red-500 text-sm mt-1" 
-                        role="alert"
-                        aria-live="polite"
-                      >
-                        {errors.lastName}
-                      </p>
-                    )}
-                  </div>
-                </fieldset>
-
-                <div>
-                  <Input
-                    ref={emailRef}
-                    type="email"
-                    label="Email Address"
-                    value={formData.email}
-                    onChange={handleInputChange('email')}
-                    onKeyDown={handleKeyDown(emailRef, phoneRef)}
-                    error={!!errors.email}
-                    required
-                    size="lg"
-                    className="w-full"
-                    aria-invalid={!!errors.email}
-                    aria-describedby={errors.email ? 'email-error' : 'email-help'}
-                    autoComplete="email"
-                  />
-                  <p id="email-help" className="text-sm text-gray-500 mt-1">
-                    We'll use this email to send you account updates and verification.
-                  </p>
-                  {errors.email && (
-                    <p 
-                      id="email-error" 
-                      className="text-red-500 text-sm mt-1" 
-                      role="alert"
-                      aria-live="polite"
-                    >
-                      {errors.email}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Input
-                    ref={phoneRef}
-                    type="tel"
-                    label="Phone Number (Optional)"
-                    value={formData.phone}
-                    onChange={handleInputChange('phone')}
-                    onKeyDown={handleKeyDown(phoneRef, passwordRef)}
-                    error={!!errors.phone}
-                    size="lg"
-                    className="w-full"
-                    placeholder="+1 (555) 123-4567"
-                    aria-invalid={!!errors.phone}
-                    aria-describedby={errors.phone ? 'phone-error' : 'phone-help'}
-                    autoComplete="tel"
-                  />
-                  <p id="phone-help" className="text-sm text-gray-500 mt-1">
-                    Optional. We may use this for account security notifications.
-                  </p>
-                  {errors.phone && (
-                    <p 
-                      id="phone-error" 
-                      className="text-red-500 text-sm mt-1" 
-                      role="alert"
-                      aria-live="polite"
-                    >
-                      {errors.phone}
-                    </p>
-                  )}
-                </div>
-
-                <fieldset className="space-y-4">
-                  <legend className="sr-only">Password Security</legend>
-                  
-                  <div>
-                    <Input
-                      ref={passwordRef}
-                      type="password"
-                      label="Password"
-                      value={formData.password}
-                      onChange={handleInputChange('password')}
-                      onKeyDown={handleKeyDown(passwordRef, confirmPasswordRef)}
-                      error={!!errors.password}
-                      required
-                      size="lg"
-                      className="w-full"
-                      aria-invalid={!!errors.password}
-                      aria-describedby={errors.password ? 'password-error' : 'password-help'}
-                      autoComplete="new-password"
-                    />
-                    <p id="password-help" className="text-sm text-gray-500 mt-1">
-                      Must be at least 8 characters with uppercase, lowercase, and number.
-                    </p>
-                    {errors.password && (
-                      <p 
-                        id="password-error" 
-                        className="text-red-500 text-sm mt-1" 
-                        role="alert"
-                        aria-live="polite"
-                      >
-                        {errors.password}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Input
-                      ref={confirmPasswordRef}
-                      type="password"
-                      label="Confirm Password"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange('confirmPassword')}
-                      error={!!errors.confirmPassword}
-                      required
-                      size="lg"
-                      className="w-full"
-                      aria-invalid={!!errors.confirmPassword}
-                      aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
-                      autoComplete="new-password"
-                    />
-                    {errors.confirmPassword && (
-                      <p 
-                        id="confirmPassword-error" 
-                        className="text-red-500 text-sm mt-1" 
-                        role="alert"
-                        aria-live="polite"
-                      >
-                        {errors.confirmPassword}
-                      </p>
-                    )}
-                  </div>
-                </fieldset>
-
-                <div>
-                  <label className="flex items-start space-x-3">
-                    <input
-                      ref={termsRef}
-                      type="checkbox"
-                      checked={formData.acceptTerms}
-                      onChange={handleInputChange('acceptTerms')}
-                      className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                      aria-invalid={!!errors.acceptTerms}
-                      aria-describedby={errors.acceptTerms ? 'terms-error' : 'terms-help'}
-                      required
-                    />
-                    <span className="text-sm text-gray-700">
-                      I agree to the{' '}
-                      <Link 
-                        to="/terms" 
-                        className="text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
-                        aria-label="Read Terms of Service (opens in new tab)"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Terms of Service
-                      </Link>{' '}
-                      and{' '}
-                      <Link 
-                        to="/privacy" 
-                        className="text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
-                        aria-label="Read Privacy Policy (opens in new tab)"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Privacy Policy
-                      </Link>
-                    </span>
-                  </label>
-                  <p id="terms-help" className="text-sm text-gray-500 mt-1 ml-7">
-                    Required to create an account and use our services.
-                  </p>
-                  {errors.acceptTerms && (
-                    <p 
-                      id="terms-error" 
-                      className="text-red-500 text-sm mt-1 ml-7" 
-                      role="alert"
-                      aria-live="polite"
-                    >
-                      {errors.acceptTerms}
-                    </p>
-                  )}
-                </div>
-
-                <Button
-                  type="submit"
-                  variant="filled"
-                  color="blue"
+          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg">
+            {/* Name Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="firstName" className="mb-2 block font-medium text-gray-900 text-sm">
+                  First Name*
+                </label>
+                <Input
+                  ref={firstNameRef}
+                  id="firstName"
+                  color="gray"
                   size="lg"
-                  fullWidth
-                  loading={isLoading}
-                  className="mt-6"
-                  aria-describedby="submit-help"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
-                </Button>
-                <span id="submit-help" className="sr-only">
-                  Submit the registration form to create your account
-                </span>
-              </form>
-
-              <div className="mt-8 text-center">
-                <p className="text-gray-600">
-                  Already have an account?{' '}
-                  <Link
-                    to="/auth/login"
-                    className="text-blue-600 hover:text-blue-800 font-semibold underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
-                    aria-label="Sign in to existing account"
-                  >
-                    Sign in
-                  </Link>
-                </p>
+                  type="text"
+                  value={formData.firstName}
+                  onChange={handleInputChange('firstName')}
+                  className="w-full !text-gray-900 placeholder:!text-gray-500 placeholder:!opacity-100 focus:!border-t-blue-500 !border-t-blue-gray-200"
+                  labelProps={{ className: "hidden" }}
+                  required
+                  crossOrigin={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                  onResize={undefined}
+                  onResizeCapture={undefined}
+                />
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+                )}
               </div>
-            </CardBody>
-          </Card>
+
+              <div>
+                <label htmlFor="lastName" className="mb-2 block font-medium text-gray-900 text-sm">
+                  Last Name*
+                </label>
+                <Input
+                  id="lastName"
+                  color="gray"
+                  size="lg"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={handleInputChange('lastName')}
+                  className="w-full !text-gray-900 placeholder:!text-gray-500 placeholder:!opacity-100 focus:!border-t-blue-500 !border-t-blue-gray-200"
+                  labelProps={{ className: "hidden" }}
+                  required
+                  crossOrigin={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                  onResize={undefined}
+                  onResizeCapture={undefined}
+                />
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="mb-4">
+            <label htmlFor="email" className="mb-2 block font-medium text-gray-900 text-sm">
+              Email Address*
+            </label>
+            <Input
+              id="email"
+              color="gray"
+              size="lg"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange('email')}
+              placeholder="name@mail.com"
+              className="w-full !text-gray-900 placeholder:!text-gray-500 placeholder:!opacity-100 focus:!border-t-blue-500 !border-t-blue-gray-200"
+              labelProps={{ className: "hidden" }}
+              required
+              crossOrigin={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              We'll use this email to send you account updates and verification.
+            </p>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
+
+            {/* Phone */}
+            <div className="mb-4">
+            <label htmlFor="phone" className="mb-2 block font-medium text-gray-900 text-sm">
+              Phone Number (Optional)
+            </label>
+            <Input
+              id="phone"
+              color="gray"
+              size="lg"
+              type="tel"
+              value={formData.phone}
+              onChange={handleInputChange('phone')}
+              placeholder="+1 (555) 123-4567"
+              className="w-full !text-gray-900 placeholder:!text-gray-500 placeholder:!opacity-100 focus:!border-t-blue-500 !border-t-blue-gray-200"
+              labelProps={{ className: "hidden" }}
+              crossOrigin={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              Optional. We may use this for account security notifications.
+            </p>
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+            )}
+          </div>
+
+            {/* Password */}
+            <div className="mb-4">
+            <label htmlFor="password" className="mb-2 block font-medium text-gray-900 text-sm">
+              Password*
+            </label>
+            <div className="relative">
+              <Input
+                id="password"
+                size="lg"
+                value={formData.password}
+                onChange={handleInputChange('password')}
+                placeholder="********"
+                labelProps={{ className: "hidden" }}
+                className="w-full !text-gray-900 placeholder:!text-gray-500 placeholder:!opacity-100 focus:!border-t-blue-500 !border-t-blue-gray-200 !pr-12"
+                type={passwordShown ? "text" : "password"}
+                required
+                crossOrigin={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+                onResize={undefined}
+                onResizeCapture={undefined}
+              />
+              <button 
+                type="button"
+                onClick={togglePasswordVisibility} 
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600 hover:text-gray-900"
+              >
+                {passwordShown ? (
+                  <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeSlashIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 mt-1">
+              At least 8 characters with uppercase, lowercase, and number.
+            </p>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
+          </div>
+
+            {/* Confirm Password */}
+            <div className="mb-4">
+            <label htmlFor="confirmPassword" className="mb-2 block font-medium text-gray-900 text-sm">
+              Confirm Password*
+            </label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                size="lg"
+                value={formData.confirmPassword}
+                onChange={handleInputChange('confirmPassword')}
+                placeholder="********"
+                labelProps={{ className: "hidden" }}
+                className="w-full !text-gray-900 placeholder:!text-gray-500 placeholder:!opacity-100 focus:!border-t-blue-500 !border-t-blue-gray-200 !pr-12"
+                type={confirmPasswordShown ? "text" : "password"}
+                required
+                crossOrigin={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+                onResize={undefined}
+                onResizeCapture={undefined}
+              />
+              <button 
+                type="button"
+                onClick={toggleConfirmPasswordVisibility} 
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600 hover:text-gray-900"
+              >
+                {confirmPasswordShown ? (
+                  <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeSlashIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+            )}
+          </div>
+
+            {/* Terms and Conditions */}
+            <div className="mb-4">
+            <label className="flex items-start space-x-3">
+              <input
+                type="checkbox"
+                checked={formData.acceptTerms}
+                onChange={handleInputChange('acceptTerms')}
+                className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                required
+              />
+              <span className="text-sm text-gray-700">
+                I agree to the{' '}
+                <Link 
+                  to="/terms" 
+                  className="text-blue-600 hover:text-blue-800 underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link 
+                  to="/privacy" 
+                  className="text-blue-600 hover:text-blue-800 underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Privacy Policy
+                </Link>
+              </span>
+            </label>
+            <p className="text-sm text-gray-500 mt-1 ml-7">
+              Required to create an account and use our services.
+            </p>
+            {errors.acceptTerms && (
+              <p className="text-red-500 text-sm mt-1 ml-7">{errors.acceptTerms}</p>
+            )}
+          </div>
+
+            <Button 
+              type="submit"
+              color="blue" 
+              size="lg" 
+              className="mt-6 mb-3 !bg-blue-600 !text-white hover:!bg-blue-700 !py-3 !px-6 !font-medium !text-base !rounded-lg !shadow-md hover:!shadow-lg !transition-all !duration-200" 
+              fullWidth
+              loading={isLoading}
+              disabled={isLoading}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
+            >
+              {isLoading ? 'Creating Account...' : 'Create Account'}
+            </Button>
+            
+            <p className="mt-4 text-center font-normal text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link to="/auth/login" className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                Sign in
+              </Link>
+            </p>
+          </form>
         </div>
-      </PageWrapper>
-    </Section>
+      </div>
+    </section>
   );
 };
 

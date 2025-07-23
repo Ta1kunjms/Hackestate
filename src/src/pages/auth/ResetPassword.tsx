@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardBody, Button, Input } from '../../components/ui';
-import PageWrapper from '../../components/layout/PageWrapper';
-import Section from '../../components/layout/Section';
+import { Typography, Input, Button } from '@material-tailwind/react';
 
 interface ResetPasswordFormData {
   email: string;
@@ -51,20 +49,6 @@ const ResetPassword: React.FC = () => {
     e.preventDefault();
     
     if (!validateForm()) {
-      // Announce error to screen readers
-      const announcement = 'Please enter a valid email address to reset your password.';
-      
-      const liveRegion = document.createElement('div');
-      liveRegion.setAttribute('aria-live', 'polite');
-      liveRegion.setAttribute('aria-atomic', 'true');
-      liveRegion.className = 'sr-only';
-      liveRegion.textContent = announcement;
-      document.body.appendChild(liveRegion);
-      
-      setTimeout(() => {
-        document.body.removeChild(liveRegion);
-      }, 1000);
-      
       return;
     }
 
@@ -77,32 +61,23 @@ const ResetPassword: React.FC = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Success announcement
-      const successAnnouncement = document.createElement('div');
-      successAnnouncement.setAttribute('aria-live', 'polite');
-      successAnnouncement.className = 'sr-only';
-      successAnnouncement.textContent = 'Password reset email sent successfully. Please check your inbox.';
-      document.body.appendChild(successAnnouncement);
+      // Success announcement (client-side only)
+      if (typeof document !== 'undefined') {
+        const successAnnouncement = document.createElement('div');
+        successAnnouncement.setAttribute('aria-live', 'polite');
+        successAnnouncement.className = 'sr-only';
+        successAnnouncement.textContent = 'Password reset email sent successfully. Please check your inbox.';
+        document.body.appendChild(successAnnouncement);
+        
+        setTimeout(() => {
+          document.body.removeChild(successAnnouncement);
+        }, 1000);
+      }
       
       setIsSubmitted(true);
-      
-      setTimeout(() => {
-        document.body.removeChild(successAnnouncement);
-      }, 1000);
     } catch (error) {
       console.error('Reset password error:', error);
-      
-      const errorAnnouncement = document.createElement('div');
-      errorAnnouncement.setAttribute('aria-live', 'assertive');
-      errorAnnouncement.className = 'sr-only';
-      errorAnnouncement.textContent = 'Failed to send reset email. Please try again.';
-      document.body.appendChild(errorAnnouncement);
-      
       alert('Failed to send reset email. Please try again.');
-      
-      setTimeout(() => {
-        document.body.removeChild(errorAnnouncement);
-      }, 1000);
     } finally {
       setIsLoading(false);
     }
@@ -126,17 +101,20 @@ const ResetPassword: React.FC = () => {
       // TODO: Implement resend logic
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const resendAnnouncement = document.createElement('div');
-      resendAnnouncement.setAttribute('aria-live', 'polite');
-      resendAnnouncement.className = 'sr-only';
-      resendAnnouncement.textContent = 'Reset email sent again successfully.';
-      document.body.appendChild(resendAnnouncement);
+      // Success announcement (client-side only)
+      if (typeof document !== 'undefined') {
+        const resendAnnouncement = document.createElement('div');
+        resendAnnouncement.setAttribute('aria-live', 'polite');
+        resendAnnouncement.className = 'sr-only';
+        resendAnnouncement.textContent = 'Reset email sent again successfully.';
+        document.body.appendChild(resendAnnouncement);
+        
+        setTimeout(() => {
+          document.body.removeChild(resendAnnouncement);
+        }, 1000);
+      }
       
       alert('Reset email sent again!');
-      
-      setTimeout(() => {
-        document.body.removeChild(resendAnnouncement);
-      }, 1000);
     } catch (error) {
       console.error('Resend error:', error);
       alert('Failed to resend email. Please try again.');
@@ -147,153 +125,138 @@ const ResetPassword: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <Section background="gray" padding="lg">
-        <PageWrapper>
-          <div className="max-w-md mx-auto">
-            <Card className="shadow-xl">
-              <CardBody className="p-8 text-center">
-                <div 
-                  className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
-                  role="img" 
-                  aria-label="Success icon"
-                >
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
+      <section className="grid text-center h-screen items-center p-8 bg-white">
+        <div>
+          <div className="mx-auto max-w-[24rem] bg-white p-8 rounded-lg shadow-lg">
+            <div 
+              className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
+              role="img" 
+              aria-label="Success icon"
+            >
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
 
-                <h1 className="text-3xl font-bold text-gray-800 mb-4">Check Your Email</h1>
-                <p className="text-gray-600 mb-6">
-                  We've sent a password reset link to:
-                </p>
-                <p className="text-blue-600 font-semibold mb-8" aria-label={`Email address: ${formData.email}`}>
-                  {formData.email}
-                </p>
-                
-                <div className="space-y-4">
-                  <p className="text-sm text-gray-500">
-                    Didn't receive the email? Check your spam folder or click below to resend.
-                  </p>
-                  
-                  <Button
-                    variant="outlined"
-                    color="blue"
-                    size="lg"
-                    fullWidth
-                    loading={isLoading}
-                    onClick={handleResend}
-                    aria-describedby="resend-help"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Sending...' : 'Resend Email'}
-                  </Button>
-                  <span id="resend-help" className="sr-only">
-                    Send another password reset email to your address
-                  </span>
-                </div>
+            <h3 className="text-3xl font-bold text-gray-800 mb-4">Check Your Email</h3>
+            <p className="text-gray-600 mb-6">
+              We've sent a password reset link to:
+            </p>
+            <p className="text-blue-600 font-semibold mb-8" aria-label={`Email address: ${formData.email}`}>
+              {formData.email}
+            </p>
+            
+            <div className="space-y-4">
+              <p className="text-sm text-gray-500">
+                Didn't receive the email? Check your spam folder or click below to resend.
+              </p>
+              
+              <Button
+                color="blue"
+                variant="outlined"
+                size="lg"
+                className="mt-4 mb-4 !border-blue-600 !text-blue-600 hover:!bg-blue-600 hover:!text-white !py-3 !px-6 !font-medium !text-base !rounded-lg !transition-all !duration-200"
+                fullWidth
+                loading={isLoading}
+                onClick={handleResend}
+                disabled={isLoading}
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+                onResize={undefined}
+                onResizeCapture={undefined}
+              >
+                {isLoading ? 'Sending...' : 'Resend Email'}
+              </Button>
+            </div>
 
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <Link
-                    to="/auth/login"
-                    className="text-blue-600 hover:text-blue-800 font-semibold underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
-                    aria-label="Return to sign in page"
-                  >
-                    ← Back to Sign In
-                  </Link>
-                </div>
-              </CardBody>
-            </Card>
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <Link
+                to="/auth/login"
+                className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+              >
+                ← Back to Sign In
+              </Link>
+            </div>
           </div>
-        </PageWrapper>
-      </Section>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Section background="gray" padding="lg">
-      <PageWrapper>
-        <div className="max-w-md mx-auto">
-          <Card className="shadow-xl">
-            <CardBody className="p-8">
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">Reset Password</h1>
-                <p className="text-gray-600">
-                  Enter your email address and we'll send you a link to reset your password.
-                </p>
-              </div>
+    <section className="grid text-center h-screen items-center p-8 bg-white">
+      <div>
+        <h3 className="text-3xl font-bold text-gray-800 mb-2">
+          Reset Password
+        </h3>
+        <p className="mb-8 text-gray-600 font-normal text-lg">
+          Enter your email address and we'll send you a link to reset your password.
+        </p>
 
-              <form 
-                onSubmit={handleSubmit} 
-                className="space-y-6"
-                noValidate
-                aria-label="Password reset form"
-              >
-                <div>
-                  <Input
-                    ref={emailRef}
-                    type="email"
-                    label="Email Address"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    error={!!errors.email}
-                    required
-                    size="lg"
-                    className="w-full"
-                    placeholder="Enter your email address"
-                    aria-invalid={!!errors.email}
-                    aria-describedby={errors.email ? 'email-error' : 'email-help'}
-                    autoComplete="email"
-                  />
-                  <p id="email-help" className="text-sm text-gray-500 mt-1">
-                    We'll send password reset instructions to this email address.
-                  </p>
-                  {errors.email && (
-                    <p 
-                      id="email-error" 
-                      className="text-red-500 text-sm mt-1" 
-                      role="alert"
-                      aria-live="polite"
-                    >
-                      {errors.email}
-                    </p>
-                  )}
-                </div>
+        {/* Error Message */}
+        {errors.email && (
+          <div className="mx-auto max-w-[24rem] mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-600 text-sm font-medium">
+              {errors.email}
+            </p>
+          </div>
+        )}
 
-                <Button
-                  type="submit"
-                  variant="filled"
-                  color="blue"
-                  size="lg"
-                  fullWidth
-                  loading={isLoading}
-                  className="mt-6"
-                  aria-describedby="submit-help"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Sending...' : 'Send Reset Link'}
-                </Button>
-                <span id="submit-help" className="sr-only">
-                  Submit the form to receive password reset instructions
-                </span>
-              </form>
+        <form onSubmit={handleSubmit} className="mx-auto max-w-[24rem] text-left bg-white p-8 rounded-lg shadow-lg">
+          <div className="mb-6">
+            <label htmlFor="email" className="mb-2 block font-medium text-gray-900 text-sm">
+              Email Address*
+            </label>
+            <Input
+              ref={emailRef}
+              id="email"
+              color="gray"
+              size="lg"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="Enter your email address"
+              className="w-full !text-gray-900 placeholder:!text-gray-500 placeholder:!opacity-100 focus:!border-t-blue-500 !border-t-blue-gray-200"
+              labelProps={{ className: "hidden" }}
+              required
+              crossOrigin={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              We'll send password reset instructions to this email address.
+            </p>
+          </div>
 
-              <div className="mt-8 text-center">
-                <p className="text-gray-600">
-                  Remember your password?{' '}
-                  <Link
-                    to="/auth/login"
-                    className="text-blue-600 hover:text-blue-800 font-semibold underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
-                    aria-label="Return to sign in page"
-                  >
-                    Sign in
-                  </Link>
-                </p>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
-      </PageWrapper>
-    </Section>
+          <Button 
+            type="submit"
+            color="blue" 
+            size="lg" 
+            className="mt-8 mb-4 !bg-blue-600 !text-white hover:!bg-blue-700 !py-3 !px-6 !font-medium !text-base !rounded-lg !shadow-md hover:!shadow-lg !transition-all !duration-200" 
+            fullWidth
+            loading={isLoading}
+            disabled={isLoading}
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+            onResize={undefined}
+            onResizeCapture={undefined}
+          >
+            {isLoading ? 'Sending...' : 'Send Reset Link'}
+          </Button>
+          
+          <p className="mt-6 text-center font-normal text-sm text-gray-600">
+            Remember your password?{" "}
+            <Link to="/auth/login" className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200">
+              Sign in
+            </Link>
+          </p>
+        </form>
+      </div>
+    </section>
   );
 };
 

@@ -13,7 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, user, openLoginModal, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -150,14 +150,15 @@ const Navbar: React.FC = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Button
-                  variant="text"
-                  color="gray"
-                  onClick={openLoginModal}
-                  className="font-medium"
-                >
-                  Sign In
-                </Button>
+                <Link to="/auth/login">
+                  <Button
+                    variant="text"
+                    color="gray"
+                    className="font-medium"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
                 <Link to="/auth/register">
                   <Button
                     variant="filled"
@@ -257,15 +258,13 @@ const Navbar: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <button
-                    onClick={() => {
-                      openLoginModal();
-                      closeMobileMenu();
-                    }}
-                    className="text-gray-700 hover:text-blue-600 block w-full text-left px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    Sign In
-                  </button>
+                                     <Link
+                     to="/auth/login"
+                     className="text-gray-700 hover:text-blue-600 block w-full text-left px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                     onClick={closeMobileMenu}
+                   >
+                     Sign In
+                   </Link>
                   <Link
                     to="/auth/register"
                     className="text-white bg-blue-600 hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium text-center focus:outline-none focus:ring-2 focus:ring-blue-500"

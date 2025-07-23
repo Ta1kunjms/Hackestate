@@ -14,19 +14,10 @@ export interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   
-  // Modal state
-  isLoginModalOpen: boolean;
-  openLoginModal: () => void;
-  closeLoginModal: () => void;
-  
   // Auth actions
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   register: (userData: RegisterData) => Promise<void>;
-  
-  // Navigation helpers
-  redirectToRegister: () => void;
-  redirectToResetPassword: () => void;
 }
 
 export interface RegisterData {
@@ -54,14 +45,9 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // Auth state
   const isAuthenticated = !!user;
-
-  // Modal controls
-  const openLoginModal = () => setIsLoginModalOpen(true);
-  const closeLoginModal = () => setIsLoginModalOpen(false);
 
   // Auth actions
   const login = async (email: string, password: string): Promise<void> => {
@@ -83,18 +69,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       };
       
       setUser(mockUser);
-      closeLoginModal(); // Close modal on successful login
       
-      // Success announcement
-      const successAnnouncement = document.createElement('div');
-      successAnnouncement.setAttribute('aria-live', 'polite');
-      successAnnouncement.className = 'sr-only';
-      successAnnouncement.textContent = `Welcome back, ${mockUser.firstName}!`;
-      document.body.appendChild(successAnnouncement);
+      // Redirect to home page
+      window.location.href = '/';
       
-      setTimeout(() => {
-        document.body.removeChild(successAnnouncement);
-      }, 2000);
+      // Success announcement (client-side only)
+      if (typeof document !== 'undefined') {
+        const successAnnouncement = document.createElement('div');
+        successAnnouncement.setAttribute('aria-live', 'polite');
+        successAnnouncement.className = 'sr-only';
+        successAnnouncement.textContent = `Welcome back, ${mockUser.firstName}!`;
+        document.body.appendChild(successAnnouncement);
+        
+        setTimeout(() => {
+          document.body.removeChild(successAnnouncement);
+        }, 2000);
+      }
       
     } catch (error) {
       console.error('Login error:', error);
@@ -106,18 +96,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    closeLoginModal();
     
-    // Logout announcement
-    const logoutAnnouncement = document.createElement('div');
-    logoutAnnouncement.setAttribute('aria-live', 'polite');
-    logoutAnnouncement.className = 'sr-only';
-    logoutAnnouncement.textContent = 'You have been logged out successfully.';
-    document.body.appendChild(logoutAnnouncement);
-    
-    setTimeout(() => {
-      document.body.removeChild(logoutAnnouncement);
-    }, 2000);
+    // Logout announcement (client-side only)
+    if (typeof document !== 'undefined') {
+      const logoutAnnouncement = document.createElement('div');
+      logoutAnnouncement.setAttribute('aria-live', 'polite');
+      logoutAnnouncement.className = 'sr-only';
+      logoutAnnouncement.textContent = 'You have been logged out successfully.';
+      document.body.appendChild(logoutAnnouncement);
+      
+      setTimeout(() => {
+        document.body.removeChild(logoutAnnouncement);
+      }, 2000);
+    }
   };
 
   const register = async (userData: RegisterData): Promise<void> => {
@@ -140,36 +131,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Navigation helpers
-  const redirectToRegister = () => {
-    closeLoginModal();
-    window.location.href = '/auth/register';
-  };
-
-  const redirectToResetPassword = () => {
-    closeLoginModal();
-    window.location.href = '/auth/reset-password';
-  };
-
   const contextValue: AuthContextType = {
     // Auth state
     user,
     isLoading,
     isAuthenticated,
     
-    // Modal state
-    isLoginModalOpen,
-    openLoginModal,
-    closeLoginModal,
-    
     // Auth actions
     login,
     logout,
     register,
-    
-    // Navigation helpers
-    redirectToRegister,
-    redirectToResetPassword,
   };
 
   return (

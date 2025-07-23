@@ -7,7 +7,7 @@ import PageWrapper from './components/layout/PageWrapper';
 import Section from './components/layout/Section';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import LoginModal from './components/auth/LoginModal';
+// Removed LoginModal - using page-only authentication
 import { Login, Register, ResetPassword, VerifyEmail } from './pages/auth';
 
 // Home Page Component
@@ -127,9 +127,6 @@ const App: React.FC = () => {
           {/* Fallback Route */}
           <Route path="*" element={<HomePage />} />
         </Routes>
-        
-        {/* Global Login Modal */}
-        <LoginModal />
       </Router>
     </AuthProvider>
   );
