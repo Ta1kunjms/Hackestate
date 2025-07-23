@@ -47,6 +47,10 @@ export const Card: React.FC<CardProps> = ({
       variant={variant}
       color={color}
       placeholder=""
+      onResize={undefined}
+      onResizeCapture={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
     >
       {children}
     </MTCard>
@@ -69,6 +73,10 @@ export const CardHeaderComponent: React.FC<CardHeaderProps> = ({
       floated={floated}
       shadow={shadow}
       placeholder=""
+      onResize={undefined}
+      onResizeCapture={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
     >
       {children}
     </CardHeader>
@@ -80,7 +88,14 @@ export const CardBodyComponent: React.FC<CardBodyProps> = ({
   className = '',
 }) => {
   return (
-    <CardBody className={className} placeholder="">
+    <CardBody 
+      className={className} 
+      placeholder=""
+      onResize={undefined}
+      onResizeCapture={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
       {children}
     </CardBody>
   );
@@ -92,7 +107,14 @@ export const CardFooterComponent: React.FC<CardFooterProps> = ({
   divider = false,
 }) => {
   return (
-    <CardFooter className={`${divider ? 'pt-0' : ''} ${className}`} placeholder="">
+    <CardFooter 
+      className={`${divider ? 'pt-0' : ''} ${className}`} 
+      placeholder=""
+      onResize={undefined}
+      onResizeCapture={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
       {children}
     </CardFooter>
   );

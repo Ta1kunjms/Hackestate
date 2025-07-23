@@ -75,6 +75,8 @@ export const Select: React.FC<SelectProps> = ({
       name={name}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
+      onResize={undefined}
+      onResizeCapture={undefined}
     >
       {children}
     </MTSelect>
@@ -134,6 +136,8 @@ export const Textarea: React.FC<TextareaProps> = ({
       id={id}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
+      onResize={undefined}
+      onResizeCapture={undefined}
     />
   );
 };

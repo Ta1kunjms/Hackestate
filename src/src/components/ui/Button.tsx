@@ -37,6 +37,10 @@ export const Button: React.FC<ButtonProps> = ({
       type={type}
       className={className}
       placeholder=""
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+      onResize={undefined}
+      onResizeCapture={undefined}
     >
       {loading ? (
         <div className="flex items-center justify-center">

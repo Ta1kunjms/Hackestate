@@ -63,6 +63,10 @@ export const Input: React.FC<InputProps> = ({
       name={name}
       id={id}
       crossOrigin=""
+      onResize={undefined}
+      onResizeCapture={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
     />
   );
 };

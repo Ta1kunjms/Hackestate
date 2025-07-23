@@ -37,9 +37,20 @@ export const Modal: React.FC<ModalProps> = ({
       className={className}
       dismiss={{ enabled: dismissible }}
       placeholder=""
+      onResize={undefined}
+      onResizeCapture={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
     >
       {title && (
-        <DialogHeader className="flex items-center justify-between" placeholder="">
+        <DialogHeader 
+          className="flex items-center justify-between" 
+          placeholder=""
+          onResize={undefined}
+          onResizeCapture={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
           {dismissible && (
             <IconButton
@@ -48,6 +59,10 @@ export const Modal: React.FC<ModalProps> = ({
               onClick={onClose}
               className="!absolute !top-3 !right-3"
               placeholder=""
+              onResize={undefined}
+              onResizeCapture={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             >
               <XMarkIcon className="h-5 w-5" />
             </IconButton>
@@ -55,12 +70,26 @@ export const Modal: React.FC<ModalProps> = ({
         </DialogHeader>
       )}
       
-      <DialogBody className="overflow-y-auto" placeholder="">
+      <DialogBody 
+        className="overflow-y-auto" 
+        placeholder=""
+        onResize={undefined}
+        onResizeCapture={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
         {children}
       </DialogBody>
       
       {footer && (
-        <DialogFooter className="space-x-2" placeholder="">
+        <DialogFooter 
+          className="space-x-2" 
+          placeholder=""
+          onResize={undefined}
+          onResizeCapture={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           {footer}
         </DialogFooter>
       )}
