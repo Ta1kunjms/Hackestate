@@ -12,9 +12,10 @@ export interface ButtonProps {
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
+  'aria-describedby'?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
   variant = 'filled',
   size = 'md',
   color = 'blue',
@@ -25,7 +26,8 @@ export const Button: React.FC<ButtonProps> = ({
   onClick,
   type = 'button',
   className = '',
-}) => {
+  'aria-describedby': ariaDescribedBy,
+}, ref) => {
   return (
     <MTButton
       variant={variant}
@@ -36,11 +38,13 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       type={type}
       className={className}
+      aria-describedby={ariaDescribedBy}
       placeholder=""
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
       onResize={undefined}
       onResizeCapture={undefined}
+      ref={ref}
     >
       {loading ? (
         <div className="flex items-center justify-center">
@@ -52,6 +56,8 @@ export const Button: React.FC<ButtonProps> = ({
       )}
     </MTButton>
   );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button; 
