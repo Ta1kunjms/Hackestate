@@ -17,16 +17,16 @@ const Section: React.FC<SectionProps> = ({
 }) => {
   const paddingClasses = {
     none: '',
-    sm: 'section-padding-sm',
-    md: 'section-padding',
+    sm: 'py-12 lg:py-16',
+    md: 'py-16 lg:py-24',
     lg: 'py-20 lg:py-32',
   };
 
   const backgroundClasses = {
     white: 'bg-white',
-    gray: 'bg-secondary-50',
-    primary: 'bg-primary-50',
-    gradient: 'bg-gradient-to-br from-primary-50 to-secondary-50',
+    gray: 'bg-gray-100',
+    primary: 'bg-blue-50',
+    gradient: 'bg-gradient-to-br from-blue-50 to-gray-50',
   };
 
   return (
