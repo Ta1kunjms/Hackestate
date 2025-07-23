@@ -9,6 +9,7 @@
 - `src/src/utils/helpers.ts` – Helper functions for formatting, validation, and common utilities
 - `src/src/components/AgentChat.tsx` – AI chatbot component (preserved for real estate assistance)  
 - `src/src/components/` – Other chatbot components (AgentAvatar, ToastProvider, etc.)
+- `src/src/components/ui/` – Material Tailwind base component library (Button, Input, Card, Modal, Form components) with complete documentation
 - `src/src/utils/` – Utility functions for voice recognition and agent memory
 - `src/src/api/geminiApi.ts` – AI API integration for real estate assistance
 - `package.json` – Project dependencies and scripts
@@ -44,13 +45,13 @@
   - [x] 1.2 Set up Tailwind config (`tailwind.config.js`) with custom colors and fonts  
   - [x] 1.3 Create global styles and layout wrappers  
   - [x] 1.4 Set up reusable utility classes (e.g., spacing, container widths)  
-  - [x] 1.5 Add Prettier, ESLint, and commit hooks
+  - [x] 1.5 Add Prettier, ESLint, Husky and commit hooks
 
-- [ ] 2.0 Design System Kickoff (Tailwind Components)  
-  - [ ] 2.1 Request Tailwind component library/design kit link from product owner 🔍  
-  - [ ] 2.2 Set up a base component library in `components/ui/` (Button, Input, Modal, etc.)  
-  - [ ] 2.3 Style all components using Tailwind utilities only  
-  - [ ] 2.4 Document components and variants for reuse (e.g., Button: primary, ghost, disabled)
+- [x] 2.0 Design System Kickoff (Tailwind Components)  
+  - [x] 2.1 Request Tailwind component library/design kit link from product owner (Material Tailwind selected)  
+  - [x] 2.2 Set up a base component library in `components/ui/` (Button, Input, Modal, etc.)  
+  - [x] 2.3 Style all components using Tailwind utilities only  
+  - [x] 2.4 Document components and variants for reuse (e.g., Button: primary, ghost, disabled)
 
 - [ ] 3.0 Authentication System (UI + Logic)  
   - [ ] 3.1 Design and build Login, Register, Reset Password, and Verify Email pages using Tailwind  
