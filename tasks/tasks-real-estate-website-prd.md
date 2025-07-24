@@ -33,6 +33,9 @@
 - `src/.eslintrc.json` – ESLint configuration with TypeScript and Prettier integration
 - `src/.prettierignore` – Files to exclude from Prettier formatting
 - `src/.husky/pre-commit` – Git pre-commit hook for running lint-staged
+- `src/src/components/landing/HeroSection.tsx` – Modern hero section with TopPix-inspired design, Buy/Rent/Sell tabs, search functionality
+- `src/src/components/PropertyCard.tsx` – Reusable property card component with image, price, details, save functionality, and action buttons
+- `src/src/components/landing/FeaturedListings.tsx` – Featured properties section with grid layout, pagination, and statistics
 
 ### Notes
 
@@ -52,7 +55,9 @@
 - ✅ **Error handling**: Custom 404 and 500 pages with helpful suggestions and navigation
 - ✅ **Supabase integration**: Full authentication backend with PostgreSQL database, email verification, and secure session management
 - ✅ **Real authentication**: Complete user registration, login, password reset, and profile management
-- 🎯 **Next step**: Continue Landing Page (Task 5.2) - Featured listings, testimonials, and call-to-action sections
+- ✅ **Hero section redesigned**: Modern TopPix-inspired design with background image, Buy/Rent/Sell tabs, Filipino peso pricing, and improved UX
+- ✅ **Featured listings complete**: Property cards with save functionality, grid layout, pagination, and quick stats
+- 🎯 **Next step**: Continue Landing Page (Task 5.3) - Browse by Category and Featured Agents sections
 
 ---
 
@@ -84,8 +89,8 @@
   - [x] 4.4 Add Error Pages (404, 500) with Tailwind styles
 
 - [ ] 5.0 Landing Page
-  - [ ] 5.1 Build Hero section with search input
-  - [ ] 5.2 Add Featured Listings carousel/grid
+  - [x] 5.1 Build Hero section with search input
+  - [x] 5.2 Add Featured Listings carousel/grid
   - [ ] 5.3 Add "Browse by Category" and Featured Agents
   - [ ] 5.4 Build Testimonials, How It Works, Blog/Event teasers
   - [ ] 5.5 Add call-to-action buttons (List Property, Contact Agent)
