@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import AgentCard from '../AgentCard';
 import { Button } from '../ui';
 
@@ -56,10 +56,10 @@ const featuredAgents = [
 ];
 
 const FeaturedAgents: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleViewAllAgents = () => {
-    navigate('/agents'); // This would be the agents directory page
+    router.push('/agents'); // This would be the agents directory page
   };
 
   return (
@@ -137,7 +137,7 @@ const FeaturedAgents: React.FC = () => {
 
                   {/* Contact Button */}
                   <button
-                    onClick={() => navigate(agent.profileUrl)}
+                    onClick={() => router.push(agent.profileUrl)}
                     className="w-full bg-orange-500 text-white text-sm font-semibold py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors duration-300 group-hover:shadow-md"
                   >
                     View Profile
@@ -160,13 +160,13 @@ const FeaturedAgents: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => navigate('/contact')}
+                onClick={() => router.push('/contact')}
                 className="px-8 py-3 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition-colors duration-300"
               >
                 Get Personalized Help
               </button>
               <button
-                onClick={() => navigate('/properties')}
+                onClick={() => router.push('/properties')}
                 className="px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-full hover:border-orange-500 hover:text-orange-500 transition-colors duration-300"
               >
                 Browse Properties

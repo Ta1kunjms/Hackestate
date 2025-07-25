@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 
 const AuthCallback: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,11 +30,11 @@ const AuthCallback: React.FC = () => {
 
           if (data.user) {
             // Success - redirect to dashboard or home
-            navigate('/', { replace: true });
+            router.push('/');
           }
         } else {
           // No tokens found, redirect to login
-          navigate('/auth/login', { replace: true });
+          router.push('/auth/login');
         }
       } catch (err) {
         console.error('Auth callback error:', err);
@@ -45,7 +45,7 @@ const AuthCallback: React.FC = () => {
     };
 
     handleAuthCallback();
-  }, [navigate]);
+  }, [router]);
 
   if (loading) {
     return (
@@ -67,7 +67,7 @@ const AuthCallback: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-800 mb-2">Authentication Error</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={() => navigate('/auth/login')}
+            onClick={() => router.push('/auth/login')}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Back to Sign In

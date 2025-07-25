@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 // Blog posts data
 const blogPosts = [
@@ -79,24 +79,24 @@ const upcomingEvents = [
 ];
 
 const BlogEventTeasers: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleReadMore = (postId: number) => {
     // Navigate to blog post (placeholder)
-    navigate(`/blog/${postId}`);
+    router.push(`/blog/${postId}`);
   };
 
   const handleEventRegister = (eventId: number) => {
     // Navigate to event registration (placeholder)
-    navigate(`/events/${eventId}/register`);
+    router.push(`/events/${eventId}/register`);
   };
 
   const handleViewAllBlogs = () => {
-    navigate('/blog');
+    router.push('/blog');
   };
 
   const handleViewAllEvents = () => {
-    navigate('/events');
+    router.push('/events');
   };
 
   return (

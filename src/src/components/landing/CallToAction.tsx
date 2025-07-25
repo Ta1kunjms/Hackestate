@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 const CallToAction: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
 
   const handleListProperty = () => {
     // Navigate to property listing form (placeholder)
-    navigate('/list-property');
+    router.push('/list-property');
   };
 
   const handleContactAgent = () => {
     // Navigate to contact/agent selection (placeholder)
-    navigate('/contact');
+    router.push('/contact');
   };
 
   const handleGetStarted = () => {
     if (activeTab === 'buy') {
-      navigate('/properties');
+      router.push('/properties');
     } else {
       handleListProperty();
     }
@@ -83,7 +83,7 @@ const CallToAction: React.FC = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
-                    onClick={() => navigate('/properties')}
+                    onClick={() => router.push('/properties')}
                     className="px-10 py-4 bg-white text-orange-500 font-bold rounded-full text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl"
                   >
                     Browse Properties
@@ -113,7 +113,7 @@ const CallToAction: React.FC = () => {
                     List My Property
                   </button>
                   <button
-                    onClick={() => navigate('/property-valuation')}
+                    onClick={() => router.push('/property-valuation')}
                     className="px-10 py-4 border-2 border-white text-white font-bold rounded-full text-lg hover:bg-white hover:text-orange-500 transition-all duration-300 transform hover:scale-105"
                   >
                     Get Free Valuation

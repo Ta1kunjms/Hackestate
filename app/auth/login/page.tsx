@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Typography, Input, Button } from '@material-tailwind/react';
 import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,8 +12,11 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
   const { login, isLoading } = useAuth();
-  const location = useLocation();
-  const state = location.state as { message?: string; email?: string } | null;
+  const searchParams = useSearchParams();
+  const state = {
+    message: searchParams.get('message'),
+    email: searchParams.get('email'),
+  };
   
   const [formData, setFormData] = useState<LoginFormData>({
     email: state?.email || '',
@@ -171,7 +175,7 @@ const Login: React.FC = () => {
           
           <div className="mt-4 flex justify-end">
             <Link
-              to="/auth/reset-password"
+              href="/auth/reset-password"
               className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors duration-200"
             >
               Forgot password?
@@ -180,7 +184,7 @@ const Login: React.FC = () => {
           
           <p className="mt-6 text-center font-normal text-sm text-gray-600">
             Not registered?{" "}
-            <Link to="/auth/register" className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200">
+            <Link href="/auth/register" className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200">
               Create account
             </Link>
           </p>

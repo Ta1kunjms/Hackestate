@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import PropertyCard from '../PropertyCard';
 import { Button } from '../ui';
 
@@ -63,7 +63,7 @@ const featuredProperties = [
 
 const FeaturedListings: React.FC = () => {
   const [savedProperties, setSavedProperties] = useState<Set<string>>(new Set());
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSaveProperty = (propertyId: string) => {
     setSavedProperties(prev => {
@@ -78,7 +78,7 @@ const FeaturedListings: React.FC = () => {
   };
 
   const handleViewAllProperties = () => {
-    navigate('/properties');
+    router.push('/properties');
   };
 
   return (

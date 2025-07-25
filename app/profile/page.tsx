@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { 
   UserCircleIcon,
   CameraIcon,
@@ -140,7 +140,7 @@ const mockNotifications: NotificationPreferences = {
 };
 
 const ProfilePage: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [activeTab, setActiveTab] = useState<'personal' | 'password' | 'notifications' | 'privacy'>('personal');
@@ -427,7 +427,7 @@ const ProfilePage: React.FC = () => {
               {/* Actions */}
               <div className="flex items-center space-x-4">
                 <Button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => router.push('/dashboard')}
                   variant="outlined"
                   className="!border-gray-300 !text-gray-700 hover:!bg-gray-50"
                 >

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { MapPinIcon, HomeIcon, CalendarIcon, HeartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { Button } from './ui';
@@ -32,7 +32,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   isSaved = false,
   className = ''
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-PH', {
@@ -52,7 +52,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   };
 
   const handleCardClick = () => {
-    navigate(`/property/${property.id}`);
+    router.push(`/property/${property.id}`);
   };
 
   return (

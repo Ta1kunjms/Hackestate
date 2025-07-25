@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { HeartIcon, ShareIcon, MapPinIcon, CalendarIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import Layout from '../components/layout/Layout';
@@ -156,8 +157,9 @@ const similarProperties = [
 ];
 
 const PropertyDetailsPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const params = useParams();
+  const router = useRouter();
+  const { id } = params as { id: string };
   const [property] = useState(mockPropertyDetails); // In real app, fetch by ID
   const [isSaved, setIsSaved] = useState(false);
   const [savedSimilarProperties, setSavedSimilarProperties] = useState<Set<string>>(new Set());
@@ -175,9 +177,9 @@ const PropertyDetailsPage: React.FC = () => {
   useEffect(() => {
     // In real app, fetch property details by ID
     if (!id) {
-      navigate('/properties');
+      router.push('/properties');
     }
-  }, [id, navigate]);
+  }, [id, router]);
 
   const handleSaveProperty = () => {
     setIsSaved(!isSaved);
@@ -237,9 +239,9 @@ const PropertyDetailsPage: React.FC = () => {
           {/* Breadcrumb */}
           <nav className="mb-6">
             <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <button onClick={() => navigate('/')} className="hover:text-orange-500">Home</button>
+              <button onClick={() => router.push('/')} className="hover:text-orange-500">Home</button>
               <span>/</span>
-              <button onClick={() => navigate('/properties')} className="hover:text-orange-500">Properties</button>
+              <button onClick={() => router.push('/properties')} className="hover:text-orange-500">Properties</button>
               <span>/</span>
               <span className="text-gray-900">{property.title}</span>
             </div>
@@ -585,7 +587,7 @@ const PropertyDetailsPage: React.FC = () => {
             <div className="text-center mt-8">
               <Button
                 variant="outlined"
-                onClick={() => navigate('/properties')}
+                onClick={() => router.push('/properties')}
                 className="!border-orange-500 !text-orange-500 hover:!bg-orange-500 hover:!text-white !px-8 !py-3"
               >
                 View All Properties

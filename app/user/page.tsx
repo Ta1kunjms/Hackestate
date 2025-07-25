@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { 
   HeartIcon, 
   BellIcon, 
@@ -13,9 +13,9 @@ import {
   HomeIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon, BellIcon as BellSolidIcon } from '@heroicons/react/24/solid';
-import DashboardLayout from '../components/layout/DashboardLayout';
-import PropertyCard from '../components/PropertyCard';
-import { Button } from '../components/ui';
+import DashboardLayout from '../../src/src/components/layout/DashboardLayout';
+import PropertyCard from '../../src/src/components/PropertyCard';
+import { Button } from '../../src/src/components/ui';
 
 // Mock user data
 const mockUser = {
@@ -165,7 +165,7 @@ const recentActivities = [
 ];
 
 const UserDashboard: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'saved' | 'alerts' | 'preferences'>('overview');
   const [savedPropertiesState, setSavedPropertiesState] = useState<Set<string>>(
     new Set(savedProperties.map(p => p.id))
@@ -237,7 +237,7 @@ const UserDashboard: React.FC = () => {
       subtitle={`Member since ${formatDate(mockUser.memberSince)}`}
       actions={
         <Button
-          onClick={() => navigate('/profile')}
+          onClick={() => router.push('/profile')}
           variant="outlined"
           className="!border-orange-500 !text-orange-500 hover:!bg-orange-500 hover:!text-white"
         >
@@ -345,7 +345,7 @@ const UserDashboard: React.FC = () => {
                   <HeartIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No saved properties yet</h3>
                   <p className="text-gray-600 mb-4">Start browsing and save properties you're interested in.</p>
-                  <Button onClick={() => navigate('/properties')}>
+                  <Button onClick={() => router.push('/properties')}>
                     Browse Properties
                   </Button>
                 </div>
@@ -357,7 +357,7 @@ const UserDashboard: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Search Alerts</h2>
-                <Button onClick={() => navigate('/properties')}>
+                <Button onClick={() => router.push('/properties')}>
                   <BellIcon className="w-4 h-4 mr-2" />
                   Create New Alert
                 </Button>
@@ -435,7 +435,7 @@ const UserDashboard: React.FC = () => {
                   <BellIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No search alerts yet</h3>
                   <p className="text-gray-600 mb-4">Set up alerts to get notified when new properties match your criteria.</p>
-                  <Button onClick={() => navigate('/properties')}>
+                  <Button onClick={() => router.push('/properties')}>
                     Create Your First Alert
                   </Button>
                 </div>

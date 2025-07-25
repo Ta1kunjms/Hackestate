@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   Bars3Icon, 
   XMarkIcon,
@@ -58,8 +59,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Navigation items based on user role
   const getNavigationItems = (): NavigationItem[] => {
@@ -105,7 +105,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const handleLogout = () => {
     // In real app, handle logout logic
     console.log('Logout clicked');
-    navigate('/auth/login');
+    router.push('/auth/login');
   };
 
   const getDashboardTitle = () => {
@@ -284,7 +284,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       </div>
                       
                       <Link
-                        to="/profile"
+                        href="/profile"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setUserMenuOpen(false)}
                       >

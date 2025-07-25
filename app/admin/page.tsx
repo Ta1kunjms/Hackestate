@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { 
   UsersIcon, 
   UserGroupIcon, 
@@ -17,8 +17,8 @@ import {
   ExclamationTriangleIcon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
-import DashboardLayout from '../components/layout/DashboardLayout';
-import { Button } from '../components/ui';
+import DashboardLayout from '../../src/src/components/layout/DashboardLayout';
+import { Button } from '../../src/src/components/ui';
 
 // Mock admin data
 const mockAdmin = {
@@ -162,7 +162,7 @@ const mockContent = [
 ];
 
 const AdminDashboard: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'agents' | 'properties' | 'events' | 'content' | 'settings'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');

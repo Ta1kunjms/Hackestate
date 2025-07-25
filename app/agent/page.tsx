@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { 
   HomeIcon, 
   ChatBubbleLeftIcon, 
@@ -142,7 +142,7 @@ const inquiries = [
 ];
 
 const AgentDashboard: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'properties' | 'inquiries' | 'performance'>('overview');
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
 
@@ -207,7 +207,7 @@ const AgentDashboard: React.FC = () => {
   };
 
   const handleEditProperty = (propertyId: string) => {
-    navigate(`/agent/properties/${propertyId}/edit`);
+    router.push(`/agent/properties/${propertyId}/edit`);
   };
 
   const handleRespondToInquiry = (inquiryId: string) => {
@@ -237,7 +237,7 @@ const AgentDashboard: React.FC = () => {
       subtitle={`${mockAgent.title} • License: ${mockAgent.license} • ${mockAgent.rating} (${mockAgent.reviewCount} reviews)`}
       actions={
         <Button
-          onClick={() => navigate('/agent/properties/new')}
+          onClick={() => router.push('/agent/properties/new')}
           className="!bg-orange-500 hover:!bg-orange-600 !text-white"
         >
           <PlusIcon className="w-4 h-4 mr-2" />
@@ -368,7 +368,7 @@ const AgentDashboard: React.FC = () => {
                 <h2 className="text-2xl font-bold text-gray-900">My Properties</h2>
                 <div className="flex items-center space-x-4">
                   <span className="text-gray-600">{agentProperties.length} total properties</span>
-                  <Button onClick={() => navigate('/agent/properties/new')}>
+                  <Button onClick={() => router.push('/agent/properties/new')}>
                     <PlusIcon className="w-4 h-4 mr-2" />
                     Add Property
                   </Button>
@@ -415,7 +415,7 @@ const AgentDashboard: React.FC = () => {
                       </div>
                       
                       <div className="flex items-center space-x-2">
-                        <Button size="sm" variant="outlined" onClick={() => navigate(`/property/${property.id}`)}>
+                        <Button size="sm" variant="outlined" onClick={() => router.push(`/property/${property.id}`)}>
                           <EyeIcon className="w-4 h-4 mr-1" />
                           View
                         </Button>

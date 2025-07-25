@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 interface FloatingCTAProps {
   showOnScroll?: boolean;
@@ -10,7 +10,7 @@ const FloatingCTA: React.FC<FloatingCTAProps> = ({
   showOnScroll = true, 
   className = '' 
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(!showOnScroll);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -30,11 +30,11 @@ const FloatingCTA: React.FC<FloatingCTAProps> = ({
   }, [showOnScroll]);
 
   const handleListProperty = () => {
-    navigate('/list-property');
+    router.push('/list-property');
   };
 
   const handleContactAgent = () => {
-    navigate('/contact');
+    router.push('/contact');
   };
 
   const toggleExpanded = () => {
@@ -85,7 +85,7 @@ const FloatingCTA: React.FC<FloatingCTAProps> = ({
 
             {/* Browse Properties */}
             <button
-              onClick={() => navigate('/properties')}
+              onClick={() => router.push('/properties')}
               className="w-full flex items-center px-4 py-3 text-left hover:bg-green-50 rounded-xl transition-colors duration-200 group"
             >
               <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3 group-hover:bg-green-200 transition-colors">

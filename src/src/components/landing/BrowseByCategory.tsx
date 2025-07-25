@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 // Category data with images and descriptions
 const categories = [
@@ -10,7 +10,7 @@ const categories = [
     imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     count: '120+ Properties'
   },
-  {
+  { 
     type: 'Condo',
     title: 'Condominiums',
     description: 'Modern living with premium amenities',
@@ -48,12 +48,12 @@ const categories = [
 ];
 
 const BrowseByCategory: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleCategoryClick = (propertyType: string) => {
     const searchParams = new URLSearchParams();
     searchParams.set('type', propertyType.toLowerCase());
-    navigate(`/properties?${searchParams.toString()}`);
+    router.push(`/properties?${searchParams.toString()}`);
   };
 
   return (
@@ -119,7 +119,7 @@ const BrowseByCategory: React.FC = () => {
         {/* View All Categories CTA */}
         <div className="text-center mt-12">
           <button
-            onClick={() => navigate('/properties')}
+            onClick={() => router.push('/properties')}  
             className="inline-flex items-center px-8 py-3 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition-colors duration-300 transform hover:scale-105"
           >
             View All Properties

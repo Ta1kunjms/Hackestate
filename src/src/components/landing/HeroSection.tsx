@@ -1,7 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import Navbar from '../layout/Navbar';
 import SearchFilters from '../SearchFilters';
+import Link from 'next/link';
 
 interface SearchFiltersData {
   location: string;
@@ -11,7 +12,7 @@ interface SearchFiltersData {
 }
 
 const HeroSection: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSearch = (filters: SearchFiltersData) => {
     // Navigate to properties page with search filters as URL params
@@ -22,7 +23,7 @@ const HeroSection: React.FC = () => {
     if (filters.priceRange !== 'all') searchParams.set('price', filters.priceRange);
     searchParams.set('searchType', filters.searchType);
     
-    navigate(`/properties?${searchParams.toString()}`);
+    router.push(`/properties?${searchParams.toString()}`);
   };
 
   return (
@@ -57,7 +58,7 @@ const HeroSection: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 items-center">
               <button 
-                onClick={() => navigate('/properties')}
+                onClick={() => router.push('/properties')}
                 className="px-8 py-4 rounded-full text-white font-bold text-lg transition-all hover:shadow-lg transform hover:scale-105"
                 style={{ 
                   backgroundColor: '#F5A623',
@@ -67,7 +68,7 @@ const HeroSection: React.FC = () => {
                 Browse Properties
               </button>
               <button 
-                onClick={() => navigate('/list-property')}
+                onClick={() => router.push('/list-property')}
                 className="px-8 py-4 rounded-full border-2 border-white text-white font-bold text-lg transition-all hover:bg-white hover:text-gray-900 transform hover:scale-105"
                 style={{ 
                   boxShadow: '0 2px 8px rgba(0,0,0,0.3)'

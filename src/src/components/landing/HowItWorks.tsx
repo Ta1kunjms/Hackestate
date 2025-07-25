@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 // Process steps data
 const buyingSteps = [
@@ -105,7 +105,7 @@ const sellingSteps = [
 ];
 
 const HowItWorks: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [activeTab, setActiveTab] = React.useState<'buying' | 'selling'>('buying');
 
   const renderIcon = (iconName: string, colorClass: string) => {
@@ -277,13 +277,13 @@ const HowItWorks: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => navigate('/properties')}
+              onClick={() => router.push('/properties')}
               className="px-8 py-4 bg-white text-orange-500 font-semibold rounded-full hover:bg-gray-100 transition-colors duration-300"
             >
               {activeTab === 'buying' ? 'Browse Properties' : 'List Your Property'}
             </button>
             <button
-              onClick={() => navigate('/contact')}
+              onClick={() => router.push('/contact')}
               className="px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-orange-500 transition-colors duration-300"
             >
               Talk to an Expert
