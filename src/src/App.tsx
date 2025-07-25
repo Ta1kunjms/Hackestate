@@ -9,6 +9,7 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import HeroSection from './components/landing/HeroSection';
 import FeaturedListings from './components/landing/FeaturedListings';
+import PropertiesPage from './pages/PropertiesPage';
 // Removed LoginModal - using page-only authentication
 import { Login, Register, ResetPassword, VerifyEmail, AuthCallback } from './pages/auth';
 import NotFoundPage from './pages/NotFoundPage';
@@ -37,6 +38,9 @@ const App: React.FC = () => {
         <Routes>
           {/* Home Route */}
           <Route path="/" element={<HomePage />} />
+          
+          {/* Properties Route */}
+          <Route path="/properties" element={<PropertiesPage />} />
           
           {/* Authentication Routes (without navbar) */}
           <Route path="/auth/login" element={<AuthPageLayout><Login /></AuthPageLayout>} />
