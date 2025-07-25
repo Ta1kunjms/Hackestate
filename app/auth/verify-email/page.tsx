@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { Card, CardBody, Button } from '../../components/ui';
-import PageWrapper from '../../components/layout/PageWrapper';
-import Section from '../../components/layout/Section';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Card, CardBody, Button } from '../../../src/src/components/ui';
+import PageWrapper from '../../../src/src/components/layout/PageWrapper';
+import Section from '../../../src/src/components/layout/Section';
 
 type VerificationState = 'pending' | 'success' | 'error' | 'expired';
 
 const VerifyEmail: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const [verificationState, setVerificationState] = useState<VerificationState>('pending');
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -315,7 +316,7 @@ const VerifyEmail: React.FC = () => {
 
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <Link
-                    to="/auth/login"
+                    href="/auth/login"
                     className="text-blue-600 hover:text-blue-800 font-semibold underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                     aria-label="Return to sign in page"
                   >
@@ -341,7 +342,7 @@ const VerifyEmail: React.FC = () => {
               {verificationState !== 'success' && (
                 <div className="mt-8 pt-6 border-t border-gray-200 text-center">
                   <Link
-                    to="/auth/login"
+                    href="/auth/login"
                     className="text-blue-600 hover:text-blue-800 font-semibold underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                     aria-label="Return to sign in page"
                   >

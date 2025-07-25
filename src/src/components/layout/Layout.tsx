@@ -1,6 +1,7 @@
 import React from 'react';
 import { ToastProvider } from '../ToastProvider';
 import AgentChat from '../AgentChat';
+import FloatingCTA from './FloatingCTA';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,9 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
 
         {/* Floating AI Chat Assistant - available on all pages */}
         <AgentChat />
+        
+        {/* Floating Call-to-Action buttons */}
+        <FloatingCTA />
       </div>
     </ToastProvider>
   );

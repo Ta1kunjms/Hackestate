@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { MapPinIcon, HomeIcon, CalendarIcon, HeartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { Button } from './ui';
@@ -31,6 +32,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   isSaved = false,
   className = ''
 }) => {
+  const router = useRouter();
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-PH', {
       style: 'currency',
@@ -48,8 +51,15 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     }
   };
 
+  const handleCardClick = () => {
+    router.push(`/property/${property.id}`);
+  };
+
   return (
-    <div className={`w-full max-w-sm mx-auto bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 group ${className}`}>
+    <div 
+      onClick={handleCardClick}
+      className={`w-full max-w-sm mx-auto bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 group cursor-pointer ${className}`}
+    >
       {/* Property Image */}
       <div className="relative h-48 overflow-hidden">
         <img

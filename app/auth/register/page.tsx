@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Typography, Input, Button } from '@material-tailwind/react';
 import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../src/src/contexts/AuthContext';
 
 interface RegisterFormData {
   firstName: string;
@@ -26,7 +27,7 @@ interface FormErrors {
 
 const Register: React.FC = () => {
   const { register, isLoading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
@@ -122,12 +123,9 @@ const Register: React.FC = () => {
       
       // Navigate to login after 3 seconds
       setTimeout(() => {
-        navigate('/auth/login', { 
-          state: { 
-            message: 'Registration successful! Please check your email for verification before signing in.',
-            email: formData.email 
-          }
-        });
+        router.push(
+          `/auth/login?message=${encodeURIComponent('Registration successful! Please check your email for verification before signing in.')}&email=${encodeURIComponent(formData.email)}`
+        );
       }, 3000);
       
     } catch (error: any) {
@@ -413,21 +411,11 @@ const Register: React.FC = () => {
               />
               <span className="text-sm text-gray-700">
                 I agree to the{' '}
-                <Link 
-                  to="/terms" 
-                  className="text-blue-600 hover:text-blue-800 underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link href="/terms" className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link 
-                  to="/privacy" 
-                  className="text-blue-600 hover:text-blue-800 underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link href="/privacy" className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer">
                   Privacy Policy
                 </Link>
               </span>
@@ -464,7 +452,7 @@ const Register: React.FC = () => {
             
             <p className="mt-4 text-center font-normal text-sm text-gray-600">
               Already have an account?{" "}
-              <Link to="/auth/login" className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200">
+              <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200">
                 Sign in
               </Link>
             </p>

@@ -40,11 +40,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
       className={className}
       aria-describedby={ariaDescribedBy}
       placeholder=""
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
-      onResize={undefined}
-      onResizeCapture={undefined}
       ref={ref}
+      onResize={() => {}}
+      onResizeCapture={() => {}}
+      onPointerEnterCapture={() => {}}
+      onPointerLeaveCapture={() => {}}
     >
       {loading ? (
         <div className="flex items-center justify-center">

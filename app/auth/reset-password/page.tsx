@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Typography, Input, Button } from '@material-tailwind/react';
 
 interface ResetPasswordFormData {
@@ -172,7 +172,7 @@ const ResetPassword: React.FC = () => {
 
             <div className="mt-8 pt-6 border-t border-gray-200">
               <Link
-                to="/auth/login"
+                href="/auth/login"
                 className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
               >
                 ← Back to Sign In
@@ -250,7 +250,7 @@ const ResetPassword: React.FC = () => {
           
           <p className="mt-6 text-center font-normal text-sm text-gray-600">
             Remember your password?{" "}
-            <Link to="/auth/login" className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200">
+            <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200">
               Sign in
             </Link>
           </p>
