@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
@@ -15,8 +16,8 @@ import {
   CheckCircleIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline';
-import DashboardLayout from '../components/layout/DashboardLayout';
-import { Button } from '../components/ui';
+import DashboardLayout from '../../src/src/components/layout/DashboardLayout';
+import { Button } from '../../src/src/components/ui';
 
 // Mock agent data
 const mockAgent = {
