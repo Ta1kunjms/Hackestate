@@ -3,12 +3,12 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { HeartIcon, ShareIcon, MapPinIcon, CalendarIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
-import Layout from '../components/layout/Layout';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import PropertyImageGallery from '../components/PropertyImageGallery';
-import PropertyCard from '../components/PropertyCard';
-import { Button } from '../components/ui';
+import Layout from '../../src/src/components/layout/Layout';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
+import PropertyImageGallery from '../../src/src/components/PropertyImageGallery';
+import PropertyCard from '../../src/src/components/PropertyCard';
+import { Button } from '../../src/src/components/ui';
 
 // Mock property data with detailed information
 const mockPropertyDetails = {

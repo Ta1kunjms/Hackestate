@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';  
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -52,7 +52,7 @@ const EventCard: React.FC<EventCardProps> = ({
   variant = 'default',
   className = ''
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -123,7 +123,7 @@ const EventCard: React.FC<EventCardProps> = ({
   const canRegister = event.status === 'Published' && !isEventFull && !isEventPast && !isDeadlinePassed && !isRegistered;
 
   const handleCardClick = () => {
-    navigate(`/events/${event.id}`);
+    router.push(`/events/${event.id}`);
   };
 
   const handleRSVPClick = (e: React.MouseEvent) => {

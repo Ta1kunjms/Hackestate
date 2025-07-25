@@ -1,8 +1,10 @@
+'use client'
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '../components/ui';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
+import Link from 'next/link';
+import { Button } from '../../src/src/components/ui';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
+import { useRouter } from 'next/navigation';
 
 interface ErrorPageProps {
   errorCode: 404 | 500;
@@ -15,6 +17,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
   title, 
   message 
 }) => {
+  const router = useRouter();
   const errorContent = {
     404: {
       title: title || "Page Not Found",
@@ -50,16 +53,22 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
         <div className="max-w-lg w-full text-center">
           {/* Error Illustration */}
           <div className="mb-8">
-            <div className="text-6xl mb-4">{content.illustration}</div>
-            <h1 className="text-6xl font-bold text-gray-800 mb-2">{errorCode}</h1>
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4">{content.title}</h2>
-            <p className="text-gray-600 text-lg leading-relaxed">{content.message}</p>
+            {content ? (
+              <>
+                <div className="text-6xl mb-4">{content.illustration}</div>
+                <h1 className="text-6xl font-bold text-gray-800 mb-2">{errorCode}</h1>
+                <h2 className="text-2xl font-semibold text-gray-700 mb-4">{content.title}</h2>
+                <p className="text-gray-600 text-lg leading-relaxed">{content.message}</p>
+              </>
+            ) : (
+              <div className="text-red-500">An unknown error occurred.</div>
+            )}
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Link to="/">
-              <Button
+            {/* <Link href="/"> */}
+              {/* <Button
                 variant="filled"
                 color="blue"
                 size="lg"
@@ -67,25 +76,30 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
               >
                 Go Home
               </Button>
-            </Link>
-            <button
-              onClick={() => window.history.back()}
+            </Link> */}
+            <Button
+              onClick={() => router.back()}
               className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 font-medium"
             >
               Go Back
-            </button>
+            </Button>
           </div>
 
           {/* Helpful Suggestions */}
           <div className="bg-gray-50 rounded-lg p-6 text-left">
             <h3 className="font-semibold text-gray-800 mb-3">You can try:</h3>
             <ul className="space-y-2">
-              {content.suggestions.map((suggestion, index) => (
+              {content ? content.suggestions.map((suggestion, index) => (
                 <li key={index} className="flex items-start">
                   <span className="text-blue-600 mr-2">•</span>
                   <span className="text-gray-600">{suggestion}</span>
                 </li>
-              ))}
+              )) : (
+                <li className="flex items-start">
+                  <span className="text-red-600 mr-2">•</span>
+                  <span className="text-gray-600">No suggestions available.</span>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -94,25 +108,25 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
             <p className="text-sm text-gray-500 mb-4">Popular pages:</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link 
-                to="/properties" 
+                href="/properties" 
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
               >
                 Browse Properties
               </Link>
               <Link 
-                to="/agents" 
+                href="/agents" 
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
               >
                 Find Agents
               </Link>
               <Link 
-                to="/about" 
+                href="/about" 
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
               >
                 About Us
               </Link>
               <Link 
-                to="/contact" 
+                href="/contact" 
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
               >
                 Contact Support

@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react';
 import { 
   MapPinIcon,
@@ -15,10 +16,10 @@ import {
   DocumentTextIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline';
-import Layout from '../components/layout/Layout';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import { Button, Input, Select, Textarea, FormField } from '../components/ui';
+import Layout from '../../src/src/components/layout/Layout';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
+import { Button, Input, Select, Textarea, FormField } from '../../src/src/components/ui';
 
 interface ContactForm {
   firstName: string;

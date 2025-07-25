@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react';
 import { 
   NewspaperIcon,
@@ -12,11 +13,11 @@ import {
   LightBulbIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline';
-import Layout from '../components/layout/Layout';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import { Button, Input, FormField } from '../components/ui';
-import { newsletterService } from '../services/newsletterService';
+import Layout from '../../src/src/components/layout/Layout';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
+import { Button, Input, FormField } from '../../src/src/components/ui';
+import { newsletterService } from '../../src/src/services/newsletterService';
 
 interface NewsletterFormData {
   email: string;

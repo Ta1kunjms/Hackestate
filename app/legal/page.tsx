@@ -1,5 +1,6 @@
+'use client'
 import React from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { 
   DocumentTextIcon,
   CalendarIcon,
@@ -8,12 +9,13 @@ import {
   PhoneIcon,
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
-import Layout from '../components/layout/Layout';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import MarkdownRenderer from '../components/MarkdownRenderer';
-import { Button } from '../components/ui';
-import { legalDocuments } from '../content/legal';
+import Layout from '../../src/src/components/layout/Layout';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
+import MarkdownRenderer from '../../src/src/components/MarkdownRenderer';
+import { Button } from '../../src/src/components/ui';
+import { legalDocuments } from '../../src/src/content/legal';
+import ErrorPage from '../error/page';
 
 const LegalPage: React.FC = () => {
   const { docType } = useParams<{ docType: string }>();
@@ -21,16 +23,18 @@ const LegalPage: React.FC = () => {
   // Determine document type from URL path
   let currentDocType = docType;
   if (!currentDocType) {
-    const path = window.location.pathname;
-    if (path.includes('/terms')) currentDocType = 'terms';
-    else if (path.includes('/privacy')) currentDocType = 'privacy';
-    else if (path.includes('/cookies')) currentDocType = 'cookies';
-    else if (path.includes('/accessibility')) currentDocType = 'accessibility';
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path.includes('/terms')) currentDocType = 'terms';
+      else if (path.includes('/privacy')) currentDocType = 'privacy';
+      else if (path.includes('/cookies')) currentDocType = 'cookies';
+      else if (path.includes('/accessibility')) currentDocType = 'accessibility';
+    }
   }
   
   // Check if the requested document exists
   if (!currentDocType || !legalDocuments[currentDocType as keyof typeof legalDocuments]) {
-    return <Navigate to="/404" replace />;
+    return <ErrorPage errorCode={404} />;
   }
 
   const document = legalDocuments[currentDocType as keyof typeof legalDocuments];

@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react';
 import { 
   StarIcon,
@@ -20,10 +21,10 @@ import {
   ArrowRightIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
-import Layout from '../components/layout/Layout';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import { Button } from '../components/ui';
+import Layout from '../../src/src/components/layout/Layout';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
+import { Button } from '../../src/src/components/ui';
 
 interface TeamMember {
   id: string;

@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
@@ -23,10 +24,10 @@ import {
   CreditCardIcon
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckSolidIcon } from '@heroicons/react/24/solid';
-import Layout from '../components/layout/Layout';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import { Button, Input, Select, Textarea, FormField } from '../components/ui';
+import Layout from '../../src/src/components/layout/Layout';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
+import { Button, Input, Select, Textarea, FormField } from '../../src/src/components/ui';
 
 interface UserProfile {
   id: string;
@@ -427,7 +428,7 @@ const ProfilePage: React.FC = () => {
               {/* Actions */}
               <div className="flex items-center space-x-4">
                 <Button
-                  onClick={() => router.push('/dashboard')}
+                  onClick={() => router.push('/user')}
                   variant="outlined"
                   className="!border-gray-300 !text-gray-700 hover:!bg-gray-50"
                 >
