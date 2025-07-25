@@ -49,8 +49,6 @@ export const Card: React.FC<CardProps> = ({
       placeholder=""
       onResize={undefined}
       onResizeCapture={undefined}
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
     >
       {children}
     </MTCard>
@@ -75,8 +73,6 @@ export const CardHeaderComponent: React.FC<CardHeaderProps> = ({
       placeholder=""
       onResize={undefined}
       onResizeCapture={undefined}
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
     >
       {children}
     </CardHeader>
@@ -93,8 +89,6 @@ export const CardBodyComponent: React.FC<CardBodyProps> = ({
       placeholder=""
       onResize={undefined}
       onResizeCapture={undefined}
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
     >
       {children}
     </CardBody>
@@ -112,8 +106,6 @@ export const CardFooterComponent: React.FC<CardFooterProps> = ({
       placeholder=""
       onResize={undefined}
       onResizeCapture={undefined}
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
     >
       {children}
     </CardFooter>

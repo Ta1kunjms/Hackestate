@@ -177,16 +177,16 @@
   - [x] 2.3 Style all components using Tailwind utilities only
   - [x] 2.4 Document components and variants for reuse (e.g., Button: primary, ghost, disabled)
 
-- [x] 3.0 Authentication System (UI + Logic)  
-  - [x] 3.1 Design and build Login, Register, Reset Password, and Verify Email pages using Tailwind  
-  - [x] 3.2 Create auth forms with validation and accessibility in mind  
-  - [x] 3.3 Implement modals or pages depending on design spec  
+- [x] 3.0 Authentication System (UI + Logic)
+  - [x] 3.1 Design and build Login, Register, Reset Password, and Verify Email pages using Tailwind
+  - [x] 3.2 Create auth forms with validation and accessibility in mind
+  - [x] 3.3 Implement modals or pages depending on design spec
   - [x] 3.4 Connect to backend (Supabase integration complete)
 
-- [x] 4.0 UI Shell: Navbar, Footer, Layout  
-  - [x] 4.1 Build responsive Navbar with login/profile dropdown  
-  - [x] 4.2 Build Footer with links, social icons, and newsletter input  
-  - [x] 4.3 Create main `Layout.tsx` wrapper for page structure  
+- [x] 4.0 UI Shell: Navbar, Footer, Layout
+  - [x] 4.1 Build responsive Navbar with login/profile dropdown
+  - [x] 4.2 Build Footer with links, social icons, and newsletter input
+  - [x] 4.3 Create main `Layout.tsx` wrapper for page structure
   - [x] 4.4 Add Error Pages (404, 500) with Tailwind styles
 
 - [x] 5.0 Landing Page
@@ -220,6 +220,10 @@
   - [x] 9.2 Build Agent Dashboard with property CRUD and inquiry management
   - [x] 9.3 Build Admin Dashboard with CMS for users, agents, events, and listings
   - [x] 9.4 Create reusable dashboard layout wrapper with sidebar/topbar
+  - [ ] 9.5 Dashboard Sidebar & Navbar Integration
+    - [ ] Make sidebar full height (100%, 100vh, min-h-screen)
+    - [ ] Import and render navbar as a prop in dashboard layout
+    - [ ] Align main content perfectly below navbar and to the right of sidebar, no gaps
 
 - [x] 10.0 Events Page
   - [x] 10.1 Build Event List with filterable `EventCard.tsx`
