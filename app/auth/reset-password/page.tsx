@@ -161,8 +161,6 @@ const ResetPassword: React.FC = () => {
                 onClick={handleResend}
                 disabled={isLoading}
                 placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
                 onResize={undefined}
                 onResizeCapture={undefined}
               >
@@ -221,8 +219,6 @@ const ResetPassword: React.FC = () => {
               labelProps={{ className: "hidden" }}
               required
               crossOrigin={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
               onResize={undefined}
               onResizeCapture={undefined}
             />
@@ -240,8 +236,6 @@ const ResetPassword: React.FC = () => {
             loading={isLoading}
             disabled={isLoading}
             placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
             onResize={undefined}
             onResizeCapture={undefined}
           >
