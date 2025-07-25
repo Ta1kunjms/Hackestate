@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';
 import { 
   MagnifyingGlassIcon,
   FunnelIcon,
@@ -9,11 +11,11 @@ import {
   AdjustmentsHorizontalIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
-import Layout from '../components/layout/Layout';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import EventCard, { Event } from '../components/EventCard';
-import { Button } from '../components/ui';
+import Layout from '../../src/src/components/layout/Layout';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
+import EventCard, { Event } from '../../src/src/components/EventCard';
+import { Button } from '../../src/src/components/ui';
 
 // Mock events data
 const mockEvents: Event[] = [
@@ -174,7 +176,7 @@ interface EventFilters {
 type SortOption = 'date-asc' | 'date-desc' | 'price-asc' | 'price-desc' | 'popularity' | 'featured';
 
 const EventsPage: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('date-asc');
@@ -201,8 +203,8 @@ const EventsPage: React.FC = () => {
     if (filters.priceRange !== 'all') params.set('price', filters.priceRange);
     if (filters.dateRange !== 'all') params.set('date', filters.dateRange);
     
-    setSearchParams(params);
-  }, [searchTerm, filters, setSearchParams]);
+    // setSearchParams(params);
+  }, [searchTerm, filters]);
 
   const handleRSVP = (eventId: string) => {
     setRegisteredEvents(prev => {

@@ -1,12 +1,14 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';
 import { ChevronLeftIcon, ChevronRightIcon, MapIcon, ViewColumnsIcon } from '@heroicons/react/24/outline';
-import PropertyCard from '../components/PropertyCard';
-import PropertyFilters, { PropertyFiltersData } from '../components/PropertyFilters';
-import { Button } from '../components/ui';
-import Layout from '../components/layout/Layout';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
+import PropertyCard from '../../src/src/components/PropertyCard';
+import PropertyFilters, { PropertyFiltersData } from '../../src/src/components/PropertyFilters';
+import { Button } from '../../src/src/components/ui';
+import Layout from '../../src/src/components/layout/Layout';
+import Navbar from '../../src/src/components/layout/Navbar';
+import Footer from '../../src/src/components/layout/Footer';
 
 // Mock data for all properties (moved from FeaturedListings)
 const allProperties = [
@@ -219,7 +221,7 @@ interface SearchFiltersData {
 type SortOption = 'price-asc' | 'price-desc' | 'newest' | 'oldest' | 'area-asc' | 'area-desc';
 
 const PropertiesPage: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const [savedProperties, setSavedProperties] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
   const [filters, setFilters] = useState<PropertyFiltersData | null>(null);
