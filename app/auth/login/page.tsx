@@ -1,9 +1,11 @@
+'use client';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Typography, Input, Button } from '@material-tailwind/react';
 import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../src/src/contexts/AuthContext';
 
 interface LoginFormData {
   email: string;
