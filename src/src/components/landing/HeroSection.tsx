@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Input } from '../ui';
-import { MagnifyingGlassIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import Navbar from '../layout/Navbar';
 
 interface SearchFilters {
   location: string;
@@ -11,7 +12,7 @@ interface SearchFilters {
 
 const HeroSection: React.FC = () => {
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
-    location: '',
+    location: 'General Santos City',
     propertyType: 'house',
     priceRange: '150000-300000',
     searchType: 'buy'
@@ -40,7 +41,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section className="relative h-screen" style={{ backgroundColor: '#1C1C1E' }}>
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -48,160 +49,139 @@ const HeroSection: React.FC = () => {
           backgroundImage: `url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
         }}
       />
-      <div className="absolute inset-0 bg-black bg-opacity-40" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60" />
       
-      {/* Content */}
-      <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Navigation Bar */}
-        <nav className="flex justify-between items-center p-6 lg:px-12">
-          {/* Logo */}
-          <div className="flex items-center">
-            <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
-              <span className="text-white font-bold text-xl">🏠</span>
-            </div>
-            <span className="text-2xl font-bold text-white">TOPPIX</span>
-          </div>
+      {/* Fixed Navigation */}
+      <Navbar />
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
-            <a href="#" className="text-white hover:text-green-400 transition-colors">Home</a>
-            <a href="#" className="text-white hover:text-green-400 transition-colors">Buy</a>
-            <a href="#" className="text-white hover:text-green-400 transition-colors">Rent</a>
-            <a href="#" className="text-white hover:text-green-400 transition-colors">Sell</a>
-            <a href="#" className="text-white hover:text-green-400 transition-colors">Explore</a>
-            <a href="#" className="text-white hover:text-green-400 transition-colors">Blog</a>
-          </div>
+      {/* Hero Content */}
+      <div className="relative z-10 h-full flex items-center">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full">
+          <div className="max-w-2xl">
+            {/* Main Headline */}
+            <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Designed for <span style={{ color: '#F5A623' }}>Seekers.</span>
+              <br />
+              Powered by <span style={{ color: '#F5A623' }}>Trust.</span>
+            </h1>
+            
+            <p className="text-xl text-gray-200 leading-relaxed mb-8">
+              Explore distinguished properties with confidence —<br />
+              built for buyers, sellers, and serious investors.
+            </p>
 
-          {/* Auth Buttons */}
-          <div className="flex items-center space-x-4">
-            <button className="text-white hover:text-green-400 transition-colors">Login</button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full transition-colors">
-              Sign up
+            <button 
+              className="px-6 py-3 rounded-full text-white font-semibold transition-all hover:shadow-lg transform hover:scale-105"
+              style={{ 
+                backgroundColor: '#F5A623',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+              }}
+            >
+              Explore Properties
             </button>
           </div>
-        </nav>
+        </div>
+      </div>
 
-        {/* Hero Content */}
-        <div className="flex-1 flex items-center justify-center px-6 lg:px-12">
-          <div className="max-w-6xl w-full">
-            <div className="text-center mb-12">
-              <h1 className="text-5xl lg:text-7xl font-bold text-white leading-tight mb-6">
-                Designed for <span className="text-orange-400">Seekers.</span>
-                <br />
-                Powered by <span className="text-orange-400">Trust.</span>
-              </h1>
-              
-              <p className="text-xl lg:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
-                Explore distinguished properties with confidence — <br />
-                built for buyers, sellers, and serious investors.
-              </p>
-
-              <div className="mt-8">
-                <Button
-                  variant="filled"
-                  className="!bg-orange-500 hover:!bg-orange-600 !px-8 !py-4 !text-lg !font-semibold !rounded-full"
-                >
-                  Explore Properties
-                </Button>
-              </div>
-            </div>
-
-            {/* Search Widget */}
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-                {/* Search Tabs */}
-                <div className="flex border-b border-gray-200">
-                  {(['buy', 'rent', 'sell'] as const).map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => handleTabChange(tab)}
-                      className={`flex-1 py-4 px-6 text-lg font-semibold capitalize transition-colors ${
-                        searchFilters.searchType === tab
-                          ? 'bg-orange-500 text-white'
-                          : 'text-gray-600 hover:text-orange-500 hover:bg-orange-50'
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Search Form */}
-                <form onSubmit={handleSearch} className="p-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-end">
-                    {/* Category */}
-                    <div>
-                      <label htmlFor="propertyType" className="block text-sm font-medium text-gray-700 mb-2">
-                        Category
-                      </label>
-                      <select
-                        id="propertyType"
-                        value={searchFilters.propertyType}
-                        onChange={handleInputChange('propertyType')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      >
-                        <option value="house">House</option>
-                        <option value="apartment">Apartment</option>
-                        <option value="condo">Condo</option>
-                        <option value="townhouse">Townhouse</option>
-                        <option value="land">Land</option>
-                      </select>
-                    </div>
-
-                    {/* Location */}
-                    <div>
-                      <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                        Location
-                      </label>
-                      <div className="relative">
-                        <Input
-                          id="location"
-                          type="text"
-                          value={searchFilters.location}
-                          onChange={handleInputChange('location')}
-                          placeholder="General Santos City"
-                          className="w-full !text-gray-900 placeholder:!text-gray-500"
-                          size="lg"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Price Range */}
-                    <div>
-                      <label htmlFor="priceRange" className="block text-sm font-medium text-gray-700 mb-2">
-                        Price Range
-                      </label>
-                      <select
-                        id="priceRange"
-                        value={searchFilters.priceRange}
-                        onChange={handleInputChange('priceRange')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      >
-                        <option value="150000-300000">₱150,000 - ₱300,000</option>
-                        <option value="300000-500000">₱300,000 - ₱500,000</option>
-                        <option value="500000-1000000">₱500,000 - ₱1,000,000</option>
-                        <option value="1000000-2000000">₱1,000,000 - ₱2,000,000</option>
-                        <option value="2000000-5000000">₱2,000,000 - ₱5,000,000</option>
-                        <option value="5000000+">₱5,000,000+</option>
-                      </select>
-                    </div>
-
-                    {/* Search Button */}
-                    <div>
-                      <Button
-                        type="submit"
-                        variant="filled"
-                        className="w-full !bg-orange-500 hover:!bg-orange-600 !py-3 !text-lg !font-semibold !rounded-lg"
-                      >
-                        <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
-                        Search
-                      </Button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
+      {/* Floating Search Bar */}
+      <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-30">
+        <div 
+          className="bg-white rounded-xl shadow-2xl overflow-hidden"
+          style={{ 
+            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+            minWidth: '800px'
+          }}
+        >
+          {/* Search Tabs */}
+          <div className="flex border-b border-gray-200">
+            {(['buy', 'rent', 'sell'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => handleTabChange(tab)}
+                className={`flex-1 py-4 px-6 text-lg font-semibold capitalize transition-colors ${
+                  searchFilters.searchType === tab
+                    ? 'text-white'
+                    : 'text-gray-600 hover:text-orange-500 hover:bg-orange-50'
+                }`}
+                style={{
+                  backgroundColor: searchFilters.searchType === tab ? '#F5A623' : 'transparent'
+                }}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
+
+          {/* Search Form */}
+          <form onSubmit={handleSearch} className="p-6">
+            <div className="flex gap-4 items-end">
+              {/* Category */}
+              <div className="flex-1">
+                <label htmlFor="propertyType" className="block text-sm font-medium text-gray-700 mb-2">
+                  Category
+                </label>
+                <select
+                  id="propertyType"
+                  value={searchFilters.propertyType}
+                  onChange={handleInputChange('propertyType')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:border-orange-500"
+                >
+                  <option value="house">House</option>
+                  <option value="apartment">Apartment</option>
+                  <option value="condo">Condo</option>
+                  <option value="townhouse">Townhouse</option>
+                  <option value="land">Land</option>
+                </select>
+              </div>
+
+              {/* Location */}
+              <div className="flex-1">
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                  Location
+                </label>
+                <input
+                  id="location"
+                  type="text"
+                  value={searchFilters.location}
+                  onChange={handleInputChange('location')}
+                  placeholder="General Santos City"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:border-orange-500"
+                />
+              </div>
+
+              {/* Price Range */}
+              <div className="flex-1">
+                <label htmlFor="priceRange" className="block text-sm font-medium text-gray-700 mb-2">
+                  Price Range
+                </label>
+                <select
+                  id="priceRange"
+                  value={searchFilters.priceRange}
+                  onChange={handleInputChange('priceRange')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:border-orange-500"
+                >
+                  <option value="150000-300000">₱150,000 - ₱300,000</option>
+                  <option value="300000-500000">₱300,000 - ₱500,000</option>
+                  <option value="500000-1000000">₱500,000 - ₱1,000,000</option>
+                  <option value="1000000-2000000">₱1,000,000 - ₱2,000,000</option>
+                  <option value="2000000-5000000">₱2,000,000 - ₱5,000,000</option>
+                  <option value="5000000+">₱5,000,000+</option>
+                </select>
+              </div>
+
+              {/* Search Button */}
+              <div>
+                <button
+                  type="submit"
+                  className="flex items-center px-5 py-3 rounded-lg text-white font-semibold transition-colors hover:opacity-90"
+                  style={{ backgroundColor: '#F5A623' }}
+                >
+                  <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
+                  Search
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </section>

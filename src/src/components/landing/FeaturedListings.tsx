@@ -84,12 +84,130 @@ const featuredProperties = [
     imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     isFeatured: true,
   },
+  {
+    id: '7',
+    title: 'Cozy Beach House with Ocean View',
+    price: 6800000,
+    location: 'Batangas City',
+    type: 'House',
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 180,
+    yearBuilt: 2021,
+    imageUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isFeatured: true,
+  },
+  {
+    id: '8',
+    title: 'High-Rise Penthouse Suite',
+    price: 15000000,
+    location: 'Bonifacio Global City',
+    type: 'Penthouse',
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 220,
+    yearBuilt: 2023,
+    imageUrl: 'https://images.unsplash.com/photo-1556020685-ae41abfc9365?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isNew: true,
+    isFeatured: true,
+  },
+  {
+    id: '9',
+    title: 'Traditional Filipino House',
+    price: 3800000,
+    location: 'Laguna',
+    type: 'House',
+    bedrooms: 4,
+    bathrooms: 2,
+    area: 160,
+    yearBuilt: 2020,
+    imageUrl: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isFeatured: true,
+  },
+  {
+    id: '10',
+    title: 'Modern Duplex with Rooftop Garden',
+    price: 7200000,
+    location: 'Cebu City',
+    type: 'Duplex',
+    bedrooms: 3,
+    bathrooms: 3,
+    area: 190,
+    yearBuilt: 2022,
+    imageUrl: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isNew: true,
+  },
+  {
+    id: '11',
+    title: 'Luxury Loft in Business District',
+    price: 9500000,
+    location: 'Ortigas Center',
+    type: 'Loft',
+    bedrooms: 2,
+    bathrooms: 2,
+    area: 110,
+    yearBuilt: 2023,
+    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isFeatured: true,
+  },
+  {
+    id: '12',
+    title: 'Garden Bungalow with Pool',
+    price: 4200000,
+    location: 'Cavite',
+    type: 'Bungalow',
+    bedrooms: 2,
+    bathrooms: 2,
+    area: 130,
+    yearBuilt: 2021,
+    imageUrl: 'https://images.unsplash.com/photo-1510627498534-cf7e9002facc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isNew: true,
+  },
+  {
+    id: '13',
+    title: 'Corporate Housing Complex Unit',
+    price: 3600000,
+    location: 'Taguig City',
+    type: 'Apartment',
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 75,
+    yearBuilt: 2022,
+    imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isFeatured: true,
+  },
+  {
+    id: '14',
+    title: 'Mountain View Retreat House',
+    price: 5800000,
+    location: 'Tagaytay City',
+    type: 'House',
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 170,
+    yearBuilt: 2020,
+    imageUrl: 'https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isFeatured: true,
+  },
+  {
+    id: '15',
+    title: 'Urban Studio with City Access',
+    price: 2200000,
+    location: 'Manila',
+    type: 'Studio',
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 35,
+    yearBuilt: 2023,
+    imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    isNew: true,
+  },
 ];
 
 const FeaturedListings: React.FC = () => {
   const [savedProperties, setSavedProperties] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
-  const propertiesPerPage = 6;
+  const propertiesPerPage = 15; // 5 columns × 3 rows
   const totalPages = Math.ceil(featuredProperties.length / propertiesPerPage);
 
   const handleSaveProperty = (propertyId: string) => {
@@ -118,7 +236,7 @@ const FeaturedListings: React.FC = () => {
   };
 
   return (
-    <section className="py-16 lg:py-24 bg-gray-50">
+    <section className="pt-32 pb-16 lg:pb-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -132,7 +250,7 @@ const FeaturedListings: React.FC = () => {
         </div>
 
         {/* Properties Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
           {getCurrentProperties().map((property) => (
             <PropertyCard
               key={property.id}
