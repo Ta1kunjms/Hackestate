@@ -39,6 +39,8 @@ export const Modal: React.FC<ModalProps> = ({
       placeholder=""
       onResize={undefined}
       onResizeCapture={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
     >
       {title && (
         <DialogHeader 
@@ -46,6 +48,8 @@ export const Modal: React.FC<ModalProps> = ({
           placeholder=""
           onResize={undefined}
           onResizeCapture={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
         >
           <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
           {dismissible && (
@@ -57,6 +61,8 @@ export const Modal: React.FC<ModalProps> = ({
               placeholder=""
               onResize={undefined}
               onResizeCapture={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             >
               <XMarkIcon className="h-5 w-5" />
             </IconButton>
@@ -69,6 +75,8 @@ export const Modal: React.FC<ModalProps> = ({
         placeholder=""
         onResize={undefined}
         onResizeCapture={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
       >
         {children}
       </DialogBody>
@@ -79,6 +87,8 @@ export const Modal: React.FC<ModalProps> = ({
           placeholder=""
           onResize={undefined}
           onResizeCapture={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
         >
           {footer}
         </DialogFooter>

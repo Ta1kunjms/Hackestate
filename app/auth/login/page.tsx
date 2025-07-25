@@ -114,6 +114,8 @@ const Login: React.FC = () => {
               }}
               required
               crossOrigin={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
               onResize={undefined}
               onResizeCapture={undefined}
             />
@@ -137,6 +139,8 @@ const Login: React.FC = () => {
                 type={passwordShown ? "text" : "password"}
                 required
                 crossOrigin={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
                 onResize={undefined}
                 onResizeCapture={undefined}
               />
@@ -163,6 +167,8 @@ const Login: React.FC = () => {
             loading={isLoading}
             disabled={isLoading}
             placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
             onResize={undefined}
             onResizeCapture={undefined}
           >
