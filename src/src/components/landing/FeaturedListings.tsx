@@ -207,7 +207,7 @@ const featuredProperties = [
 const FeaturedListings: React.FC = () => {
   const [savedProperties, setSavedProperties] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
-  const propertiesPerPage = 15; // 5 columns × 3 rows
+  const propertiesPerPage = 12; // 4 columns × 3 rows
   const totalPages = Math.ceil(featuredProperties.length / propertiesPerPage);
 
   const handleSaveProperty = (propertyId: string) => {
@@ -243,14 +243,22 @@ const FeaturedListings: React.FC = () => {
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             Featured <span className="text-orange-500">Properties</span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
             Discover our handpicked selection of premium properties. From modern condominiums 
             to luxury villas, find your perfect home today.
           </p>
+          
+          {/* View All Button */}
+          <Button
+            variant="outlined"
+            className="!border-orange-500 !text-orange-500 hover:!bg-orange-500 hover:!text-white !px-8 !py-3 !text-lg !font-semibold"
+          >
+            VIEW ALL PROPERTIES
+          </Button>
         </div>
 
         {/* Properties Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12 place-items-center">
           {getCurrentProperties().map((property) => (
             <PropertyCard
               key={property.id}
@@ -261,10 +269,9 @@ const FeaturedListings: React.FC = () => {
           ))}
         </div>
 
-        {/* Navigation and View All */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          {/* Pagination */}
-          {totalPages > 1 && (
+        {/* Pagination - Centered */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mb-12">
             <div className="flex items-center gap-4">
               <button
                 onClick={handlePrevPage}
@@ -300,32 +307,10 @@ const FeaturedListings: React.FC = () => {
                 <ChevronRightIcon className="h-5 w-5" />
               </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* View All Button */}
-          <Button
-            variant="outlined"
-            className="!border-orange-500 !text-orange-500 hover:!bg-orange-500 hover:!text-white !px-8 !py-3 !text-lg !font-semibold"
-          >
-            View All Properties
-          </Button>
-        </div>
 
-        {/* Quick Stats */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
-          <div>
-            <div className="text-3xl lg:text-4xl font-bold text-orange-500 mb-2">500+</div>
-            <div className="text-gray-600 font-medium">Properties Listed</div>
-          </div>
-          <div>
-            <div className="text-3xl lg:text-4xl font-bold text-orange-500 mb-2">98%</div>
-            <div className="text-gray-600 font-medium">Client Satisfaction</div>
-          </div>
-          <div>
-            <div className="text-3xl lg:text-4xl font-bold text-orange-500 mb-2">250+</div>
-            <div className="text-gray-600 font-medium">Verified Agents</div>
-          </div>
-        </div>
       </div>
     </section>
   );
