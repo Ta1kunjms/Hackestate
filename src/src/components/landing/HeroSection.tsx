@@ -55,16 +55,27 @@ const HeroSection: React.FC = () => {
               built for buyers, sellers, and serious investors.
             </p>
 
-            <button 
-              onClick={() => navigate('/properties')}
-              className="px-6 py-3 rounded-full text-white font-semibold transition-all hover:shadow-lg transform hover:scale-105"
-              style={{ 
-                backgroundColor: '#F5A623',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-              }}
-            >
-              Explore Properties
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <button 
+                onClick={() => navigate('/properties')}
+                className="px-8 py-4 rounded-full text-white font-bold text-lg transition-all hover:shadow-lg transform hover:scale-105"
+                style={{ 
+                  backgroundColor: '#F5A623',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                }}
+              >
+                Browse Properties
+              </button>
+              <button 
+                onClick={() => navigate('/list-property')}
+                className="px-8 py-4 rounded-full border-2 border-white text-white font-bold text-lg transition-all hover:bg-white hover:text-gray-900 transform hover:scale-105"
+                style={{ 
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                }}
+              >
+                List Your Property
+              </button>
+            </div>
           </div>
         </div>
       </div>

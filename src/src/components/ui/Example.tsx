@@ -21,7 +21,7 @@ export const ExampleComponents: React.FC = () => {
       {/* Input Example */}
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Input</h3>
-        <Input label="Email Address" type="email" placeholder="Enter your email" />
+        <Input type="email" placeholder="Enter your email" />
       </div>
 
       {/* Card Example */}

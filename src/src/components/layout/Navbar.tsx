@@ -10,6 +10,7 @@ const TopPixNavbar: React.FC = () => {
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'Properties', path: '/properties' },
+    { name: 'Dashboard', path: '/dashboard' },
     { name: 'Events', path: '/events' },
     { name: 'Blog', path: '/blog' }
   ];
