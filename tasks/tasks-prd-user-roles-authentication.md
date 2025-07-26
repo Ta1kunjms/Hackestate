@@ -47,12 +47,12 @@
   - [x] 1.3 Create role_approvals table for agent and developer approval workflows
   - [x] 1.4 Set up Row Level Security (RLS) policies for user data protection
   - [x] 1.5 Configure Supabase authentication settings and email templates (extend existing config)
-  - [ ] 1.6 Create database migration scripts for schema changes
-  - [ ] 1.7 Set up TypeScript interfaces for user and role types
-  - [ ] 1.8 Extend existing Supabase client configuration with new schema tables
+  - [x] 1.6 Create database migration scripts for schema changes
+  - [x] 1.7 Set up TypeScript interfaces for user and role types
+  - [x] 1.8 Extend existing Supabase client configuration with new schema tables
 
 - [ ] 2.0 Implement user registration with role selection
-  - [ ] 2.1 Create UserRegistration component with form validation
+  - [x] 2.1 Create UserRegistration component with form validation
   - [ ] 2.2 Build RoleSelector component with role descriptions and selection UI
   - [ ] 2.3 Implement registration form submission to Supabase
   - [ ] 2.4 Add role-specific registration flows (basic for buyer/seller, extended for agent/developer)

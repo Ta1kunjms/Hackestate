@@ -160,9 +160,6 @@ const ResetPassword: React.FC = () => {
                 loading={isLoading}
                 onClick={handleResend}
                 disabled={isLoading}
-                placeholder={undefined}
-                onResize={undefined}
-                onResizeCapture={undefined}
               >
                 {isLoading ? 'Sending...' : 'Resend Email'}
               </Button>
@@ -221,6 +218,8 @@ const ResetPassword: React.FC = () => {
               crossOrigin={undefined}
               onResize={undefined}
               onResizeCapture={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             />
             <p className="text-sm text-gray-500 mt-1">
               We'll send password reset instructions to this email address.
@@ -238,6 +237,8 @@ const ResetPassword: React.FC = () => {
             placeholder={undefined}
             onResize={undefined}
             onResizeCapture={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
           >
             {isLoading ? 'Sending...' : 'Send Reset Link'}
           </Button>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../src/src/lib/supabase';
 
 const AuthCallback: React.FC = () => {
   const router = useRouter();
