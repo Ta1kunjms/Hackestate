@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 const TopPixNavbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -22,7 +23,7 @@ const TopPixNavbar: React.FC = () => {
     <nav className="absolute top-0 left-0 right-0 z-50 flex justify-between items-start pt-6 px-6 lg:px-12" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Logo */}
       <Link href="/" className="flex items-center">
-        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mr-3 shadow-lg">
+        <div className="w-10 h-10 bg-card rounded-lg flex items-center justify-center mr-3 shadow-lg border border-border">
           <div className="text-2xl">🏘️</div>
         </div>
         <span className="text-2xl font-bold">
@@ -33,13 +34,13 @@ const TopPixNavbar: React.FC = () => {
 
       {/* Desktop Navigation */}
       <div className="hidden lg:flex items-center">
-        <div className="bg-black/30 backdrop-blur-sm rounded-2xl px-8 py-2">
+        <div className="bg-card/80 backdrop-blur-sm rounded-2xl px-8 py-2 border border-border">
           <div className="flex items-center space-x-8">
             {menuItems.map((item) => (
               <Link 
                 key={item.name}
                 href={item.path}
-                className="text-white hover:text-orange-400 transition-colors font-medium text-sm whitespace-nowrap"
+                className="text-card-foreground hover:text-primary transition-colors font-medium text-sm whitespace-nowrap"
               >
                 {item.name}
               </Link>
@@ -48,10 +49,30 @@ const TopPixNavbar: React.FC = () => {
         </div>
       </div>
 
+      {/* Right side controls */}
+      <div className="hidden lg:flex items-center space-x-4">
+        {/* Theme Toggle */}
+        <ThemeToggle />
+        
+        {/* Auth Buttons */}
+        <Link 
+          href="/auth/login"
+          className="text-card-foreground hover:text-primary transition-colors font-medium"
+        >
+          Login
+        </Link>
+        <Link 
+          href="/auth/register"
+          className="px-4 py-2 rounded-full transition-colors font-medium inline-block bg-primary text-primary-foreground hover:opacity-90"
+        >
+          Sign up
+        </Link>
+      </div>
+
       {/* Mobile Menu Button */}
       <button
         onClick={toggleMobileMenu}
-        className="lg:hidden text-white hover:text-orange-400 transition-colors"
+        className="lg:hidden text-card-foreground hover:text-primary transition-colors"
         aria-label="Toggle mobile menu"
       >
         {isMobileMenuOpen ? (
@@ -61,49 +82,36 @@ const TopPixNavbar: React.FC = () => {
         )}
       </button>
 
-      {/* Auth Buttons - Desktop */}
-      <div className="hidden lg:flex items-center space-x-4">
-        <Link 
-          href="/auth/login"
-          className="text-white hover:text-orange-400 transition-colors font-medium"
-        >
-          Login
-        </Link>
-        <Link 
-          href="/auth/register"
-          className="px-4 py-2 rounded-full transition-colors font-medium inline-block"
-          style={{ backgroundColor: '#F5A623', color: '#ffffff' }}
-        >
-          Sign up
-        </Link>
-      </div>
-
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-black/90 backdrop-blur-sm lg:hidden">
+        <div className="absolute top-full left-0 right-0 bg-card/95 backdrop-blur-sm lg:hidden border-b border-border">
           <div className="px-6 py-4 space-y-4">
+            {/* Theme Toggle for Mobile */}
+            <div className="flex justify-end">
+              <ThemeToggle />
+            </div>
+            
             {menuItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.path}
-                className="block text-white hover:text-orange-400 transition-colors font-medium py-2"
+                className="block text-card-foreground hover:text-primary transition-colors font-medium py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
-            <div className="pt-4 border-t border-gray-600 space-y-3">
+            <div className="pt-4 border-t border-border space-y-3">
               <Link 
                 href="/auth/login"
-                className="block w-full text-left text-white hover:text-orange-400 transition-colors font-medium py-2"
+                className="block w-full text-left text-card-foreground hover:text-primary transition-colors font-medium py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Login
               </Link>
               <Link 
                 href="/auth/register"
-                className="block w-full px-4 py-2 rounded-full transition-colors font-medium text-center"
-                style={{ backgroundColor: '#F5A623', color: '#ffffff' }}
+                className="block w-full px-4 py-2 rounded-full transition-colors font-medium text-center bg-primary text-primary-foreground hover:opacity-90"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Sign up
