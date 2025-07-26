@@ -1,5 +1,5 @@
-export { default as Login } from './Login';
-export { default as Register } from './Register';
-export { default as ResetPassword } from './ResetPassword';
-export { default as VerifyEmail } from './VerifyEmail';
-export { default as AuthCallback } from './AuthCallback'; 
+export { default as Login } from './login/page';
+export { default as Register } from './register/page';
+export { default as ResetPassword } from './reset-password/page';
+export { default as VerifyEmail } from './verify-email/page';
+export { default as AuthCallback } from './callback/page';  

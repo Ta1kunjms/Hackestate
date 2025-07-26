@@ -333,4 +333,68 @@ export const getUserApprovalStatus = async (userId: string) => {
       error: 'An unexpected error occurred while fetching approval status'
     };
   }
+};
+
+/**
+ * Resend verification email
+ */
+export const resendVerificationEmail = async (email: string) => {
+  try {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email
+    });
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+
+    return {
+      success: true
+    };
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    return {
+      success: false,
+      error: 'An unexpected error occurred while resending verification email'
+    };
+  }
+};
+
+/**
+ * Check if user's email is verified
+ */
+export const isEmailVerified = async () => {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error) {
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'No user found'
+      };
+    }
+
+    return {
+      success: true,
+      isVerified: !!user.email_confirmed_at,
+      user: user
+    };
+  } catch (error) {
+    console.error('Email verification check error:', error);
+    return {
+      success: false,
+      error: 'An unexpected error occurred while checking email verification'
+    };
+  }
 }; 
