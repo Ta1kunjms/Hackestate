@@ -117,10 +117,10 @@ const Login: React.FC = () => {
               }}
               required
               crossOrigin={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
               onResize={undefined}
               onResizeCapture={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             />
           </div>
           
@@ -142,10 +142,10 @@ const Login: React.FC = () => {
                 type={passwordShown ? "text" : "password"}
                 required
                 crossOrigin={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
                 onResize={undefined}
                 onResizeCapture={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
               />
               <button 
                 type="button"
@@ -170,10 +170,10 @@ const Login: React.FC = () => {
             loading={isLoading}
             disabled={isLoading}
             placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
             onResize={undefined}
             onResizeCapture={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>
