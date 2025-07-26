@@ -42,7 +42,7 @@
 ## Tasks
 
 - [ ] 1.0 Set up database schema and authentication infrastructure
-  - [ ] 1.1 Create user roles table in Supabase with role types (admin, agent, developer, seller, buyer)
+  - [x] 1.1 Create user roles table in Supabase with role types (admin, agent, developer, seller, buyer)
   - [ ] 1.2 Create user_profiles table with basic user information (name, email, phone, role_id)
   - [ ] 1.3 Create role_approvals table for agent and developer approval workflows
   - [ ] 1.4 Set up Row Level Security (RLS) policies for user data protection
