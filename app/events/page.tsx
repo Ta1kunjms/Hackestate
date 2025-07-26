@@ -16,154 +16,9 @@ import Navbar from '../../src/src/components/layout/Navbar';
 import Footer from '../../src/src/components/layout/Footer';
 import EventCard, { Event } from '../../src/src/components/EventCard';
 import { Button } from '../../src/src/components/ui';
+import { supabase } from '../../src/src/lib/supabase';
 
-// Mock events data
-const mockEvents: Event[] = [
-  {
-    id: '1',
-    title: 'Metro Manila Property Expo 2024',
-    description: 'The largest real estate exhibition in the Philippines featuring top developers, latest projects, and exclusive deals. Meet with industry experts, explore investment opportunities, and discover your dream property.',
-    date: '2024-04-20',
-    time: '10:00',
-    endTime: '18:00',
-    location: 'SMX Convention Center',
-    address: 'SMX Convention Center, Mall of Asia Complex, Pasay City',
-    category: 'Expo',
-    price: 0,
-    maxAttendees: 500,
-    currentAttendees: 245,
-    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    organizer: {
-      name: 'Philippine Real Estate Association',
-      avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      company: 'PREA'
-    },
-    tags: ['Real Estate', 'Investment', 'Property', 'Networking'],
-    featured: true,
-    status: 'Published',
-    registrationDeadline: '2024-04-18'
-  },
-  {
-    id: '2',
-    title: 'Real Estate Investment Strategies Seminar',
-    description: 'Learn from successful real estate investors about proven strategies, market analysis, and wealth building through property investment. Perfect for beginners and experienced investors.',
-    date: '2024-04-15',
-    time: '14:00',
-    endTime: '17:00',
-    location: 'Makati Shangri-La',
-    address: 'Makati Shangri-La, Ayala Avenue, Makati City',
-    category: 'Seminar',
-    price: 2500,
-    maxAttendees: 100,
-    currentAttendees: 67,
-    imageUrl: 'https://images.unsplash.com/photo-1559523161-0fc0d8b38a7a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    organizer: {
-      name: 'Carlos Mendoza',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      company: 'Elite Real Estate'
-    },
-    tags: ['Investment', 'Education', 'Strategy', 'Finance'],
-    featured: false,
-    status: 'Published',
-    registrationDeadline: '2024-04-13'
-  },
-  {
-    id: '3',
-    title: 'First-Time Home Buyer Workshop',
-    description: 'Complete guide for first-time home buyers covering loan processes, legal requirements, property inspection, and negotiation tips. Includes Q&A session with experts.',
-    date: '2024-04-25',
-    time: '09:00',
-    endTime: '12:00',
-    location: 'Bonifacio Global City',
-    address: 'The Fort, Taguig City',
-    category: 'Workshop',
-    price: 1500,
-    maxAttendees: 50,
-    currentAttendees: 23,
-    imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    organizer: {
-      name: 'Maria Santos',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      company: 'HomeFinder PH'
-    },
-    tags: ['First-time Buyers', 'Education', 'Home Buying', 'Legal'],
-    featured: false,
-    status: 'Published',
-    registrationDeadline: '2024-04-23'
-  },
-  {
-    id: '4',
-    title: 'Luxury Property Showcase',
-    description: 'Exclusive viewing of premium properties in prime locations. Meet with luxury property specialists and explore high-end residential and commercial projects.',
-    date: '2024-05-05',
-    time: '16:00',
-    endTime: '20:00',
-    location: 'Rockwell Center',
-    address: 'Rockwell Center, Makati City',
-    category: 'Tour',
-    price: 5000,
-    maxAttendees: 30,
-    currentAttendees: 28,
-    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    organizer: {
-      name: 'David Kim',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      company: 'Luxury Properties Inc.'
-    },
-    tags: ['Luxury', 'Premium', 'Showcase', 'High-end'],
-    featured: true,
-    status: 'Published',
-    registrationDeadline: '2024-05-03'
-  },
-  {
-    id: '5',
-    title: 'Real Estate Digital Marketing Webinar',
-    description: 'Learn how to leverage digital marketing for real estate success. Covers social media marketing, lead generation, virtual tours, and online advertising strategies.',
-    date: '2024-04-30',
-    time: '19:00',
-    endTime: '21:00',
-    location: 'Online Event',
-    address: 'Virtual Event - Zoom Platform',
-    category: 'Webinar',
-    price: 800,
-    maxAttendees: 200,
-    currentAttendees: 156,
-    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    organizer: {
-      name: 'Tech Real Estate Hub',
-      avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      company: 'Digital RE Solutions'
-    },
-    tags: ['Digital Marketing', 'Technology', 'Online', 'Social Media'],
-    featured: false,
-    status: 'Published',
-    registrationDeadline: '2024-04-28'
-  },
-  {
-    id: '6',
-    title: 'Property Management Networking Event',
-    description: 'Connect with property managers, landlords, and service providers. Share experiences, discuss challenges, and build valuable business relationships in the property management industry.',
-    date: '2024-05-10',
-    time: '18:30',
-    endTime: '21:30',
-    location: 'Alabang Town Center',
-    address: 'Alabang Town Center, Muntinlupa City',
-    category: 'Networking',
-    price: 1200,
-    maxAttendees: 80,
-    currentAttendees: 42,
-    imageUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    organizer: {
-      name: 'Property Managers Association',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      company: 'PMA Philippines'
-    },
-    tags: ['Networking', 'Property Management', 'Business', 'Professional'],
-    featured: false,
-    status: 'Published',
-    registrationDeadline: '2024-05-08'
-  }
-];
+// Events will be loaded from Supabase
 
 interface EventFilters {
   category: string;
@@ -188,11 +43,53 @@ const EventsPage: React.FC = () => {
     dateRange: searchParams.get('date') || 'all',
     tags: []
   });
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Extract unique values for filter options
-  const categories = ['all', ...Array.from(new Set(mockEvents.map(e => e.category)))];
-  const locations = ['all', ...Array.from(new Set(mockEvents.map(e => e.location)))];
-  const allTags = Array.from(new Set(mockEvents.flatMap(e => e.tags)));
+  const categories = ['all', ...Array.from(new Set(events.map(e => e.category)))];
+  const locations = ['all', ...Array.from(new Set(events.map(e => e.location)))];
+  const allTags = Array.from(new Set(events.flatMap(e => e.tags || [])));
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('event_date', { ascending: true });
+      if (error) {
+        setError('Failed to load events');
+        setEvents([]);
+      } else {
+        // Map DB fields to Event type and add fallback fields for compatibility
+        setEvents((data || []).map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          description: event.description || '',
+          date: event.event_date,
+          time: event.event_time || '',
+          endTime: event.end_time || '',
+          location: event.location,
+          address: event.address || '',
+          category: event.event_type || 'Other',
+          price: event.price || 0,
+          maxAttendees: event.max_capacity || 0,
+          currentAttendees: event.attendees_count || 0,
+          imageUrl: event.image_url || '',
+          organizer: event.organizer || { name: '', avatar: '', company: '' },
+          tags: event.tags || [],
+          featured: event.featured || false,
+          status: event.status || 'Published',
+          registrationDeadline: event.registration_deadline || '',
+        })));
+      }
+      setLoading(false);
+    };
+    fetchEvents();
+  }, []);
 
   useEffect(() => {
     // Update URL params when filters change
@@ -230,7 +127,7 @@ const EventsPage: React.FC = () => {
   };
 
   const getFilteredAndSortedEvents = () => {
-    let filtered = mockEvents;
+    let filtered = events;
 
     // Search filter
     if (searchTerm) {
@@ -238,8 +135,8 @@ const EventsPage: React.FC = () => {
       filtered = filtered.filter(event =>
         event.title.toLowerCase().includes(term) ||
         event.description.toLowerCase().includes(term) ||
-        event.organizer.name.toLowerCase().includes(term) ||
-        event.tags.some(tag => tag.toLowerCase().includes(term))
+        (event.organizer?.name?.toLowerCase().includes(term) || false) ||
+        (event.tags || []).some(tag => tag.toLowerCase().includes(term))
       );
     }
 
@@ -307,7 +204,7 @@ const EventsPage: React.FC = () => {
     // Tags filter
     if (filters.tags.length > 0) {
       filtered = filtered.filter(event =>
-        filters.tags.some(tag => event.tags.includes(tag))
+        filters.tags.some(tag => (event.tags || []).includes(tag))
       );
     }
 
@@ -326,11 +223,11 @@ const EventsPage: React.FC = () => {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'popularity':
-        filtered.sort((a, b) => b.currentAttendees - a.currentAttendees);
+        filtered.sort((a, b) => (b.currentAttendees || 0) - (a.currentAttendees || 0));
         break;
       case 'featured':
         filtered.sort((a, b) => {
-          if (a.featured === b.featured) {
+          if ((a.featured || false) === (b.featured || false)) {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
           }
           return a.featured ? -1 : 1;
@@ -362,6 +259,14 @@ const EventsPage: React.FC = () => {
               Discover upcoming seminars, workshops, networking events, and property showcases
             </p>
           </div>
+
+          {/* Loading and Error States */}
+          {loading && (
+            <div className="text-center py-12 text-gray-500">Loading events...</div>
+          )}
+          {error && (
+            <div className="text-center py-12 text-red-500">{error}</div>
+          )}
 
           {/* Search and Filters Bar */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
@@ -529,7 +434,7 @@ const EventsPage: React.FC = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-gray-600">
-                Showing {filteredEvents.length} of {mockEvents.length} events
+                Showing {filteredEvents.length} of {events.length} events
                 {hasActiveFilters && (
                   <span className="ml-2 text-orange-600">• Filtered results</span>
                 )}
@@ -538,7 +443,7 @@ const EventsPage: React.FC = () => {
           </div>
 
           {/* Events Grid */}
-          {filteredEvents.length > 0 ? (
+          {!loading && !error && filteredEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredEvents.map((event) => (
                 <EventCard

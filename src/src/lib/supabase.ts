@@ -24,6 +24,8 @@ export type Database = {
           last_name: string | null
           phone: string | null
           role_id: string
+          preferences: Record<string, any> | null
+          settings: Record<string, any> | null
           created_at: string
           updated_at: string
         }
@@ -34,6 +36,8 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           role_id: string
+          preferences?: Record<string, any> | null
+          settings?: Record<string, any> | null
           created_at?: string
           updated_at?: string
         }
@@ -44,6 +48,8 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           role_id?: string
+          preferences?: Record<string, any> | null
+          settings?: Record<string, any> | null
           created_at?: string
           updated_at?: string
         }
@@ -117,6 +123,64 @@ export type Database = {
           rejection_reason?: string | null
           documentation_url?: string | null
           additional_notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      saved_properties: {
+        Row: {
+          id: string
+          user_id: string
+          property_id: string
+          saved_at: string
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          property_id: string
+          saved_at?: string
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          property_id?: string
+          saved_at?: string
+          notes?: string | null
+          created_at?: string
+        }
+      }
+      search_alerts: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          criteria: Record<string, any>
+          frequency: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          criteria: Record<string, any>
+          frequency?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          criteria?: Record<string, any>
+          frequency?: string
+          is_active?: boolean
           created_at?: string
           updated_at?: string
         }

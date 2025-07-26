@@ -46,6 +46,16 @@ interface DashboardLayoutProps {
   title?: string;
   subtitle?: string;
   actions?: React.ReactNode;
+  counts?: {
+    users?: number;
+    agents?: number;
+    properties?: number;
+    events?: number;
+    content?: number;
+    savedProperties?: number;
+    alerts?: number;
+    inquiries?: number;
+  };
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -56,7 +66,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onTabChange,
   title,
   subtitle,
-  actions
+  actions,
+  counts
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -68,25 +79,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       case 'user':
         return [
           { id: 'overview', label: 'Overview', icon: ChartBarIcon, path: '/dashboard' },
-          { id: 'saved', label: 'Saved Properties', icon: HeartIcon, path: '/dashboard', count: 12 },
-          { id: 'alerts', label: 'Search Alerts', icon: BellIcon, path: '/dashboard', count: 3 },
+          { id: 'saved', label: 'Saved Properties', icon: HeartIcon, path: '/dashboard', count: counts?.savedProperties },
+          { id: 'alerts', label: 'Search Alerts', icon: BellIcon, path: '/dashboard', count: counts?.alerts },
           { id: 'preferences', label: 'Preferences', icon: Cog6ToothIcon, path: '/dashboard' }
         ];
       case 'agent':
         return [
           { id: 'overview', label: 'Overview', icon: ChartBarIcon, path: '/agent/dashboard' },
-          { id: 'properties', label: 'My Properties', icon: BuildingOfficeIcon, path: '/agent/dashboard', count: 8 },
-          { id: 'inquiries', label: 'Inquiries', icon: EnvelopeIcon, path: '/agent/dashboard', count: 15, badge: 'new' },
+          { id: 'properties', label: 'My Properties', icon: BuildingOfficeIcon, path: '/agent/dashboard', count: counts?.properties },
+          { id: 'inquiries', label: 'Inquiries', icon: EnvelopeIcon, path: '/agent/dashboard', count: counts?.inquiries, badge: counts?.inquiries && counts.inquiries > 0 ? 'new' : undefined },
           { id: 'performance', label: 'Performance', icon: ChartBarIcon, path: '/agent/dashboard' }
         ];
       case 'admin':
         return [
           { id: 'overview', label: 'Overview', icon: ChartBarIcon, path: '/admin/dashboard' },
-          { id: 'users', label: 'Users', icon: UsersIcon, path: '/admin/dashboard', count: 1247 },
-          { id: 'agents', label: 'Agents', icon: UserGroupIcon, path: '/admin/dashboard', count: 45 },
-          { id: 'properties', label: 'Properties', icon: BuildingOfficeIcon, path: '/admin/dashboard', count: 1832 },
-          { id: 'events', label: 'Events', icon: CalendarIcon, path: '/admin/dashboard', count: 28 },
-          { id: 'content', label: 'Content', icon: DocumentTextIcon, path: '/admin/dashboard', count: 156 },
+          { id: 'users', label: 'Users', icon: UsersIcon, path: '/admin/dashboard', count: counts?.users },
+          { id: 'agents', label: 'Agents', icon: UserGroupIcon, path: '/admin/dashboard', count: counts?.agents },
+          { id: 'properties', label: 'Properties', icon: BuildingOfficeIcon, path: '/admin/dashboard', count: counts?.properties },
+          { id: 'events', label: 'Events', icon: CalendarIcon, path: '/admin/dashboard', count: counts?.events },
+          { id: 'content', label: 'Content', icon: DocumentTextIcon, path: '/admin/dashboard', count: counts?.content },
           { id: 'settings', label: 'Settings', icon: Cog6ToothIcon, path: '/admin/dashboard' }
         ];
       default:
@@ -177,11 +188,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               {/* User Info */}
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
-                  <img
-                    src={userInfo.avatar}
-                    alt={userInfo.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
+                  {userInfo.avatar && userInfo.avatar !== 'https://via.placeholder.com/50' ? (
+                    <img
+                      src={userInfo.avatar}
+                      alt={userInfo.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                      onError={(e) => {
+                        // Fallback to placeholder if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://via.placeholder.com/50';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <UserCircleIcon className="w-6 h-6 text-gray-400" />
+                    </div>
+                  )}
                   <div className="ml-3">
                     <p className="text-sm font-medium text-gray-900">{userInfo.name}</p>
                     <p className="text-xs text-gray-500 capitalize">{userInfo.role || userRole}</p>

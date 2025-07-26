@@ -62,8 +62,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   };
 
   const containerClasses = variant === 'floating' 
-    ? `bg-white rounded-xl shadow-2xl overflow-hidden ${className}`
-    : `bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden ${className}`;
+    ? `bg-card rounded-xl shadow-2xl overflow-hidden ${className}`
+    : `bg-card rounded-lg shadow-sm border border-border overflow-hidden ${className}`;
 
   const formClasses = variant === 'floating'
     ? 'p-6'
@@ -72,7 +72,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   return (
     <div className={containerClasses}>
       {/* Search Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-border">
         {(['buy', 'rent', 'sell'] as const).map((tab) => (
           <button
             key={tab}
@@ -80,7 +80,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             className={`flex-1 py-3 px-4 text-sm font-semibold capitalize transition-colors ${
               searchFilters.searchType === tab
                 ? 'text-white bg-orange-500'
-                : 'text-gray-600 hover:text-orange-500 hover:bg-orange-50'
+                : 'text-card-foreground hover:text-orange-500 hover:bg-orange-50'
             }`}
           >
             {tab}
@@ -93,14 +93,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           {/* Property Type */}
           <div>
-            <label htmlFor="propertyType" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="propertyType" className="block text-sm font-medium text-card-foreground mb-2">
               Property Type
             </label>
             <select
               id="propertyType"
               value={searchFilters.propertyType}
               onChange={handleInputChange('propertyType')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:border-orange-500"
+              className="w-full px-3 py-2 border border-border rounded-lg text-card-foreground bg-background focus:outline-none focus:ring-2 focus:border-orange-500"
             >
               <option value="all">All Types</option>
               <option value="house">House</option>
@@ -118,7 +118,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
           {/* Location */}
           <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="location" className="block text-sm font-medium text-card-foreground mb-2">
               Location
             </label>
             <input
@@ -127,20 +127,20 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               value={searchFilters.location}
               onChange={handleInputChange('location')}
               placeholder="Enter city or area..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:border-orange-500"
+              className="w-full px-3 py-2 border border-border rounded-lg text-card-foreground bg-background focus:outline-none focus:ring-2 focus:border-orange-500"
             />
           </div>
 
           {/* Price Range */}
           <div>
-            <label htmlFor="priceRange" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="priceRange" className="block text-sm font-medium text-card-foreground mb-2">
               Price Range
             </label>
             <select
               id="priceRange"
               value={searchFilters.priceRange}
               onChange={handleInputChange('priceRange')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:border-orange-500"
+              className="w-full px-3 py-2 border border-border rounded-lg text-card-foreground bg-background focus:outline-none focus:ring-2 focus:border-orange-500"
             >
               <option value="all">Any Price</option>
               <option value="0-2000000">Under ₱2M</option>

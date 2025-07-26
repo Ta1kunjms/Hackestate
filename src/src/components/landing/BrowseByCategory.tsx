@@ -99,7 +99,7 @@ const BrowseByCategory: React.FC = () => {
                 <h3 className="text-xl font-bold mb-2 group-hover:text-orange-300 transition-colors">
                   {category.title}
                 </h3>
-                <p className="text-sm text-gray-200 leading-relaxed">
+                <p className="text-sm text-white leading-relaxed">
                   {category.description}
                 </p>
               </div>

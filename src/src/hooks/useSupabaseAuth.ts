@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { UserRole } from '../types/user'
 
 export interface AuthUser {
   id: string
@@ -8,6 +9,8 @@ export interface AuthUser {
   firstName?: string
   lastName?: string
   phone?: string
+  avatar?: string
+  role?: UserRole
 }
 
 export interface AuthState {
@@ -41,10 +44,13 @@ export const useSupabaseAuth = () => {
 
   const handleAuthStateChange = async (session: Session | null) => {
     if (session?.user) {
-      // Get user profile from profiles table
+      // Get user profile and role from profiles table with join to user_roles
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          role:user_roles(*)
+        `)
         .eq('id', session.user.id)
         .single()
 
@@ -57,7 +63,9 @@ export const useSupabaseAuth = () => {
         email: session.user.email!,
         firstName: profile?.first_name || '',
         lastName: profile?.last_name || '',
-        phone: profile?.phone || ''
+        phone: profile?.phone || '',
+        avatar: profile?.avatar_url || '',
+        role: profile?.role || undefined
       }
 
       setAuthState({
@@ -77,7 +85,7 @@ export const useSupabaseAuth = () => {
   const signUp = async (
     email: string,
     password: string,
-    userData: { firstName: string; lastName: string; phone?: string }
+    userData: { firstName: string; lastName: string; phone?: string; roleName?: string }
   ) => {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -93,20 +101,34 @@ export const useSupabaseAuth = () => {
 
     if (error) throw error
 
-    // Create profile record
+    // Create profile record with role
     if (data.user) {
+      // Get the role ID for the selected role (default to buyer if not specified)
+      const roleName = userData.roleName || 'buyer'
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('id')
+        .eq('name', roleName)
+        .single()
+
+      if (roleError) {
+        console.error('Error fetching role:', roleError)
+        throw new Error('Invalid role selected')
+      }
+
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: data.user.id,
-          email: data.user.email!,
           first_name: userData.firstName,
           last_name: userData.lastName,
-          phone: userData.phone || null
+          phone: userData.phone || '',
+          role_id: roleData.id
         })
 
       if (profileError) {
         console.error('Error creating profile:', profileError)
+        throw profileError
       }
     }
 

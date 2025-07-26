@@ -157,3 +157,28 @@ input, textarea, select {
 .text-gray-500, .text-gray-400, .text-gray-300 {
   color: var(--muted-foreground) !important;
 }
+
+/* Hero section specific overrides - always white text */
+.hero-section h1,
+.hero-section h2,
+.hero-section h3,
+.hero-section p,
+.hero-section span,
+.hero-section button {
+  color: #ffffff !important;
+}
+
+/* Ensure white text in hero section regardless of theme */
+section[class*="relative h-screen"] h1,
+section[class*="relative h-screen"] p,
+section[class*="relative h-screen"] button,
+section[class*="relative h-screen"] span {
+  color: #ffffff !important;
+}
+
+/* Override any theme-based text color changes in hero area */
+.relative.h-screen .text-white,
+.relative.h-screen .text-gray-200,
+.relative.h-screen button[class*="text-white"] {
+  color: #ffffff !important;
+}

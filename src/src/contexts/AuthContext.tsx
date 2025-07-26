@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useSupabaseAuth, AuthUser } from '../hooks/useSupabaseAuth';
+import { UserRole } from '../types/user';
+import { supabase } from '../lib/supabase';
 
 // Types
 export interface RegisterData {
@@ -10,12 +12,16 @@ export interface RegisterData {
   email: string;
   password: string;
   phone?: string;
+  roleName?: string;
 }
 
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  userRole: UserRole | null;
+  isAdmin: boolean;
+  hasPermission: (permission: string) => boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
@@ -36,6 +42,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     signOut,
     resetPassword: resetPasswordSupabase
   } = useSupabaseAuth();
+
+  // Helper functions for role-based access
+  const userRole = user?.role || null;
+  const isAdmin = userRole?.name === 'admin';
+  
+  const hasPermission = (permission: string): boolean => {
+    if (!userRole) return false;
+    return userRole.permissions[permission as keyof typeof userRole.permissions] === true;
+  };
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
@@ -63,29 +78,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const register = async (userData: RegisterData): Promise<void> => {
     try {
-      await signUp(userData.email, userData.password, {
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        phone: userData.phone
+      console.log('Starting registration for:', userData.email);
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            first_name: userData.firstName,
+            last_name: userData.lastName,
+            phone: userData.phone || '',
+          },
+        },
       });
 
-      // Success announcement (client-side only)
-      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-        const successAnnouncement = document.createElement('div');
-        successAnnouncement.setAttribute('aria-live', 'polite');
-        successAnnouncement.className = 'sr-only';
-        successAnnouncement.textContent = 'Registration successful! Please check your email for verification instructions.';
-        document.body.appendChild(successAnnouncement);
-        
-        setTimeout(() => {
-          if (document.body.contains(successAnnouncement)) {
-            document.body.removeChild(successAnnouncement);
-          }
-        }, 2000);
+      if (error) {
+        console.error('Supabase auth signup error:', error);
+        throw error;
       }
-    } catch (error: any) {
+
+      console.log('Auth signup successful:', data);
+    } catch (error) {
       console.error('Registration error:', error);
-      throw new Error(error.message || 'Registration failed. Please try again.');
+      throw error;
     }
   };
 
@@ -126,6 +141,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     user,
     isAuthenticated: !!user && !!session,
     isLoading: loading,
+    userRole,
+    isAdmin,
+    hasPermission,
     login,
     register,
     logout,

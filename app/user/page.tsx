@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   HeartIcon, 
@@ -17,6 +17,8 @@ import { HeartIcon as HeartSolidIcon, BellIcon as BellSolidIcon } from '@heroico
 import DashboardLayout from '../../src/src/components/layout/DashboardLayout';
 import PropertyCard from '../../src/src/components/PropertyCard';
 import { Button } from '../../src/src/components/ui';
+import { useAuth } from '../../src/src/contexts/AuthContext';
+import { supabase } from '../../src/src/lib/supabase';
 
 // Mock user data
 const mockUser = {
@@ -166,11 +168,49 @@ const recentActivities = [
 ];
 
 const UserDashboard: React.FC = () => {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'saved' | 'alerts' | 'preferences'>('overview');
   const [savedPropertiesState, setSavedPropertiesState] = useState<Set<string>>(
     new Set(savedProperties.map(p => p.id))
   );
+  const [userPreferences, setUserPreferences] = useState({
+    priceRange: '2000000-5000000',
+    propertyTypes: ['House', 'Condo'],
+    locations: ['Makati City', 'Bonifacio Global City'],
+    bedrooms: '2-3',
+    emailNotifications: true,
+    smsNotifications: false,
+    weeklyReports: true
+  });
+  const [isSavingPreferences, setIsSavingPreferences] = useState(false);
+
+  // Load user preferences from database
+  useEffect(() => {
+    const loadUserPreferences = async () => {
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('preferences')
+            .eq('id', user.id)
+            .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error loading preferences:', error);
+          }
+
+          if (data?.preferences) {
+            setUserPreferences(prev => ({ ...prev, ...data.preferences }));
+          }
+        } catch (error) {
+          console.error('Error loading preferences:', error);
+        }
+      }
+    };
+
+    loadUserPreferences();
+  }, [user]);
 
   const handleSaveProperty = (propertyId: string) => {
     setSavedPropertiesState(prev => {
@@ -189,9 +229,23 @@ const UserDashboard: React.FC = () => {
     // In real app, make API call
   };
 
-  const handleToggleAlert = (alertId: string) => {
-    console.log('Toggle alert:', alertId);
-    // In real app, make API call
+  const handleToggleAlert = async (alertId: string) => {
+    try {
+      const { error } = await supabase
+        .from('search_alerts')
+        .update({ 
+          is_active: !searchAlerts.find(a => a.id === alertId)?.isActive,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', alertId);
+
+      if (error) throw error;
+      
+      // Update local state
+      console.log('Alert toggled successfully');
+    } catch (error) {
+      console.error('Error toggling alert:', error);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -206,6 +260,29 @@ const UserDashboard: React.FC = () => {
     return `₱${(price / 1000000).toFixed(1)}M`;
   };
 
+  const savePreferences = async () => {
+    if (!user) return;
+    
+    setIsSavingPreferences(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          preferences: userPreferences,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      
+      console.log('Preferences saved successfully');
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+    } finally {
+      setIsSavingPreferences(false);
+    }
+  };
+
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'heart':
@@ -216,10 +293,46 @@ const UserDashboard: React.FC = () => {
         return <EyeIcon className="w-4 h-4 text-green-500" />;
       case 'chat':
         return <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.03 8-9 8s9 3.582 9 8z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.03 8-9 8s9 3.582 9 8z" />
         </svg>;
       default:
         return <ChartBarIcon className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  // Redirect if not authenticated
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    router.push('/auth/login');
+    return null;
+  }
+
+  // Use real user data or fallback to mock data
+  const currentUser = {
+    id: user.id,
+    name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User',
+    email: user.email,
+    phone: user.phone || '',
+    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    memberSince: new Date().toISOString().split('T')[0],
+    preferences: {
+      priceRange: '2000000-5000000',
+      propertyTypes: ['House', 'Condo'],
+      locations: ['Makati City', 'Bonifacio Global City'],
+      bedrooms: '2-3',
+      emailNotifications: true,
+      smsNotifications: false,
+      weeklyReports: true
     }
   };
 
@@ -227,15 +340,15 @@ const UserDashboard: React.FC = () => {
     <DashboardLayout
       userRole="user"
       userInfo={{
-        name: mockUser.name,
-        email: mockUser.email,
-        avatar: mockUser.avatar,
+        name: currentUser.name,
+        email: currentUser.email,
+        avatar: currentUser.avatar,
         role: 'Premium User'
       }}
       activeTab={activeTab}
       onTabChange={(tab) => setActiveTab(tab as any)}
-      title={`Welcome back, ${mockUser.name.split(' ')[0]}!`}
-      subtitle={`Member since ${formatDate(mockUser.memberSince)}`}
+      title={`Welcome back, ${currentUser.name.split(' ')[0]}!`}
+      subtitle={`Member since ${formatDate(currentUser.memberSince)}`}
       actions={
         <Button
           onClick={() => router.push('/profile')}
@@ -481,7 +594,13 @@ const UserDashboard: React.FC = () => {
                             <input
                               type="checkbox"
                               className="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                              defaultChecked={mockUser.preferences.locations.includes(location)}
+                              checked={userPreferences.locations.includes(location)}
+                              onChange={(e) => {
+                                const newLocations = e.target.checked
+                                  ? [...userPreferences.locations, location]
+                                  : userPreferences.locations.filter(l => l !== location);
+                                setUserPreferences(prev => ({ ...prev, locations: newLocations }));
+                              }}
                             />
                             <span className="ml-2 text-sm text-gray-700">{location}</span>
                           </label>
@@ -500,7 +619,8 @@ const UserDashboard: React.FC = () => {
                       <input
                         type="checkbox"
                         className="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                        defaultChecked={mockUser.preferences.emailNotifications}
+                        checked={userPreferences.emailNotifications}
+                        onChange={(e) => setUserPreferences(prev => ({ ...prev, emailNotifications: e.target.checked }))}
                       />
                       <span className="ml-2 text-sm text-gray-700">Email notifications for new matches</span>
                     </label>
@@ -509,7 +629,8 @@ const UserDashboard: React.FC = () => {
                       <input
                         type="checkbox"
                         className="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                        defaultChecked={mockUser.preferences.smsNotifications}
+                        checked={userPreferences.smsNotifications}
+                        onChange={(e) => setUserPreferences(prev => ({ ...prev, smsNotifications: e.target.checked }))}
                       />
                       <span className="ml-2 text-sm text-gray-700">SMS notifications for urgent updates</span>
                     </label>
@@ -518,7 +639,8 @@ const UserDashboard: React.FC = () => {
                       <input
                         type="checkbox"
                         className="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                        defaultChecked={mockUser.preferences.weeklyReports}
+                        checked={userPreferences.weeklyReports}
+                        onChange={(e) => setUserPreferences(prev => ({ ...prev, weeklyReports: e.target.checked }))}
                       />
                       <span className="ml-2 text-sm text-gray-700">Weekly market reports</span>
                     </label>
@@ -527,8 +649,12 @@ const UserDashboard: React.FC = () => {
 
                 {/* Save Button */}
                 <div className="flex justify-end">
-                  <Button className="!bg-orange-500 hover:!bg-orange-600 !text-white">
-                    Save Preferences
+                  <Button 
+                    className="!bg-orange-500 hover:!bg-orange-600 !text-white"
+                    onClick={savePreferences}
+                    disabled={isSavingPreferences}
+                  >
+                    {isSavingPreferences ? 'Saving...' : 'Save Preferences'}
                   </Button>
                 </div>
               </div>

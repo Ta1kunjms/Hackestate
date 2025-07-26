@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   UserCircleIcon,
@@ -28,6 +28,8 @@ import Layout from '../../src/src/components/layout/Layout';
 import Navbar from '../../src/src/components/layout/Navbar';
 import Footer from '../../src/src/components/layout/Footer';
 import { Button, Input, Select, Textarea, FormField } from '../../src/src/components/ui';
+import { useAuth } from '../../src/src/contexts/AuthContext';
+import { supabase } from '../../src/src/lib/supabase';
 
 interface UserProfile {
   id: string;
@@ -87,39 +89,12 @@ interface PasswordUpdate {
   confirmPassword: string;
 }
 
-// Mock user data
-const mockUser: UserProfile = {
-  id: 'user-123',
-  firstName: 'Maria',
-  lastName: 'Santos',
-  email: 'maria.santos@email.com',
-  phone: '+63 917 123 4567',
-  dateOfBirth: '1990-05-15',
-  address: {
-    street: '123 Ayala Avenue',
-    city: 'Makati',
-    state: 'Metro Manila',
-    zipCode: '1226',
-    country: 'Philippines'
-  },
-  avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  bio: 'Real estate enthusiast looking for investment opportunities in Metro Manila.',
-  occupation: 'Marketing Manager',
-  company: 'Tech Solutions Inc.',
-  website: 'https://mariasantos.portfolio.com',
-  preferredLanguage: 'English',
-  timezone: 'Asia/Manila',
-  joinDate: '2023-01-15',
-  lastLogin: '2024-02-15T10:30:00Z',
-  emailVerified: true,
-  phoneVerified: false
-};
-
-const mockNotifications: NotificationPreferences = {
+// Default notification preferences
+const defaultNotifications: NotificationPreferences = {
   emailNotifications: {
     propertyAlerts: true,
     priceChanges: true,
-    newListings: false,
+    newListings: true,
     savedSearches: true,
     agentMessages: true,
     marketReports: false,
@@ -141,12 +116,68 @@ const mockNotifications: NotificationPreferences = {
 };
 
 const ProfilePage: React.FC = () => {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [activeTab, setActiveTab] = useState<'personal' | 'password' | 'notifications' | 'privacy'>('personal');
-  const [profile, setProfile] = useState<UserProfile>(mockUser);
-  const [notifications, setNotifications] = useState<NotificationPreferences>(mockNotifications);
+  const [profile, setProfile] = useState<UserProfile>(() => {
+    if (user) {
+      return {
+        id: user.id,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email,
+        phone: user.phone || '',
+        dateOfBirth: '',
+        address: {
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          country: 'Philippines'
+        },
+        avatar: '/default-avatar.png',
+        bio: '',
+        occupation: '',
+        company: '',
+        website: '',
+        preferredLanguage: 'English',
+        timezone: 'Asia/Manila',
+        joinDate: new Date().toISOString().split('T')[0],
+        lastLogin: new Date().toISOString(),
+        emailVerified: false,
+        phoneVerified: false
+      };
+    }
+    return {
+      id: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      dateOfBirth: '',
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: 'Philippines'
+      },
+      avatar: '/default-avatar.png',
+      bio: '',
+      occupation: '',
+      company: '',
+      website: '',
+      preferredLanguage: 'English',
+      timezone: 'Asia/Manila',
+      joinDate: new Date().toISOString().split('T')[0],
+      lastLogin: new Date().toISOString(),
+      emailVerified: false,
+      phoneVerified: false
+    };
+  });
+  const [notifications, setNotifications] = useState<NotificationPreferences>(defaultNotifications);
   const [passwordData, setPasswordData] = useState<PasswordUpdate>({
     currentPassword: '',
     newPassword: '',
@@ -162,6 +193,55 @@ const ProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<any>({});
+
+  // Load user profile data
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error loading profile:', error);
+          }
+
+          if (data) {
+            setProfile(prev => ({
+              ...prev,
+              firstName: data.first_name || '',
+              lastName: data.last_name || '',
+              phone: data.phone || '',
+              email: user.email,
+              avatar: data.avatar_url || prev.avatar,
+              ...(data.settings?.personal && {
+                dateOfBirth: data.settings.personal.dateOfBirth || '',
+                address: data.settings.personal.address || prev.address,
+                bio: data.settings.personal.bio || '',
+                occupation: data.settings.personal.occupation || '',
+                company: data.settings.personal.company || '',
+                website: data.settings.personal.website || '',
+                preferredLanguage: data.settings.personal.preferredLanguage || 'English',
+                timezone: data.settings.personal.timezone || 'Asia/Manila'
+              })
+            }));
+
+            // Load notification settings
+            if (data.settings?.notifications) {
+              setNotifications(data.settings.notifications);
+            }
+          }
+        } catch (error) {
+          console.error('Error loading profile:', error);
+        }
+      }
+    };
+
+    loadUserProfile();
+  }, [user]);
 
   // Handle profile form changes
   const handleProfileChange = (field: string, value: string) => {
@@ -223,7 +303,7 @@ const ProfilePage: React.FC = () => {
   };
 
   // Handle avatar upload
-  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       // Validate file type and size
@@ -240,15 +320,86 @@ const ProfilePage: React.FC = () => {
         return;
       }
       
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setProfile(prev => ({ ...prev, avatar: e.target!.result as string }));
-          setErrors({ avatar: undefined });
+      setIsLoading(true);
+      
+      try {
+        // Create a unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user!.id}-${Date.now()}.${fileExt}`;
+        const filePath = `avatars/${fileName}`;
+        
+        // Upload file to Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: true
+          });
+        
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          // If bucket doesn't exist, try to create it
+          if (uploadError.message?.includes('bucket') || uploadError.message?.includes('not found')) {
+            throw new Error('Storage bucket not configured. Please contact support.');
+          }
+          throw uploadError;
         }
-      };
-      reader.readAsDataURL(file);
+        
+        // Get the public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+        
+        // Update profile with new avatar URL
+        setProfile(prev => ({ ...prev, avatar: publicUrl }));
+        setErrors({ avatar: undefined });
+        
+        // Save the avatar URL to the database
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            avatar_url: publicUrl,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user!.id);
+        
+        if (updateError) {
+          console.error('Error saving avatar URL:', updateError);
+        }
+        
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        
+        // Fallback: save as data URL if storage fails
+        if (error instanceof Error && error.message.includes('Storage bucket not configured')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            if (e.target?.result) {
+              setProfile(prev => ({ ...prev, avatar: e.target!.result as string }));
+              setErrors({ avatar: undefined });
+              
+              // Save the data URL to database
+              supabase
+                .from('profiles')
+                .update({
+                  avatar_url: e.target!.result as string,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', user!.id)
+                .then(({ error: updateError }) => {
+                  if (updateError) {
+                    console.error('Error saving avatar URL:', updateError);
+                  }
+                });
+            }
+          };
+          reader.readAsDataURL(file);
+        } else {
+          setErrors({ avatar: 'Failed to upload image. Please try again.' });
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -292,12 +443,41 @@ const ProfilePage: React.FC = () => {
     setSaveStatus('saving');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Update profile in Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: profile.firstName,
+          last_name: profile.lastName,
+          phone: profile.phone,
+          settings: {
+            personal: {
+              dateOfBirth: profile.dateOfBirth,
+              address: profile.address,
+              bio: profile.bio,
+              occupation: profile.occupation,
+              company: profile.company,
+              website: profile.website,
+              preferredLanguage: profile.preferredLanguage,
+              timezone: profile.timezone
+            }
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user!.id);
+
+      if (error) throw error;
       
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (error) {
+      console.error(
+        'Error saving profile:',
+        error,
+        JSON.stringify(error),
+        (error as any)?.message,
+        (error as any)?.stack
+      );
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } finally {
@@ -312,13 +492,32 @@ const ProfilePage: React.FC = () => {
     setSaveStatus('saving');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // First, verify the current password by attempting to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user!.email,
+        password: passwordData.currentPassword
+      });
+
+      if (signInError) {
+        setErrors({ currentPassword: 'Current password is incorrect' });
+        setSaveStatus('error');
+        setTimeout(() => setSaveStatus('idle'), 3000);
+        return;
+      }
+
+      // Update password in Supabase
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.newPassword
+      });
+
+      if (error) throw error;
       
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setErrors({});
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (error) {
+      console.error('Error updating password:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } finally {
@@ -331,12 +530,23 @@ const ProfilePage: React.FC = () => {
     setSaveStatus('saving');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Update notification preferences in Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          settings: {
+            notifications: notifications
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user!.id);
+
+      if (error) throw error;
       
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (error) {
+      console.error('Error saving notification preferences:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     } finally {
@@ -362,10 +572,57 @@ const ProfilePage: React.FC = () => {
     });
   };
 
+  // Calculate profile completion percentage
+  const calculateProfileCompletion = () => {
+    const fields = [
+      profile.firstName,
+      profile.lastName,
+      profile.email,
+      profile.phone,
+      profile.dateOfBirth,
+      profile.address.street,
+      profile.address.city,
+      profile.address.state,
+      profile.address.zipCode,
+      profile.occupation,
+      profile.company,
+      profile.bio
+    ];
+    
+    const completedFields = fields.filter(field => field && field.trim() !== '').length;
+    const totalFields = fields.length;
+    
+    return Math.round((completedFields / totalFields) * 100);
+  };
+
+  const profileCompletion = calculateProfileCompletion();
+
+  // Redirect if not authenticated
+  if (authLoading) {
+    return (
+      <Layout>
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading profile...</p>
+          </div>
+        </div>
+        <Footer />
+      </Layout>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    router.push('/auth/login');
+    return null;
+  }
+
   return (
     <Layout>
       <Navbar />
-      <div className="min-h-screen bg-gray-50 pt-20">
+      
+      <div className="min-h-screen bg-gray-50 pt-32">
         {/* Page Header */}
         <div className="bg-white shadow-sm border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -373,16 +630,34 @@ const ProfilePage: React.FC = () => {
               <div className="flex items-center space-x-6">
                 {/* Avatar */}
                 <div className="relative">
-                  <img
-                    src={profile.avatar}
-                    alt={`${profile.firstName} ${profile.lastName}`}
-                    className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
-                  />
+                  {profile.avatar && profile.avatar !== '/default-avatar.png' ? (
+                    <img
+                      src={profile.avatar}
+                      alt={`${profile.firstName} ${profile.lastName}`}
+                      className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-gray-200 border-4 border-white shadow-lg flex items-center justify-center">
+                      <UserCircleIcon className="w-12 h-12 text-gray-400" />
+                    </div>
+                  )}
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-0 right-0 w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center text-white hover:bg-orange-600 transition-colors shadow-lg"
+                    disabled={isLoading}
+                    className={`absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center text-white shadow-lg transition-colors ${
+                      isLoading 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-orange-500 hover:bg-orange-600'
+                    }`}
                   >
-                    <CameraIcon className="w-4 h-4" />
+                    {isLoading ? (
+                      <svg className="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <CameraIcon className="w-4 h-4" />
+                    )}
                   </button>
                   <input
                     ref={fileInputRef}
@@ -487,10 +762,10 @@ const ProfilePage: React.FC = () => {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Profile Completion</span>
-                    <span className="text-sm font-medium text-green-600">85%</span>
+                    <span className="text-sm font-medium text-green-600">{profileCompletion}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '85%' }}></div>
+                    <div className="bg-green-500 h-2 rounded-full" style={{ width: `${profileCompletion}%` }}></div>
                   </div>
                   
                   <div className="pt-4 border-t border-gray-200">
@@ -1152,21 +1427,10 @@ const ProfilePage: React.FC = () => {
                           </div>
                           
                           <Button
-                            onClick={saveNotifications}
-                            disabled={isLoading}
-                            className="!bg-orange-500 hover:!bg-orange-600 !text-white"
+                            disabled={true}
+                            className="!bg-gray-400 !cursor-not-allowed"
                           >
-                            {saveStatus === 'saving' ? (
-                              <div className="flex items-center">
-                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Saving...
-                              </div>
-                            ) : (
-                              'Save Preferences'
-                            )}
+                            Coming Soon
                           </Button>
                         </div>
                       </div>
