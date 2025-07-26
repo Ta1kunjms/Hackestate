@@ -66,6 +66,9 @@ export interface Event {
   status: string;
   attendees: number;
   maxCapacity: number;
+  imageUrl?: string;
+  price?: number;
+  description?: string;
 }
 
 export interface Content {

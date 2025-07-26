@@ -7,7 +7,7 @@ import { Button } from '../../src/src/components/ui';
 import { useAuth } from '../../src/src/contexts/AuthContext';
 import ProtectedRoute from '../../src/src/components/auth/ProtectedRoute';
 import { supabase } from '../../src/src/lib/supabase';
-import EventCreateModal from '../../src/src/components/cms/EventCreateModal';
+
 
 // Import admin components
 import {
@@ -16,6 +16,8 @@ import {
   UsersTab,
   AgentsTab,
   PropertiesTab,
+  EventsTab,
+  SettingsTab,
   UserDetailsModal,
   UserEditModal,
   UserDeleteModal,
@@ -25,6 +27,7 @@ import {
   PropertyDetailsModal,
   PropertyEditModal,
   PropertyDeleteModal,
+  EventDeleteModal,
   AdminTab,
   formatDate
 } from '../../src/src/components/admin';
@@ -36,7 +39,6 @@ const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const [showEventCreateModal, setShowEventCreateModal] = useState(false);
   
   // Modal states
   const [showUserDetailsModal, setShowUserDetailsModal] = useState(false);
@@ -53,6 +55,9 @@ const AdminDashboard: React.FC = () => {
   const [showPropertyEditModal, setShowPropertyEditModal] = useState(false);
   const [showPropertyDeleteModal, setShowPropertyDeleteModal] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
+
+  const [showEventDeleteModal, setShowEventDeleteModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   // Use the admin data hook
   const {
@@ -137,7 +142,21 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleEventAction = (eventId: string, action: string) => {
-    console.log(`${action} event ${eventId}`);
+    const event = events.find(e => e.id === eventId);
+    if (!event) return;
+    
+    switch (action) {
+      case 'view':
+        // Redirect to individual event page
+        router.push(`/events/${eventId}`);
+        break;
+      case 'delete':
+        setSelectedEvent(event);
+        setShowEventDeleteModal(true);
+        break;
+      default:
+        console.log(`${action} event ${eventId}`);
+    }
   };
 
   const handleContentAction = (contentId: string, action: string) => {
@@ -166,6 +185,9 @@ const AdminDashboard: React.FC = () => {
       location: data.location,
       description: data.description,
       event_type: data.category,
+      price: parseFloat(data.price) || 0,
+      max_capacity: parseInt(data.maxCapacity) || 0,
+      image_url: data.imageUrl || '',
       status: 'Published',
     });
     if (!error) {
@@ -269,6 +291,76 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleUpdateEvent = async (eventId: string, updates: any) => {
+    try {
+      // Map form fields to database columns
+      const mappedUpdates = {
+        title: updates.title,
+        event_date: updates.date,
+        event_time: updates.time,
+        location: updates.location,
+        description: updates.description,
+        event_type: updates.category,
+        price: parseFloat(updates.price) || 0,
+        max_capacity: parseInt(updates.maxCapacity) || 0,
+        image_url: updates.imageUrl || '',
+      };
+
+      const { error } = await supabase
+        .from('events')
+        .update(mappedUpdates)
+        .eq('id', eventId);
+      if (error) throw error;
+      await loadEvents();
+      alert('Event updated successfully!');
+    } catch (error) {
+      alert('Failed to update event: ' + (error as any).message);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      const { error } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', eventId);
+      if (error) throw error;
+      await loadEvents();
+      setShowEventDeleteModal(false);
+      setSelectedEvent(null);
+      alert('Event deleted successfully!');
+    } catch (error) {
+      alert('Failed to delete event: ' + (error as any).message);
+    }
+  };
+
+  // Handler to save settings
+  const handleSaveSettings = async (settings: any) => {
+    try {
+      // In a real app, you would save these to a settings table in the database
+      // For now, we'll just simulate the save operation
+      console.log('Saving settings:', settings);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // You could save to Supabase like this:
+      // const { error } = await supabase
+      //   .from('system_settings')
+      //   .upsert({ 
+      //     id: 1, 
+      //     settings: JSON.stringify(settings),
+      //     updated_at: new Date().toISOString()
+      //   });
+      // if (error) throw error;
+      
+      return Promise.resolve();
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      return Promise.reject(error);
+    }
+  };
+
   return (
     <ProtectedRoute requiredRole="admin">
       <DashboardLayout
@@ -362,210 +454,33 @@ const AdminDashboard: React.FC = () => {
             )}
 
             {activeTab === 'events' && (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Event Management</h2>
-                  <Button onClick={() => setShowEventCreateModal(true)}>
-                    Create New Event
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {events.map((event) => (
-                    <div key={event.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{event.title}</h3>
-                          <div className="space-y-1 text-sm text-gray-600">
-                            <p>📅 {event.date} at {event.time}</p>
-                            <p>📍 {event.location}</p>
-                            <p>🎫 {event.attendees}/{event.maxCapacity} attendees</p>
-                          </div>
-                        </div>
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {event.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <EventsTab
+                events={events}
+                isLoading={isLoading}
+                onRefresh={loadEvents}
+                onEventAction={handleEventAction}
+                onCreateEvent={handleCreateEvent}
+                onUpdateEvent={handleUpdateEvent}
+              />
             )}
 
             {activeTab === 'content' && (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Content Management</h2>
-                  <Button>Create New Content</Button>
-                </div>
-                
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Content</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {content.map((content) => (
-                          <tr key={content.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">{content.title}</div>
-                                <div className="text-sm text-gray-500">By {content.author}</div>
-                                <div className="text-xs text-gray-500">{content.category}</div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {content.type}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                {content.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              <div>{content.views.toLocaleString()} views</div>
-                              <div>{content.publishDate ? formatDate(content.publishDate) : 'Not published'}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => handleContentAction(content.id, 'view')}
-                                  className="text-blue-600 hover:text-blue-900"
-                                >
-                                  View
-                                </button>
-                                <button
-                                  onClick={() => handleContentAction(content.id, 'edit')}
-                                  className="text-orange-600 hover:text-orange-900"
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  onClick={() => handleContentAction(content.id, 'delete')}
-                                  className="text-red-600 hover:text-red-900"
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+              <div className="flex items-center justify-center py-16">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Content Management</h2>
+                  <p className="text-gray-500">Coming Soon</p>
                 </div>
               </div>
             )}
 
             {activeTab === 'settings' && (
-              <div className="max-w-4xl">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">System Settings</h2>
-                
-                <div className="space-y-8">
-                  {/* Platform Settings */}
-                  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Platform Settings</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Commission Rate (%)</label>
-                        <input
-                          type="number"
-                          defaultValue="8.5"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-orange-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Default Currency</label>
-                        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-orange-500">
-                          <option value="PHP">Philippine Peso (₱)</option>
-                          <option value="USD">US Dollar ($)</option>
-                          <option value="EUR">Euro (€)</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Max Property Images</label>
-                        <input
-                          type="number"
-                          defaultValue="20"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-orange-500"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Auto-approve Listings</label>
-                        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-orange-500">
-                          <option value="false">Manual Review Required</option>
-                          <option value="true">Auto-approve</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Email Settings */}
-                  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Email Settings</h3>
-                    
-                    <div className="space-y-4">
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                          defaultChecked
-                        />
-                        <span className="ml-2 text-sm text-gray-700">Send welcome emails to new users</span>
-                      </label>
-                      
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                          defaultChecked
-                        />
-                        <span className="ml-2 text-sm text-gray-700">Send listing notifications to agents</span>
-                      </label>
-                      
-                      <label className="flex items-center">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                        />
-                        <span className="ml-2 text-sm text-gray-700">Send weekly performance reports</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Save Button */}
-                  <div className="flex justify-end">
-                    <Button className="!bg-orange-500 hover:!bg-orange-600 !text-white">
-                      Save Settings
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <SettingsTab onSaveSettings={handleSaveSettings} />
             )}
           </>
         )}
       </DashboardLayout>
 
-      {/* Event Create Modal */}
-      <EventCreateModal
-        open={showEventCreateModal}
-        onClose={() => setShowEventCreateModal(false)}
-        onCreate={async (data) => {
-          await handleCreateEvent(data);
-          setShowEventCreateModal(false);
-        }}
-      />
+
 
       {/* User Modals */}
       <UserDetailsModal
@@ -629,6 +544,14 @@ const AdminDashboard: React.FC = () => {
         isOpen={showPropertyDeleteModal}
         onClose={() => setShowPropertyDeleteModal(false)}
         onDelete={handleDeleteProperty}
+      />
+
+      {/* Event Modals */}
+      <EventDeleteModal
+        event={selectedEvent}
+        open={showEventDeleteModal}
+        onClose={() => setShowEventDeleteModal(false)}
+        onDelete={handleDeleteEvent}
       />
     </ProtectedRoute>
   );

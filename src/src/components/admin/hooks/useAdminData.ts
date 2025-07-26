@@ -390,7 +390,10 @@ export const useAdminData = (isAdmin: boolean) => {
         type: event.event_type || 'Event',
         status: event.status || 'Draft',
         attendees: event.attendees_count || 0,
-        maxCapacity: event.max_capacity || 0
+        maxCapacity: event.max_capacity || 0,
+        imageUrl: event.image_url || '',
+        price: event.price || 0,
+        description: event.description || ''
       }));
 
       setEvents(formattedEvents);

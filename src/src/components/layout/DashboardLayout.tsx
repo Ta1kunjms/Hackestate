@@ -30,6 +30,7 @@ interface NavigationItem {
   path: string;
   count?: number;
   badge?: string;
+  disabled?: boolean;
 }
 
 interface DashboardLayoutProps {
@@ -97,7 +98,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           { id: 'agents', label: 'Agents', icon: UserGroupIcon, path: '/admin/dashboard', count: counts?.agents },
           { id: 'properties', label: 'Properties', icon: BuildingOfficeIcon, path: '/admin/dashboard', count: counts?.properties },
           { id: 'events', label: 'Events', icon: CalendarIcon, path: '/admin/dashboard', count: counts?.events },
-          { id: 'content', label: 'Content', icon: DocumentTextIcon, path: '/admin/dashboard', count: counts?.content },
+          { id: 'content', label: 'Content', icon: DocumentTextIcon, path: '/admin/dashboard', count: counts?.content, disabled: true },
           { id: 'settings', label: 'Settings', icon: Cog6ToothIcon, path: '/admin/dashboard' }
         ];
       default:
@@ -108,6 +109,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const navigationItems = getNavigationItems();
 
   const handleNavigation = (item: NavigationItem) => {
+    if (item.disabled) {
+      return; // Don't navigate if item is disabled
+    }
     if (onTabChange) {
       onTabChange(item.id);
     }
@@ -212,13 +216,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </div>
 
               {/* Navigation */}
-              <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+              <nav className="flex-1 px-4 py-4 space-y-1">
                 {navigationItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleNavigation(item)}
+                    disabled={item.disabled}
                     className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
-                      activeTab === item.id
+                      item.disabled
+                        ? 'text-gray-400 cursor-not-allowed opacity-50'
+                        : activeTab === item.id
                         ? 'bg-orange-50 text-orange-600 border-r-2 border-orange-600'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
@@ -226,7 +233,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     <item.icon className="w-5 h-5 mr-3" />
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.count && (
-                      <span className="bg-gray-200 text-gray-600 text-xs rounded-full px-2 py-0.5">
+                      <span className={`text-xs rounded-full px-2 py-0.5 ${
+                        item.disabled 
+                          ? 'bg-gray-100 text-gray-400' 
+                          : 'bg-gray-200 text-gray-600'
+                      }`}>
                         {item.count}
                       </span>
                     )}
@@ -235,20 +246,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         {item.badge}
                       </span>
                     )}
+                    {item.disabled && (
+                      <div className="ml-2 text-xs text-gray-400">
+                        <div>Coming Soon</div>
+                      </div>
+                    )}
                   </button>
                 ))}
               </nav>
 
-              {/* Sidebar Footer */}
-              <div className="p-4 border-t border-gray-200">
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
-                  Sign Out
-                </button>
-              </div>
+
             </div>
           </div>
 
