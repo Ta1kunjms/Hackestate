@@ -451,7 +451,7 @@ const ProfilePage: React.FC = () => {
         </div>
 
         {/* Tabs Navigation */}
-        <div className="bg-white border-b border-gray-200 sticky top-16 z-10">
+        <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex space-x-8">
               {[
@@ -482,7 +482,7 @@ const ProfilePage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-sm p-6 sticky top-32">
+              <div className="bg-white rounded-xl shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Status</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
