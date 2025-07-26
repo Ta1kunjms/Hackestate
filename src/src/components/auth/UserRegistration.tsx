@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Typography, Input, Button } from '@material-tailwind/react';
 import { UserRegistrationData, RoleName } from '../../types/user';
 import { getRoleDisplayName, getRoleDescription, requiresApproval, getDefaultRole } from '../../utils/authRedirects';
+import { registerUser } from '../../services/authService';
 
 interface FormErrors {
   email?: string;
@@ -109,18 +110,19 @@ const UserRegistration: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // TODO: Implement actual registration logic with Supabase
-      console.log('Registration attempt:', formData);
+      // Call the actual registration service
+      const result = await registerUser(formData);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (!result.success) {
+        throw new Error(result.error || 'Registration failed');
+      }
       
       // Success announcement (client-side only)
       if (typeof document !== 'undefined') {
         const successAnnouncement = document.createElement('div');
         successAnnouncement.setAttribute('aria-live', 'polite');
         successAnnouncement.className = 'sr-only';
-        successAnnouncement.textContent = `Registration successful! ${requiresApproval(formData.role_name) ? 'Your application is pending approval.' : 'Welcome to the platform!'}`;
+        successAnnouncement.textContent = `Registration successful! ${result.requiresApproval ? 'Your application is pending approval.' : 'Welcome to the platform!'}`;
         document.body.appendChild(successAnnouncement);
         
         setTimeout(() => {
@@ -131,7 +133,8 @@ const UserRegistration: React.FC = () => {
       setIsSubmitted(true);
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Registration failed. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed. Please try again.';
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }

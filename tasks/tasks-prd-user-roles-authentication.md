@@ -53,8 +53,8 @@
 
 - [ ] 2.0 Implement user registration with role selection
   - [x] 2.1 Create UserRegistration component with form validation
-  - [ ] 2.2 Build RoleSelector component with role descriptions and selection UI
-  - [ ] 2.3 Implement registration form submission to Supabase
+  - [x] 2.2 Build RoleSelector component with role descriptions and selection UI
+  - [x] 2.3 Implement registration form submission to Supabase
   - [ ] 2.4 Add role-specific registration flows (basic for buyer/seller, extended for agent/developer)
   - [ ] 2.5 Create email verification process for new registrations
   - [ ] 2.6 Implement password reset functionality
