@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 
 const TopPixNavbar: React.FC = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isAdmin } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
@@ -108,8 +108,17 @@ const TopPixNavbar: React.FC = () => {
                   className="block px-4 py-2 text-card-foreground hover:text-primary transition-colors"
                   onClick={() => setIsProfileDropdownOpen(false)}
                 >
-                  Dashboard
+                  User Dashboard
                 </Link>
+                {isAdmin && (
+                  <Link 
+                    href="/admin"
+                    className="block px-4 py-2 text-card-foreground hover:text-primary transition-colors"
+                    onClick={() => setIsProfileDropdownOpen(false)}
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
                 <hr className="my-1 border-border" />
                 <button
                   onClick={() => {
@@ -185,12 +194,28 @@ const TopPixNavbar: React.FC = () => {
                       <span>{user?.firstName || 'Profile'}</span>
                     </Link>
                     <Link 
+                      href="/user"
+                      className="block pl-7 text-card-foreground hover:text-primary transition-colors font-medium py-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      User Dashboard
+                    </Link>
+                    <Link 
                       href="/user/settings"
                       className="block pl-7 text-card-foreground hover:text-primary transition-colors font-medium py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Settings
                     </Link>
+                    {isAdmin && (
+                      <Link 
+                        href="/admin"
+                        className="block pl-7 text-card-foreground hover:text-primary transition-colors font-medium py-2"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         handleLogout();

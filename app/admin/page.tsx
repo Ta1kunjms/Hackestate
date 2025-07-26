@@ -43,7 +43,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role_id: string; // role id only
   status: string;
   joinDate: string;
   lastActive: string;
@@ -96,6 +96,7 @@ const AdminDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [showEventCreateModal, setShowEventCreateModal] = useState(false);
+  const [roles, setRoles] = useState<{ id: string; name: string }[]>([]);
   
   // Real data state
   const [platformStats, setPlatformStats] = useState<PlatformStats>({
@@ -116,6 +117,22 @@ const AdminDashboard: React.FC = () => {
   const [content, setContent] = useState<Content[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Computed filtered agents
+  const filteredAgents = agents.filter(agent => {
+    const matchesSearch = searchTerm === '' || 
+      agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.license.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesFilter = selectedFilter === 'all' || 
+      agent.status.toLowerCase() === selectedFilter.toLowerCase();
+    
+    return matchesSearch && matchesFilter;
+  });
+
+  // Add state to track which user's role is being edited
+  const [editingRoleUserId, setEditingRoleUserId] = useState<string | null>(null);
+
   // Load real data
   useEffect(() => {
     const loadAdminData = async () => {
@@ -123,6 +140,21 @@ const AdminDashboard: React.FC = () => {
       
       setIsLoading(true);
       try {
+        // Test database connection first
+        console.log('Testing database connection...');
+        const { data: testData, error: testError } = await supabase
+          .from('profiles')
+          .select('count')
+          .limit(1);
+        
+        if (testError) {
+          console.error('Database connection test failed:', testError);
+          alert('Database connection failed. Please check your Supabase configuration.');
+          return;
+        }
+        
+        console.log('Database connection successful');
+        
         // Load platform stats
         await loadPlatformStats();
         
@@ -137,6 +169,7 @@ const AdminDashboard: React.FC = () => {
         
         // Load content
         await loadContent();
+        await loadRoles(); // <-- fetch roles
       } catch (error) {
         console.error('Error loading admin data:', error);
       } finally {
@@ -242,21 +275,27 @@ const AdminDashboard: React.FC = () => {
 
   const loadUsers = async () => {
     try {
+      console.log('Loading users...');
+      
+      // Simple query to get all profiles
       const { data, error } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          email,
-          created_at,
-          updated_at,
-          is_active,
-          role:user_roles(name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading users:', error);
+        setUsers([]);
+        return;
+      }
+
+      console.log('Raw user data:', data);
+
+      if (!data || data.length === 0) {
+        console.log('No users found in database');
+        setUsers([]);
+        return;
+      }
 
       const formattedUsers: User[] = await Promise.all((data || []).map(async (profile: any) => {
         // Get saved properties count for this user
@@ -287,8 +326,8 @@ const AdminDashboard: React.FC = () => {
           id: profile.id,
           name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Unknown',
           email: profile.email,
-          role: profile.role?.name || 'Unknown',
-          status: profile.is_active ? 'Active' : 'Inactive',
+          role_id: profile.role_id || '',
+          status: profile.is_active !== false ? 'Active' : 'Inactive', // Default to Active if field doesn't exist
           joinDate: profile.created_at,
           lastActive: profile.updated_at,
           savedProperties: savedPropertiesCount,
@@ -296,36 +335,53 @@ const AdminDashboard: React.FC = () => {
         };
       }));
 
+      console.log('Final formatted users:', formattedUsers);
       setUsers(formattedUsers);
     } catch (error) {
       console.error('Error loading users:', error);
+      setUsers([]);
     }
   };
 
   const loadAgents = async () => {
     try {
-      const { data: agentRole } = await supabase
+      console.log('Loading agents...');
+      
+      // First, get the agent role ID
+      const { data: agentRole, error: roleError } = await supabase
         .from('user_roles')
         .select('id')
         .eq('name', 'agent')
         .single();
 
+      if (roleError) {
+        console.error('Error getting agent role:', roleError);
+        setAgents([]);
+        return;
+      }
+
+      console.log('Agent role found:', agentRole);
+
+      // Get all profiles with agent role
       const { data, error } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          email,
-          phone,
-          created_at,
-          is_verified,
-          role:user_roles(name)
-        `)
-        .eq('role_id', agentRole?.id)
+        .select('*')
+        .eq('role_id', agentRole.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading agents:', error);
+        setAgents([]);
+        return;
+      }
+
+      console.log('Raw agent data:', data);
+
+      if (!data || data.length === 0) {
+        console.log('No agents found in database');
+        setAgents([]);
+        return;
+      }
 
       const formattedAgents: Agent[] = await Promise.all((data || []).map(async (profile: any) => {
         // Get properties count for this agent
@@ -373,7 +429,7 @@ const AdminDashboard: React.FC = () => {
           name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Unknown',
           email: profile.email,
           phone: profile.phone || 'N/A',
-          status: profile.is_verified ? 'Verified' : 'Pending',
+          status: profile.is_verified === true ? 'Verified' : 'Pending', // Default to Pending if field doesn't exist
           license: `RE-${profile.id.slice(0, 8).toUpperCase()}`,
           joinDate: profile.created_at,
           properties: propertiesCount,
@@ -383,9 +439,11 @@ const AdminDashboard: React.FC = () => {
         };
       }));
 
+      console.log('Final formatted agents:', formattedAgents);
       setAgents(formattedAgents);
     } catch (error) {
       console.error('Error loading agents:', error);
+      setAgents([]);
     }
   };
 
@@ -454,6 +512,21 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const loadRoles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('name', { ascending: true });
+      if (error) throw error;
+      setRoles(data || []);
+    } catch (error) {
+      console.error('Error loading roles:', error);
+      setRoles([]);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -490,9 +563,46 @@ const AdminDashboard: React.FC = () => {
     // In real app, make API call
   };
 
-  const handleAgentAction = (agentId: string, action: string) => {
-    console.log(`${action} agent ${agentId}`);
-    // In real app, make API call
+  const handleAgentAction = async (agentId: string, action: string) => {
+    try {
+      switch (action) {
+        case 'view':
+          console.log(`Viewing agent ${agentId}`);
+          // In real app, navigate to agent detail page
+          break;
+        case 'edit':
+          console.log(`Editing agent ${agentId}`);
+          // In real app, open edit modal
+          break;
+        case 'verify':
+          if (window.confirm('Verify this agent?')) {
+            const { error } = await supabase
+              .from('profiles')
+              .update({ is_verified: true })
+              .eq('id', agentId);
+            if (error) throw error;
+            await loadAgents();
+            alert('Agent verified successfully!');
+          }
+          break;
+        case 'delete':
+          if (window.confirm('Are you sure you want to delete this agent? This cannot be undone.')) {
+            const { error } = await supabase
+              .from('profiles')
+              .delete()
+              .eq('id', agentId);
+            if (error) throw error;
+            await loadAgents();
+            alert('Agent deleted successfully!');
+          }
+          break;
+        default:
+          console.log(`${action} agent ${agentId}`);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing agent:`, error);
+      alert(`Failed to ${action} agent: ${(error as any).message}`);
+    }
   };
 
   const handleEventAction = (eventId: string, action: string) => {
@@ -540,6 +650,55 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  // Handler to change user role
+  const handleChangeUserRole = async (userId: string, newRoleId: string) => {
+    if (!window.confirm('Change this user\'s role?')) return;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role_id: newRoleId })
+        .eq('id', userId);
+      if (error) throw error;
+      await loadUsers();
+      alert('User role updated!');
+    } catch (error) {
+      alert('Failed to update user role: ' + (error as any).message);
+    }
+  };
+
+  // Handler to delete user
+  const handleDeleteUser = async (userId: string) => {
+    if (!window.confirm('Are you sure you want to delete this user? This cannot be undone.')) return;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+      if (error) throw error;
+      await loadUsers();
+      alert('User deleted!');
+    } catch (error) {
+      alert('Failed to delete user: ' + (error as any).message);
+    }
+  };
+
+  // Handler to suspend/unsuspend user
+  const handleSuspendUser = async (userId: string, suspend: boolean) => {
+    const action = suspend ? 'suspend' : 'unsuspend';
+    if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: !suspend })
+        .eq('id', userId);
+      if (error) throw error;
+      await loadUsers();
+      alert(`User ${suspend ? 'suspended' : 'unsuspended'}!`);
+    } catch (error) {
+      alert('Failed to update user status: ' + (error as any).message);
+    }
+  };
+
   return (
     <ProtectedRoute requiredRole="admin">
       <DashboardLayout
@@ -564,7 +723,7 @@ const AdminDashboard: React.FC = () => {
         }
         counts={{
           users: platformStats.totalUsers,
-          agents: platformStats.totalAgents,
+          agents: agents.length, // Use actual agents array length instead of platformStats
           properties: platformStats.totalProperties,
           events: platformStats.totalEvents,
           content: content.length
@@ -727,6 +886,14 @@ const AdminDashboard: React.FC = () => {
                       <option value="suspended">Suspended</option>
                       <option value="inactive">Inactive</option>
                     </select>
+                    <Button 
+                      variant="outlined" 
+                      onClick={() => loadUsers()}
+                      className="flex items-center"
+                    >
+                      <span className="mr-2">🔄</span>
+                      Refresh
+                    </Button>
                   </div>
                 </div>
                 
@@ -739,54 +906,102 @@ const AdminDashboard: React.FC = () => {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {users.map((user) => (
-                          <tr key={user.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                                <div className="text-sm text-gray-500">{user.email}</div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                                {user.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              <div>{user.savedProperties} saved properties</div>
-                              <div>{user.inquiries} inquiries sent</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {formatDate(user.joinDate)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => handleUserAction(user.id, 'view')}
-                                  className="text-blue-600 hover:text-blue-900"
-                                >
-                                  <EyeIcon className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleUserAction(user.id, 'edit')}
-                                  className="text-orange-600 hover:text-orange-900"
-                                >
-                                  <PencilIcon className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleUserAction(user.id, user.status === 'Active' ? 'suspend' : 'activate')}
-                                  className={user.status === 'Active' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}
-                                >
-                                  {user.status === 'Active' ? <XMarkIcon className="w-4 h-4" /> : <CheckIcon className="w-4 h-4" />}
-                                </button>
+                        {users.length > 0 ? (
+                          users.map((user) => (
+                            <tr key={user.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                  <div className="text-sm text-gray-500">{user.email}</div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                  Active
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div>{user.savedProperties} saved properties</div>
+                                <div>{user.inquiries} inquiries sent</div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {formatDate(user.joinDate)}
+                              </td>
+                              {/* Role cell with hover-to-edit */}
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative"
+                                  onMouseEnter={() => setEditingRoleUserId(user.id)}
+                                  onMouseLeave={() => setEditingRoleUserId(null)}
+                              >
+                                {editingRoleUserId === user.id ? (
+                                  <select
+                                    autoFocus
+                                    value={user.role_id || ''}
+                                    onChange={e => {
+                                      handleChangeUserRole(user.id, e.target.value);
+                                      setEditingRoleUserId(null);
+                                    }}
+                                    className="border rounded px-2 py-1 text-xs bg-white shadow"
+                                    onBlur={() => setEditingRoleUserId(null)}
+                                  >
+                                    <option value="">Select role</option>
+                                    {roles.map(role => (
+                                      <option key={role.id} value={role.id}>{role.name}</option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <span className="cursor-pointer hover:underline hover:text-orange-600 transition-colors">{roles.find(r => r.id === user.role_id)?.name || 'Unknown'}</span>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div className="flex items-center space-x-2">
+                                  {/* Suspend button (always, disabled for now) */}
+                                  <button
+                                    disabled
+                                    className="text-yellow-600 border border-yellow-400 rounded px-2 py-1 text-xs font-semibold opacity-50 cursor-not-allowed"
+                                    title="Suspend user (coming soon)"
+                                  >
+                                    Suspend
+                                  </button>
+                                  {/* Delete button */}
+                                  <button
+                                    onClick={() => handleDeleteUser(user.id)}
+                                    className="text-red-600 hover:text-red-900"
+                                    title="Delete user"
+                                  >
+                                    <TrashIcon className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={6} className="px-6 py-12 text-center">
+                              <div className="flex flex-col items-center">
+                                <UsersIcon className="w-12 h-12 text-gray-300 mb-4" />
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
+                                <p className="text-gray-500 mb-4">
+                                  {isLoading ? 'Loading users...' : 'There are no users in the system yet.'}
+                                </p>
+                                {!isLoading && (
+                                  <Button 
+                                    variant="outlined" 
+                                    onClick={() => loadUsers()}
+                                    className="flex items-center"
+                                  >
+                                    <span className="mr-2">🔄</span>
+                                    Refresh Users
+                                  </Button>
+                                )}
                               </div>
                             </td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -798,10 +1013,36 @@ const AdminDashboard: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-900">Agent Management</h2>
-                  <Button>
-                    <PlusIcon className="w-4 h-4 mr-2" />
-                    Add New Agent
-                  </Button>
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        placeholder="Search agents..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-orange-500"
+                      />
+                    </div>
+                    <select
+                      value={selectedFilter}
+                      onChange={(e) => setSelectedFilter(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-orange-500"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="verified">Verified</option>
+                      <option value="pending">Pending</option>
+                    </select>
+                    <Button 
+                      variant="outlined" 
+                      onClick={() => loadAgents()}
+                      className="flex items-center"
+                    >
+                      <span className="mr-2">🔄</span>
+                      Refresh
+                    </Button>
+
+                  </div>
                 </div>
                 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -813,61 +1054,99 @@ const AdminDashboard: React.FC = () => {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commission</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {agents.map((agent) => (
-                          <tr key={agent.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">{agent.name}</div>
-                                <div className="text-sm text-gray-500">{agent.email}</div>
-                                <div className="text-xs text-gray-500">License: {agent.license}</div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(agent.status)}`}>
-                                {agent.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              <div>{agent.properties} properties</div>
-                              <div>{agent.sales} sales</div>
-                              <div className="flex items-center">
-                                <span className="text-yellow-400">★</span>
-                                <span className="ml-1">{agent.rating || 'No rating'}</span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {filteredAgents.length > 0 ? (
+                          filteredAgents.map((agent) => (
+                            <tr key={agent.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{agent.name}</div>
+                                  <div className="text-sm text-gray-500">{agent.email}</div>
+                                  <div className="text-xs text-gray-500">License: {agent.license}</div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(agent.status)}`}>
+                                  {agent.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div>{agent.properties} properties</div>
+                                <div>{agent.sales} sales</div>
+                                <div className="flex items-center">
+                                  <span className="text-yellow-400">★</span>
+                                  <span className="ml-1">{agent.rating || 'No rating'}</span>
+                                </div>
+                              </td>
+                                                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {agent.commission}%
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {formatDate(agent.joinDate)}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => handleAgentAction(agent.id, 'view')}
-                                  className="text-blue-600 hover:text-blue-900"
-                                >
-                                  <EyeIcon className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleAgentAction(agent.id, 'edit')}
-                                  className="text-orange-600 hover:text-orange-900"
-                                >
-                                  <PencilIcon className="w-4 h-4" />
-                                </button>
-                                {agent.status === 'Pending' && (
+                                <div className="flex items-center space-x-2">
                                   <button
-                                    onClick={() => handleAgentAction(agent.id, 'verify')}
-                                    className="text-green-600 hover:text-green-900"
+                                    onClick={() => handleAgentAction(agent.id, 'view')}
+                                    className="text-blue-600 hover:text-blue-900"
                                   >
-                                    <CheckIcon className="w-4 h-4" />
+                                    <EyeIcon className="w-4 h-4" />
                                   </button>
+                                  <button
+                                    onClick={() => handleAgentAction(agent.id, 'edit')}
+                                    className="text-orange-600 hover:text-orange-900"
+                                  >
+                                    <PencilIcon className="w-4 h-4" />
+                                  </button>
+                                  {agent.status === 'Pending' && (
+                                    <button
+                                      onClick={() => handleAgentAction(agent.id, 'verify')}
+                                      className="text-green-600 hover:text-green-900"
+                                      title="Verify agent"
+                                    >
+                                      <CheckIcon className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleAgentAction(agent.id, 'delete')}
+                                    className="text-red-600 hover:text-red-900"
+                                    title="Delete agent"
+                                  >
+                                    <TrashIcon className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={6} className="px-6 py-12 text-center">
+                              <div className="flex flex-col items-center">
+                                <UserGroupIcon className="w-12 h-12 text-gray-300 mb-4" />
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">No agents found</h3>
+                                <p className="text-gray-500 mb-4">
+                                  {isLoading ? 'Loading agents...' : 
+                                   searchTerm || selectedFilter !== 'all' ? 'No agents match your search criteria.' : 
+                                   'There are no agents in the system yet.'}
+                                </p>
+                                {!isLoading && (
+                                  <Button 
+                                    variant="outlined" 
+                                    onClick={() => loadAgents()}
+                                    className="flex items-center"
+                                  >
+                                    <span className="mr-2">🔄</span>
+                                    Refresh Agents
+                                  </Button>
                                 )}
                               </div>
                             </td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>
