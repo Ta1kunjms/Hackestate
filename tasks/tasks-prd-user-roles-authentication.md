@@ -62,7 +62,7 @@
   - [ ] 2.8 Create registration success/confirmation pages
 
 - [ ] 3.0 Create role-based access control system
-  - [ ] 3.1 Build rolePermissions utility functions for checking user permissions
+  - [x] 3.1 Build rolePermissions utility functions for checking user permissions
   - [ ] 3.2 Create ProtectedRoute component for role-based route protection
   - [ ] 3.3 Implement role-based component rendering logic
   - [ ] 3.4 Add permission checks for API endpoints and data access
