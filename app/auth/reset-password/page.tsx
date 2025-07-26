@@ -161,10 +161,10 @@ const ResetPassword: React.FC = () => {
                 onClick={handleResend}
                 disabled={isLoading}
                 placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                onResize={undefined}
-                onResizeCapture={undefined}
+                onResize={() => {}}
+                onResizeCapture={() => {}}
+                onPointerEnterCapture={() => {}}
+                onPointerLeaveCapture={() => {}}
               >
                 {isLoading ? 'Sending...' : 'Resend Email'}
               </Button>
@@ -221,10 +221,10 @@ const ResetPassword: React.FC = () => {
               labelProps={{ className: "hidden" }}
               required
               crossOrigin={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-              onResize={undefined}
-              onResizeCapture={undefined}
+              onResize={() => {}}
+              onResizeCapture={() => {}}
+              onPointerEnterCapture={() => {}}
+              onPointerLeaveCapture={() => {}}
             />
             <p className="text-sm text-gray-500 mt-1">
               We'll send password reset instructions to this email address.
@@ -240,10 +240,10 @@ const ResetPassword: React.FC = () => {
             loading={isLoading}
             disabled={isLoading}
             placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-            onResize={undefined}
-            onResizeCapture={undefined}
+            onResize={() => {}}
+            onResizeCapture={() => {}}
+            onPointerEnterCapture={() => {}}
+            onPointerLeaveCapture={() => {}}
           >
             {isLoading ? 'Sending...' : 'Send Reset Link'}
           </Button>

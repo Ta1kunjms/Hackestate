@@ -73,8 +73,6 @@ export const Select: React.FC<SelectProps> = ({
       className={className}
       placeholder={placeholder}
       name={name}
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
       onResize={undefined}
       onResizeCapture={undefined}
     >
@@ -134,8 +132,6 @@ export const Textarea: React.FC<TextareaProps> = ({
       rows={rows}
       name={name}
       id={id}
-      onPointerEnterCapture={undefined}
-      onPointerLeaveCapture={undefined}
       onResize={undefined}
       onResizeCapture={undefined}
     />

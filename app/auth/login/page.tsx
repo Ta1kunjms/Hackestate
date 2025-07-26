@@ -112,12 +112,12 @@ const Login: React.FC = () => {
               labelProps={{
                 className: "hidden",
               }}
-              required
-              crossOrigin={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-              onResize={undefined}
-              onResizeCapture={undefined}
+                                required
+                  crossOrigin={undefined}
+                  onResize={() => {}}
+                  onResizeCapture={() => {}}
+                  onPointerEnterCapture={() => {}}
+                  onPointerLeaveCapture={() => {}}
             />
           </div>
           
@@ -139,10 +139,10 @@ const Login: React.FC = () => {
                 type={passwordShown ? "text" : "password"}
                 required
                 crossOrigin={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                onResize={undefined}
-                onResizeCapture={undefined}
+                onResize={() => {}}
+                onResizeCapture={() => {}}
+                onPointerEnterCapture={() => {}}
+                onPointerLeaveCapture={() => {}}
               />
               <button 
                 type="button"
@@ -165,12 +165,12 @@ const Login: React.FC = () => {
             className="mt-8 mb-4 !bg-blue-600 !text-white hover:!bg-blue-700 !py-3 !px-6 !font-medium !text-base !rounded-lg !shadow-md hover:!shadow-lg !transition-all !duration-200" 
             fullWidth
             loading={isLoading}
-            disabled={isLoading}
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-            onResize={undefined}
-            onResizeCapture={undefined}
+                          disabled={isLoading}
+              placeholder={undefined}
+              onResize={() => {}}
+              onResizeCapture={() => {}}
+              onPointerEnterCapture={() => {}}
+              onPointerLeaveCapture={() => {}}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>
