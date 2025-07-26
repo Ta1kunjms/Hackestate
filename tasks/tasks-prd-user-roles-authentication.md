@@ -43,8 +43,8 @@
 
 - [ ] 1.0 Set up database schema and authentication infrastructure
   - [x] 1.1 Create user roles table in Supabase with role types (admin, agent, developer, seller, buyer)
-  - [ ] 1.2 Create user_profiles table with basic user information (name, email, phone, role_id)
-  - [ ] 1.3 Create role_approvals table for agent and developer approval workflows
+  - [x] 1.2 Create user_profiles table with basic user information (name, email, phone, role_id)
+  - [x] 1.3 Create role_approvals table for agent and developer approval workflows
   - [ ] 1.4 Set up Row Level Security (RLS) policies for user data protection
   - [ ] 1.5 Configure Supabase authentication settings and email templates (extend existing config)
   - [ ] 1.6 Create database migration scripts for schema changes

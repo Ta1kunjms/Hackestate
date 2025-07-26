@@ -87,6 +87,7 @@ export type Database = {
           reviewed_by: string | null
           rejection_reason: string | null
           documentation_url: string | null
+          additional_notes: string | null
           created_at: string
           updated_at: string
         }
@@ -100,6 +101,7 @@ export type Database = {
           reviewed_by?: string | null
           rejection_reason?: string | null
           documentation_url?: string | null
+          additional_notes?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -113,6 +115,7 @@ export type Database = {
           reviewed_by?: string | null
           rejection_reason?: string | null
           documentation_url?: string | null
+          additional_notes?: string | null
           created_at?: string
           updated_at?: string
         }

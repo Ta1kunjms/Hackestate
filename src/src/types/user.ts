@@ -81,6 +81,7 @@ export interface RoleApproval {
   reviewed_by?: string;
   rejection_reason?: string;
   documentation_url?: string;
+  additional_notes?: string;
   created_at: string;
   updated_at: string;
 }
