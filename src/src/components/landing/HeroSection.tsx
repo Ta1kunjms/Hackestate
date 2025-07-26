@@ -27,7 +27,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative h-screen" style={{ backgroundColor: '#1C1C1E' }}>
+    <section className="relative h-screen bg-background">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"

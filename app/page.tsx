@@ -11,7 +11,7 @@ import CallToAction from '../src/src/components/landing/CallToAction';
 import Footer from '../src/src/components/layout/Footer';
 
 const HomePage: React.FC = () => (
-  <div>
+  <div className="bg-background text-foreground">
     <HeroSection />
     <FeaturedListings />
     <BrowseByCategory />

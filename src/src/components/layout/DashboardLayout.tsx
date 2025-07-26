@@ -26,7 +26,7 @@ import TopPixNavbar from './Navbar';
 interface NavigationItem {
   id: string;
   label: string;
-  icon: React.ComponentType;
+  icon: React.ComponentType<any>;
   path: string;
   count?: number;
   badge?: string;
@@ -144,12 +144,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <div className="sticky top-0 z-50 h-16 bg-white border-b border-gray-200">
           <TopPixNavbar />
         </div>
-        
+
         {/* Main area: sidebar + content */}
-        <div className="flex mt-0">
+        <div className="flex flex-1">
+          {/* Mobile sidebar backdrop */}
+          {sidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
           {/* Sidebar */}
-          <div className={`hidden lg:block fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40`} style={{ top: '64px' }}>
-            <div className="flex flex-col h-full">
+          <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}>
+            <div className="flex flex-col h-screen">
               {/* Sidebar Header */}
               <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
                 <div className="flex items-center">
@@ -163,6 +173,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <XMarkIcon className="w-5 h-5" />
                 </button>
               </div>
+
               {/* User Info */}
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center">
@@ -177,6 +188,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </div>
                 </div>
               </div>
+
               {/* Navigation */}
               <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
                 {navigationItems.map((item) => (
@@ -189,10 +201,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    {item.icon && (
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      React.createElement(item.icon as any, { className: "w-5 h-5 mr-3" })
-                    )}
+                    <item.icon className="w-5 h-5 mr-3" />
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.count && (
                       <span className="bg-gray-200 text-gray-600 text-xs rounded-full px-2 py-0.5">
@@ -207,6 +216,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </button>
                 ))}
               </nav>
+
               {/* Sidebar Footer */}
               <div className="p-4 border-t border-gray-200">
                 <button
@@ -219,9 +229,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </div>
             </div>
           </div>
-          
-          {/* Main content */}
-          <div className="flex-1 lg:ml-64 pt-16">
+
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col">
             {/* Page Header */}
             <div className="bg-white border-b border-gray-200">
               <div className="px-4 sm:px-6 lg:px-8 py-4">
@@ -230,6 +240,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     <h1 className="text-2xl font-bold text-gray-900 lg:hidden">{getDashboardTitle()}</h1>
                     <p className="text-gray-600 mt-1">{getDashboardSubtitle()}</p>
                   </div>
+                  
                   {actions && (
                     <div className="flex items-center space-x-4">
                       {actions}
@@ -238,6 +249,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 </div>
               </div>
             </div>
+
             {/* Main Content Area */}
             <div className="px-4 sm:px-6 lg:px-8 py-6">
               {children}

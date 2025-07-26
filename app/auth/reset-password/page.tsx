@@ -160,6 +160,11 @@ const ResetPassword: React.FC = () => {
                 loading={isLoading}
                 onClick={handleResend}
                 disabled={isLoading}
+                placeholder={undefined}
+                onResize={undefined}
+                onResizeCapture={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
               >
                 {isLoading ? 'Sending...' : 'Resend Email'}
               </Button>
@@ -237,8 +242,6 @@ const ResetPassword: React.FC = () => {
             placeholder={undefined}
             onResize={undefined}
             onResizeCapture={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
           >
             {isLoading ? 'Sending...' : 'Send Reset Link'}
           </Button>
