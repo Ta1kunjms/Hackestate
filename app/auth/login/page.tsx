@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Typography, Input, Button } from '@material-tailwind/react';
 import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../../../src/src/contexts/AuthContext';
@@ -14,6 +14,7 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
   const { login, isLoading } = useAuth();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const state = {
     message: searchParams.get('message'),
@@ -41,6 +42,8 @@ const Login: React.FC = () => {
 
     try {
       await login(formData.email, formData.password);
+      // Redirect to dashboard or home page after successful login
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     }
@@ -112,12 +115,12 @@ const Login: React.FC = () => {
               labelProps={{
                 className: "hidden",
               }}
-                                required
-                  crossOrigin={undefined}
-                  onResize={() => {}}
-                  onResizeCapture={() => {}}
-                  onPointerEnterCapture={() => {}}
-                  onPointerLeaveCapture={() => {}}
+              required
+              crossOrigin={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
             />
           </div>
           
@@ -139,10 +142,10 @@ const Login: React.FC = () => {
                 type={passwordShown ? "text" : "password"}
                 required
                 crossOrigin={undefined}
-                onResize={() => {}}
-                onResizeCapture={() => {}}
-                onPointerEnterCapture={() => {}}
-                onPointerLeaveCapture={() => {}}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+                onResize={undefined}
+                onResizeCapture={undefined}
               />
               <button 
                 type="button"
@@ -165,12 +168,12 @@ const Login: React.FC = () => {
             className="mt-8 mb-4 !bg-blue-600 !text-white hover:!bg-blue-700 !py-3 !px-6 !font-medium !text-base !rounded-lg !shadow-md hover:!shadow-lg !transition-all !duration-200" 
             fullWidth
             loading={isLoading}
-                          disabled={isLoading}
-              placeholder={undefined}
-              onResize={() => {}}
-              onResizeCapture={() => {}}
-              onPointerEnterCapture={() => {}}
-              onPointerLeaveCapture={() => {}}
+            disabled={isLoading}
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+            onResize={undefined}
+            onResizeCapture={undefined}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>
