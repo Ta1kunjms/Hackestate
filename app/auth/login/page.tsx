@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Typography, Input, Button } from '@material-tailwind/react';
 import { EyeSlashIcon, EyeIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../../../src/src/contexts/AuthContext';
@@ -14,6 +14,7 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
   const { login, isLoading } = useAuth();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const state = {
     message: searchParams.get('message'),
@@ -41,6 +42,8 @@ const Login: React.FC = () => {
 
     try {
       await login(formData.email, formData.password);
+      // Redirect to dashboard or home page after successful login
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     }
@@ -114,6 +117,8 @@ const Login: React.FC = () => {
               }}
               required
               crossOrigin={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
               onResize={undefined}
               onResizeCapture={undefined}
             />
@@ -137,6 +142,8 @@ const Login: React.FC = () => {
                 type={passwordShown ? "text" : "password"}
                 required
                 crossOrigin={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
                 onResize={undefined}
                 onResizeCapture={undefined}
               />
@@ -163,6 +170,8 @@ const Login: React.FC = () => {
             loading={isLoading}
             disabled={isLoading}
             placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
             onResize={undefined}
             onResizeCapture={undefined}
           >
