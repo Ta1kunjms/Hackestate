@@ -1,36 +1,8 @@
 import React from 'react';
 import AgentCard from '../../src/src/components/AgentCard';
 
-// Mock agents data
-const agents = [
-  {
-    id: '1',
-    avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
-    name: 'Carlos Mendoza',
-    location: 'Makati City',
-    language: 'English, Filipino',
-    experience: '8+ years',
-    profileUrl: '/agents/1',
-  },
-  {
-    id: '2',
-    avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
-    name: 'Maria Santos',
-    location: 'Quezon City',
-    language: 'English, Filipino',
-    experience: '5+ years',
-    profileUrl: '/agents/2',
-  },
-  {
-    id: '3',
-    avatarUrl: 'https://randomuser.me/api/portraits/men/65.jpg',
-    name: 'John Lee',
-    location: 'Taguig City',
-    language: 'English, Chinese',
-    experience: '10+ years',
-    profileUrl: '/agents/3',
-  },
-];
+// Agents data - in real app, this would come from API
+const agents: any[] = [];
 
 const AgentsDirectoryPage: React.FC = () => (
   <div className="max-w-5xl mx-auto py-16 px-4">

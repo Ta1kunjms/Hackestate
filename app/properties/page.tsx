@@ -9,213 +9,16 @@ import { Button } from '../../src/src/components/ui';
 import Layout from '../../src/src/components/layout/Layout';
 import Navbar from '../../src/src/components/layout/Navbar';
 import Footer from '../../src/src/components/layout/Footer';
+import { PropertyService, Property } from '../../src/src/services/propertyService';
 
-// Mock data for all properties (moved from FeaturedListings)
-const allProperties = [
-  {
-    id: '1',
-    title: 'Modern 3-Bedroom House with Swimming Pool',
-    price: 4500000,
-    location: 'Alabang, Muntinlupa City',
-    type: 'House',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 150,
-    yearBuilt: 2022,
-    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-    isFeatured: true,
-  },
-  {
-    id: '2',
-    title: 'Luxury Condominium Unit with City View',
-    price: 8500000,
-    location: 'Makati City',
-    type: 'Condo',
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 95,
-    yearBuilt: 2023,
-    imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-  },
-  {
-    id: '3',
-    title: 'Charming Townhouse in Gated Community',
-    price: 3200000,
-    location: 'Quezon City',
-    type: 'Townhouse',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 120,
-    yearBuilt: 2021,
-    imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-  },
-  {
-    id: '4',
-    title: 'Spacious Family Home with Garden',
-    price: 5200000,
-    location: 'Pasig City',
-    type: 'House',
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 200,
-    yearBuilt: 2020,
-    imageUrl: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-  },
-  {
-    id: '5',
-    title: 'Modern Studio Apartment Downtown',
-    price: 2800000,
-    location: 'Mandaluyong City',
-    type: 'Apartment',
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 45,
-    yearBuilt: 2023,
-    imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-  },
-  {
-    id: '6',
-    title: 'Executive Villa with Private Pool',
-    price: 12000000,
-    location: 'Antipolo, Rizal',
-    type: 'Villa',
-    bedrooms: 5,
-    bathrooms: 4,
-    area: 350,
-    yearBuilt: 2022,
-    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-  },
-  {
-    id: '7',
-    title: 'Cozy Beach House with Ocean View',
-    price: 6800000,
-    location: 'Batangas City',
-    type: 'House',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 180,
-    yearBuilt: 2021,
-    imageUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-  },
-  {
-    id: '8',
-    title: 'High-Rise Penthouse Suite',
-    price: 15000000,
-    location: 'Bonifacio Global City',
-    type: 'Penthouse',
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 220,
-    yearBuilt: 2023,
-    imageUrl: 'https://images.unsplash.com/photo-1556020685-ae41abfc9365?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-    isFeatured: true,
-  },
-  {
-    id: '9',
-    title: 'Traditional Filipino House',
-    price: 3800000,
-    location: 'Laguna',
-    type: 'House',
-    bedrooms: 4,
-    bathrooms: 2,
-    area: 160,
-    yearBuilt: 2020,
-    imageUrl: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-  },
-  {
-    id: '10',
-    title: 'Modern Duplex with Rooftop Garden',
-    price: 7200000,
-    location: 'Cebu City',
-    type: 'Duplex',
-    bedrooms: 3,
-    bathrooms: 3,
-    area: 190,
-    yearBuilt: 2022,
-    imageUrl: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-  },
-  {
-    id: '11',
-    title: 'Luxury Loft in Business District',
-    price: 9500000,
-    location: 'Ortigas Center',
-    type: 'Loft',
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 110,
-    yearBuilt: 2023,
-    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-  },
-  {
-    id: '12',
-    title: 'Garden Bungalow with Pool',
-    price: 4200000,
-    location: 'Cavite',
-    type: 'Bungalow',
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 130,
-    yearBuilt: 2021,
-    imageUrl: 'https://images.unsplash.com/photo-1510627498534-cf7e9002facc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-  },
-  {
-    id: '13',
-    title: 'Corporate Housing Complex Unit',
-    price: 3600000,
-    location: 'Taguig City',
-    type: 'Apartment',
-    bedrooms: 2,
-    bathrooms: 1,
-    area: 75,
-    yearBuilt: 2022,
-    imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-  },
-  {
-    id: '14',
-    title: 'Mountain View Retreat House',
-    price: 5800000,
-    location: 'Tagaytay City',
-    type: 'House',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 170,
-    yearBuilt: 2020,
-    imageUrl: 'https://images.unsplash.com/photo-1494526585095-c41746248156?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-  },
-  {
-    id: '15',
-    title: 'Urban Studio with City Access',
-    price: 2200000,
-    location: 'Manila',
-    type: 'Studio',
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 35,
-    yearBuilt: 2023,
-    imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-  },
-];
+// Platform properties - in real app, this would come from API
+const allProperties: any[] = [];
 
 interface SearchFiltersData {
   location: string;
   propertyType: string;
   priceRange: string;
-  searchType: 'buy' | 'rent' | 'sell';
+  searchType: 'buy' | 'rent';
 }
 
 type SortOption = 'price-asc' | 'price-desc' | 'newest' | 'oldest' | 'area-asc' | 'area-desc';
@@ -228,6 +31,7 @@ const PropertiesPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortOption>('price-asc');
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+  const [sellerProperties, setSellerProperties] = useState<any[]>([]);
   
   const propertiesPerPage = 12;
 
@@ -236,7 +40,7 @@ const PropertiesPage: React.FC = () => {
     const location = searchParams.get('location');
     const type = searchParams.get('type');
     const price = searchParams.get('price');
-    const searchType = searchParams.get('searchType') as 'buy' | 'rent' | 'sell';
+    const searchType = searchParams.get('searchType') as 'buy' | 'rent';
 
     if (location || type || price || searchType) {
       setFilters({
@@ -255,6 +59,22 @@ const PropertiesPage: React.FC = () => {
       });
     }
   }, [searchParams]);
+
+  // Load properties from database
+  useEffect(() => {
+    const loadProperties = async () => {
+      try {
+        // Load available properties from database
+        const availableProperties = await PropertyService.getAvailableProperties();
+        setSellerProperties(availableProperties);
+      } catch (error) {
+        console.error('Error loading properties:', error);
+        setSellerProperties([]);
+      }
+    };
+
+    loadProperties();
+  }, []);
 
   const handleSaveProperty = (propertyId: string) => {
     setSavedProperties(prev => {
@@ -275,7 +95,9 @@ const PropertiesPage: React.FC = () => {
 
   // Enhanced filtering logic
   const getFilteredAndSortedProperties = () => {
-    let filtered = allProperties;
+    // Combine platform properties with seller properties
+    const combinedProperties = [...allProperties, ...sellerProperties];
+    let filtered = combinedProperties;
 
     if (filters) {
       // Location filter

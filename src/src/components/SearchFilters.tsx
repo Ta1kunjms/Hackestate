@@ -5,7 +5,7 @@ interface SearchFiltersData {
   location: string;
   propertyType: string;
   priceRange: string;
-  searchType: 'buy' | 'rent' | 'sell';
+  searchType: 'buy' | 'rent';
 }
 
 interface SearchFiltersProps {
@@ -54,7 +54,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     }));
   };
 
-  const handleTabChange = (searchType: 'buy' | 'rent' | 'sell') => {
+  const handleTabChange = (searchType: 'buy' | 'rent') => {
     setSearchFilters(prev => ({
       ...prev,
       searchType
@@ -73,7 +73,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     <div className={containerClasses}>
       {/* Search Tabs */}
       <div className="flex border-b border-border">
-        {(['buy', 'rent', 'sell'] as const).map((tab) => (
+        {(['buy', 'rent'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabChange(tab)}

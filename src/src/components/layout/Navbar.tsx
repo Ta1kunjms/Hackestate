@@ -110,6 +110,13 @@ const TopPixNavbar: React.FC = () => {
                 >
                   User Dashboard
                 </Link>
+                <Link 
+                  href="/seller/dashboard"
+                  className="block px-4 py-2 text-card-foreground hover:text-primary transition-colors"
+                  onClick={() => setIsProfileDropdownOpen(false)}
+                >
+                  Seller Dashboard
+                </Link>
                 {isAdmin && (
                   <Link 
                     href="/admin"
@@ -199,6 +206,13 @@ const TopPixNavbar: React.FC = () => {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       User Dashboard
+                    </Link>
+                    <Link 
+                      href="/seller/dashboard"
+                      className="block pl-7 text-card-foreground hover:text-primary transition-colors font-medium py-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Seller Dashboard
                     </Link>
                     <Link 
                       href="/user/settings"

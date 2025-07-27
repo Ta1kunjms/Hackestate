@@ -20,152 +20,33 @@ import { Button } from '../../src/src/components/ui';
 import { useAuth } from '../../src/src/contexts/AuthContext';
 import { supabase } from '../../src/src/lib/supabase';
 
-// Mock user data
-const mockUser = {
-  id: '1',
-  name: 'Maria Santos',
-  email: 'maria.santos@email.com',
-  phone: '+63 917 123 4567',
-  avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  memberSince: '2023-06-15',
+// User data - in real app, this would come from API
+const user = {
+  id: '',
+  name: '',
+  email: '',
+  phone: '',
+  avatar: '',
+  memberSince: '',
   preferences: {
-    priceRange: '2000000-5000000',
-    propertyTypes: ['House', 'Condo'],
-    locations: ['Makati City', 'Bonifacio Global City'],
-    bedrooms: '2-3',
-    emailNotifications: true,
+    priceRange: '',
+    propertyTypes: [],
+    locations: [],
+    bedrooms: '',
+    emailNotifications: false,
     smsNotifications: false,
-    weeklyReports: true
+    weeklyReports: false
   }
 };
 
-// Mock saved properties
-const savedProperties = [
-  {
-    id: '1',
-    title: 'Modern 3-Bedroom House with Swimming Pool',
-    price: 4500000,
-    location: 'Alabang, Muntinlupa City',
-    type: 'House',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 150,
-    yearBuilt: 2022,
-    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-    isFeatured: true,
-    savedDate: '2024-01-15'
-  },
-  {
-    id: '2',
-    title: 'Luxury Condominium Unit with City View',
-    price: 8500000,
-    location: 'Makati City',
-    type: 'Condo',
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 95,
-    yearBuilt: 2023,
-    imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isFeatured: true,
-    savedDate: '2024-01-10'
-  },
-  {
-    id: '3',
-    title: 'Charming Townhouse in Gated Community',
-    price: 3200000,
-    location: 'Quezon City',
-    type: 'Townhouse',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 120,
-    yearBuilt: 2021,
-    imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-    isNew: true,
-    savedDate: '2024-01-08'
-  }
-];
+// Saved properties - in real app, this would come from API
+const savedProperties: any[] = [];
 
-// Mock search alerts
-const searchAlerts = [
-  {
-    id: '1',
-    name: 'BGC Condos Under ₱10M',
-    criteria: {
-      location: 'Bonifacio Global City',
-      propertyType: 'Condo',
-      maxPrice: 10000000,
-      bedrooms: '2+'
-    },
-    frequency: 'Daily',
-    isActive: true,
-    createdDate: '2024-01-01',
-    matchCount: 12
-  },
-  {
-    id: '2',
-    name: 'Houses in Alabang',
-    criteria: {
-      location: 'Alabang',
-      propertyType: 'House',
-      maxPrice: 6000000,
-      bedrooms: '3+'
-    },
-    frequency: 'Weekly',
-    isActive: true,
-    createdDate: '2023-12-20',
-    matchCount: 8
-  },
-  {
-    id: '3',
-    name: 'New Properties in Makati',
-    criteria: {
-      location: 'Makati City',
-      propertyType: 'All',
-      isNew: true
-    },
-    frequency: 'Instant',
-    isActive: false,
-    createdDate: '2023-12-15',
-    matchCount: 3
-  }
-];
+// Search alerts - in real app, this would come from API
+const searchAlerts: any[] = [];
 
-// Mock recent activities
-const recentActivities = [
-  {
-    id: '1',
-    type: 'property_saved',
-    title: 'Saved Modern 3-Bedroom House',
-    description: 'Property in Alabang, Muntinlupa City',
-    date: '2024-01-15',
-    icon: 'heart'
-  },
-  {
-    id: '2',
-    type: 'alert_triggered',
-    title: 'New Alert Match',
-    description: '3 new properties match "BGC Condos Under ₱10M"',
-    date: '2024-01-14',
-    icon: 'bell'
-  },
-  {
-    id: '3',
-    type: 'property_viewed',
-    title: 'Viewed Luxury Condominium',
-    description: 'Property in Makati City',
-    date: '2024-01-13',
-    icon: 'eye'
-  },
-  {
-    id: '4',
-    type: 'agent_contacted',
-    title: 'Contacted Agent Carlos Mendoza',
-    description: 'Inquiry about Modern 3-Bedroom House',
-    date: '2024-01-12',
-    icon: 'chat'
-  }
-];
+// Recent activities - in real app, this would come from API
+const recentActivities: any[] = [];
 
 const UserDashboard: React.FC = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();

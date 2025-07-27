@@ -70,53 +70,12 @@ const PropertiesManager: React.FC<PropertiesManagerProps> = ({ userRole, userId 
     features: [] as string[]
   });
 
-  // Mock data loading
+  // Load properties from API
   useEffect(() => {
     const loadProperties = async () => {
-      // Simulate API call
-      const mockProperties: Property[] = [
-        {
-          id: '1',
-          title: 'Modern 3BR Condo in BGC',
-          type: 'condo',
-          status: 'active',
-          price: 8500000,
-          location: 'Bonifacio Global City, Taguig',
-          bedrooms: 3,
-          bathrooms: 2,
-          area: 85,
-          description: 'Beautiful modern condo with city views, fully furnished with premium amenities.',
-          images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-          features: ['Swimming Pool', 'Gym', 'Parking', 'Security'],
-          createdAt: '2024-01-15T10:00:00Z',
-          updatedAt: '2024-01-16T14:30:00Z',
-          agentId: userRole === 'agent' ? userId : undefined,
-          developerId: userRole === 'developer' ? userId : undefined,
-          sellerId: userRole === 'seller' ? userId : undefined
-        },
-        {
-          id: '2',
-          title: 'Luxury House in Alabang',
-          type: 'house',
-          status: 'pending',
-          price: 25000000,
-          location: 'Alabang, Muntinlupa',
-          bedrooms: 4,
-          bathrooms: 3,
-          area: 200,
-          description: 'Spacious family home with garden and pool, perfect for large families.',
-          images: ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'],
-          features: ['Garden', 'Pool', 'Garage', 'Security System'],
-          createdAt: '2024-01-10T09:00:00Z',
-          updatedAt: '2024-01-15T16:20:00Z',
-          agentId: userRole === 'agent' ? userId : undefined,
-          developerId: userRole === 'developer' ? userId : undefined,
-          sellerId: userRole === 'seller' ? userId : undefined
-        }
-      ];
-
-      setProperties(mockProperties);
-      setFilteredProperties(mockProperties);
+      // In real app, fetch from API
+      setProperties([]);
+      setFilteredProperties([]);
       setIsLoading(false);
     };
 

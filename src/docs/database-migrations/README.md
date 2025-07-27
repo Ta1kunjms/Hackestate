@@ -9,6 +9,8 @@ This directory contains SQL migration files for setting up the Supabase database
 3. **03_create_events_table.sql** - Creates events table for managing real estate events
 4. **04_create_properties_table.sql** - Creates properties table for real estate listings
 5. **05_create_supporting_tables.sql** - Creates additional supporting tables
+6. **07_fix_properties_rls.sql** - Fixes RLS policies to allow authenticated users to create properties
+7. **08_fix_inquiries_rls.sql** - Fixes RLS policies to allow authenticated users to create inquiries
 
 ## How to Run Migrations
 
@@ -42,7 +44,9 @@ supabase db push
 -- Then 02_create_role_approvals.sql
 -- Then 03_create_events_table.sql
 -- Then 04_create_properties_table.sql
--- Finally 05_create_supporting_tables.sql
+-- Then 05_create_supporting_tables.sql
+-- Then 07_fix_properties_rls.sql
+-- Finally 08_fix_inquiries_rls.sql
 ```
 
 ## Prerequisites

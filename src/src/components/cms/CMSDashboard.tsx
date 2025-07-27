@@ -129,23 +129,22 @@ const CMSDashboard: React.FC<CMSDashboardProps> = ({ userRole, userInfo }) => {
     }
   };
 
-  // Mock data loading
+  // Load stats from API
   useEffect(() => {
-    // Simulate API call to load stats
+    // In real app, fetch from API
     const loadStats = async () => {
-      // Mock API response
-      const mockStats: CMSStats = {
-        totalProperties: userRole === 'admin' ? 1832 : 8,
-        activeListings: userRole === 'admin' ? 1456 : 6,
-        totalUsers: userRole === 'admin' ? 1247 : 0,
-        totalAgents: userRole === 'admin' ? 45 : 0,
-        totalEvents: userRole === 'admin' ? 28 : 0,
-        monthlyRevenue: userRole === 'admin' ? 1250000 : 45000,
-        conversionRate: userRole === 'admin' ? 3.2 : 2.8,
-        pendingApprovals: userRole === 'admin' ? 23 : 2
+      const defaultStats: CMSStats = {
+        totalProperties: 0,
+        activeListings: 0,
+        totalUsers: 0,
+        totalAgents: 0,
+        totalEvents: 0,
+        monthlyRevenue: 0,
+        conversionRate: 0,
+        pendingApprovals: 0
       };
       
-      setStats(mockStats);
+      setStats(defaultStats);
     };
 
     loadStats();

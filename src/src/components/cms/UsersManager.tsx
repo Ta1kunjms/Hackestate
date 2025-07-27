@@ -37,33 +37,11 @@ const UsersManager: React.FC<UsersManagerProps> = ({ userRole }) => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Mock data loading
+  // Load users from API
   useEffect(() => {
-    const mockUsers: User[] = [
-      {
-        id: '1',
-        name: 'Maria Santos',
-        email: 'maria.santos@email.com',
-        role: 'user',
-        status: 'active',
-        joinDate: '2024-01-10',
-        lastActive: '2024-01-16',
-        verified: true
-      },
-      {
-        id: '2',
-        name: 'Carlos Mendoza',
-        email: 'carlos.mendoza@realestate.com',
-        role: 'agent',
-        status: 'active',
-        joinDate: '2023-06-15',
-        lastActive: '2024-01-16',
-        verified: true
-      }
-    ];
-
-    setUsers(mockUsers);
-    setFilteredUsers(mockUsers);
+    // In real app, fetch from API
+    setUsers([]);
+    setFilteredUsers([]);
     setIsLoading(false);
   }, []);
 

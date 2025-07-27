@@ -2,35 +2,29 @@
 import React from 'react';
 import AgentMessages from './messages';
 
-// Mock data fetch (replace with real fetch in production)
+// Agent data fetch - in real app, this would come from API
 async function getAgent(id: string) {
+  // In real app, fetch from API
   return {
     id,
-    name: 'Jane Doe',
-    avatarUrl: '/public/logo192.png',
-    bio: 'Experienced real estate agent specializing in downtown properties.',
-    location: 'New York, NY',
-    language: 'English, Spanish',
-    experience: '10 years',
-    email: 'jane@example.com',
+    name: '',
+    avatarUrl: '',
+    bio: '',
+    location: '',
+    language: '',
+    experience: '',
+    email: '',
   };
 }
 
 async function getListings(agentId: string) {
-  return [
-    {
-      id: '1',
-      title: 'Modern Loft',
-      image: '/public/logo512.png',
-      price: '$1,200,000',
-    },
-    {
-      id: '2',
-      title: 'Cozy Studio',
-      image: '/public/logo192.png',
-      price: '$650,000',
-    },
-  ];
+  // In real app, fetch from API
+  return [] as Array<{
+    id: string;
+    title: string;
+    image: string;
+    price: string;
+  }>;
 }
 
 export default async function AgentProfilePage({ params }: { params: { id: string } }) {

@@ -8,15 +8,22 @@ interface Property {
   id: string;
   title: string;
   price: number;
-  location: string;
-  type: string;
-  bedrooms: number;
-  bathrooms: number;
-  area: number;
-  imageUrl: string;
+  address?: string;
+  city?: string;
+  location?: string;
+  property_type?: string;
+  type?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  area_sqm?: number;
+  area?: number;
+  images?: string[];
+  imageUrl?: string;
   isNew?: boolean;
   isFeatured?: boolean;
+  year_built?: number;
   yearBuilt?: number;
+  created_at?: string;
 }
 
 interface PropertyCardProps {
@@ -63,7 +70,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       {/* Property Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={property.imageUrl}
+          src={property.imageUrl || property.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'}
           alt={property.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -106,7 +113,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             </p>
           </div>
           <span className="ml-2 bg-gray-100 text-gray-700 px-2 py-1 rounded-md text-xs font-medium shrink-0">
-            {property.type}
+            {property.type || property.property_type}
           </span>
         </div>
 
@@ -118,7 +125,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         {/* Location */}
         <div className="flex items-start text-gray-600 mb-3">
           <MapPinIcon className="h-4 w-4 mr-1 flex-shrink-0 text-gray-400 mt-0.5" />
-          <span className="text-xs truncate">{property.location}</span>
+          <span className="text-xs truncate">{property.location || property.address || property.city}</span>
         </div>
 
         {/* Property Features Grid */}
@@ -128,7 +135,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               <HomeIcon className="h-3 w-3 text-gray-400" />
             </div>
             <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Bed</p>
-            <p className="text-xs font-semibold text-gray-900">{property.bedrooms}</p>
+            <p className="text-xs font-semibold text-gray-900">{property.bedrooms || 0}</p>
           </div>
           <div className="text-center border-l border-r border-gray-200">
             <div className="flex items-center justify-center mb-1">
@@ -137,14 +144,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               </div>
             </div>
             <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Bath</p>
-            <p className="text-xs font-semibold text-gray-900">{property.bathrooms}</p>
+            <p className="text-xs font-semibold text-gray-900">{property.bathrooms || 0}</p>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center mb-1">
               <CalendarIcon className="h-3 w-3 text-gray-400" />
             </div>
             <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Area</p>
-            <p className="text-xs font-semibold text-gray-900">{property.area}m²</p>
+            <p className="text-xs font-semibold text-gray-900">{property.area || property.area_sqm || 0}m²</p>
           </div>
         </div>
 

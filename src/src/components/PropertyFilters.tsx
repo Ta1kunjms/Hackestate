@@ -5,7 +5,7 @@ export interface PropertyFiltersData {
   location: string;
   propertyType: string;
   priceRange: string;
-  searchType: 'buy' | 'rent' | 'sell';
+  searchType: 'buy' | 'rent';
   bedrooms: string;
   bathrooms: string;
   minArea: string;
@@ -65,7 +65,7 @@ const PropertyFilters: React.FC<PropertyFiltersProps> = ({
     onFiltersChange(newFilters);
   };
 
-  const handleSearchTypeChange = (searchType: 'buy' | 'rent' | 'sell') => {
+  const handleSearchTypeChange = (searchType: 'buy' | 'rent') => {
     const newFilters = { ...filters, searchType };
     setFilters(newFilters);
     onFiltersChange(newFilters);
@@ -112,7 +112,7 @@ const PropertyFilters: React.FC<PropertyFiltersProps> = ({
       <div className={`bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden ${className}`}>
         {/* Search Tabs */}
         <div className="flex border-b border-gray-200">
-          {(['buy', 'rent', 'sell'] as const).map((tab) => (
+          {(['buy', 'rent'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => handleSearchTypeChange(tab)}
@@ -211,7 +211,7 @@ const PropertyFilters: React.FC<PropertyFiltersProps> = ({
 
         {/* Search Type Tabs */}
         <div className="mt-4 flex bg-gray-100 rounded-lg p-1">
-          {(['buy', 'rent', 'sell'] as const).map((tab) => (
+          {(['buy', 'rent'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => handleSearchTypeChange(tab)}

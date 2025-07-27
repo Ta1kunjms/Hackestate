@@ -8,7 +8,7 @@ interface SearchFiltersData {
   location: string;
   propertyType: string;
   priceRange: string;
-  searchType: 'buy' | 'rent' | 'sell';
+  searchType: 'buy' | 'rent';
 }
 
 const HeroSection: React.FC = () => {
