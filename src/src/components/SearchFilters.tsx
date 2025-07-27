@@ -80,7 +80,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             className={`flex-1 py-3 px-4 text-sm font-semibold capitalize transition-colors ${
               searchFilters.searchType === tab
                 ? 'text-white bg-orange-500'
-                : 'text-card-foreground hover:text-orange-500 hover:bg-orange-50'
+                : '!text-gray-900 hover:text-orange-500 hover:bg-orange-50'
             }`}
           >
             {tab}
