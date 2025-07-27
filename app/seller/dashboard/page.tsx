@@ -55,8 +55,8 @@ const SellerDashboard: React.FC = () => {
         // Transform database properties to dashboard format
         const dashboardProperties: DashboardProperty[] = dbProperties.map(prop => ({
           ...prop,
-          views: Math.floor(Math.random() * 200) + 50, // TODO: Get from property_views table
-          inquiries: Math.floor(Math.random() * 10) + 1, // TODO: Get from inquiries table
+          views: 0, // TODO: Get from property_views table
+          inquiries: 0, // TODO: Get from inquiries table
           imageUrl: prop.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'
         }));
         
